@@ -21,13 +21,13 @@
  },
  "source": {
   "file": "app/library/fingerprints.npz",
-  "postings": 31372380,
-  "bytes": 313764256,
-  "sha256": "0e16dd0da1db7df82ad83c9b67262f5261c20c9c9101ea6143a7de4f245abebd",
+  "postings": 31463728,
+  "bytes": 314677904,
+  "sha256": "192e47b7498f08666b77ca9b24afe8d947be35fe510c5f77b1ff1a65bf239e5a",
   "refs_json": true
  },
  "nbuckets": 262657,
- "universe": 21068379,
+ "universe": 21126636,
  "sections": [
   {
    "name": "bucket_bits",
@@ -39,46 +39,46 @@
    "name": "stream",
    "type": "bits",
    "offset": 1050632,
-   "bytes": 82239895,
-   "bits": 657919157
+   "bytes": 82480464,
+   "bits": 659843705
   }
  ],
  "stats": {
-  "distinct_hashes": 2423889,
-  "postings": 31372380,
-  "stream_bits": 657919157,
-  "unary_ones": 30508710,
+  "distinct_hashes": 2426347,
+  "postings": 31463728,
+  "stream_bits": 659843705,
+  "unary_ones": 30669283,
   "max_rice_k": 24
  },
  "checksum": [
-  1596937766,
-  3263250980
+  2281164321,
+  1600575319
  ],
- "total_bytes": 83290527,
+ "total_bytes": 83531096,
  "shards": [
   {
-   "file": "index/fp-00-817ad50f22.bin",
+   "file": "index/fp-00-8ce910e4e1.bin",
    "bytes": 14000000
   },
   {
-   "file": "index/fp-01-e95887d576.bin",
+   "file": "index/fp-01-34c5aabf20.bin",
    "bytes": 14000000
   },
   {
-   "file": "index/fp-02-f2f10c392d.bin",
+   "file": "index/fp-02-9e23845cd8.bin",
    "bytes": 14000000
   },
   {
-   "file": "index/fp-03-7e79d37645.bin",
+   "file": "index/fp-03-2ecf9d084c.bin",
    "bytes": 14000000
   },
   {
-   "file": "index/fp-04-410c8552df.bin",
+   "file": "index/fp-04-e304c76c8b.bin",
    "bytes": 14000000
   },
   {
-   "file": "index/fp-05-30c46e4a6d.bin",
-   "bytes": 13290527
+   "file": "index/fp-05-fcb2160c07.bin",
+   "bytes": 13531096
   }
  ],
  "refs": [
@@ -10454,6 +10454,39 @@
    "excluded": false,
    "duration": 277.008,
    "start": 21051270
+  },
+  {
+   "ref_id": "bemagnified::aida-live-at-adelaide-chapel",
+   "song_id": "bemagnified",
+   "via": "release",
+   "live": true,
+   "shift": 0.0,
+   "aligned": null,
+   "excluded": true,
+   "duration": 362.058,
+   "start": 21068379
+  },
+  {
+   "ref_id": "bridgeovertroubledwatersstars::love-concert",
+   "song_id": "bridgeovertroubledwatersstars",
+   "via": "release",
+   "live": true,
+   "shift": 0.0,
+   "aligned": null,
+   "excluded": true,
+   "duration": 328.056,
+   "start": 21090604
+  },
+  {
+   "ref_id": "comenowisthetimetoworship::aida-live-at-taita-hills",
+   "song_id": "comenowisthetimetoworship",
+   "via": "release",
+   "live": true,
+   "shift": 0.0,
+   "aligned": null,
+   "excluded": true,
+   "duration": 249.443,
+   "start": 21111050
   }
  ]
 }
