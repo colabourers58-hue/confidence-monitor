@@ -1,12 +1,13 @@
 /* Keeps the whole app on the device. First visit stores everything; after that it
    never needs a network. Bump VERSION to push an update the next time it is online. */
-const VERSION = 'cm-v12';
+const VERSION = 'cm-202609301016';   // stamped by publish_site.sh
 const SHELL = ['./', 'index.html', 'app.js', 'orb.js', 'manifest.webmanifest', 'icon-512.png',
                'data/songs.json', 'fonts/inter-600.woff2', 'fonts/inter-800.woff2', 'awake.mp4'];
 self.addEventListener('install', e => {
   e.waitUntil((async () => {
     const c = await caches.open(VERSION);
-    await c.addAll(SHELL);
+    // straight from the server, never from the browser's own cache (it can hold a copy that's minutes old)
+    await c.addAll(SHELL.map(u => new Request(u, {cache:'reload'})));
     // the offline-only files one by one, so a host without them (the Mac serves none of
     // them) can't fail the install
     try{ await c.add('decide.js'); }catch(err){}

@@ -178,6 +178,11 @@
         border-radius:3px;background:var(--fill);overflow:hidden;transition:opacity .5s}
   #load i{display:block;height:100%;width:0;background:var(--label-3);transition:width .2s}
   #load.done{opacity:0}
+  #cp .ver{font-size:14px;color:var(--label-2);margin:-6px 0 14px}
+  #toast{position:fixed;top:max(18px,env(safe-area-inset-top));left:50%;transform:translateX(-50%);z-index:30;
+         padding:12px 20px;border-radius:14px;background:rgba(40,40,44,.92);color:#fff;font-size:17px;font-weight:600;
+         -webkit-backdrop-filter:blur(20px);backdrop-filter:blur(20px);transition:opacity .4s}
+  #toast[hidden]{display:block;opacity:0;pointer-events:none}
   #loadMsg{position:fixed;left:50%;bottom:calc(5vh + 20px);transform:translateX(-50%);z-index:7;width:min(420px,86vw);
            text-align:center;font-size:clamp(14px,1.9vh,18px);line-height:1.35;color:var(--label-2);transition:opacity .5s}
   #loadMsg[hidden]{display:block;opacity:0;pointer-events:none}
@@ -192,11 +197,13 @@
   <div id="mapWrap"><div id="map"></div></div>
 </div>
 <div id="zoomTag"></div>
+<div id="toast" hidden></div>
 <div id="load"><i></i></div>
 <div id="loadMsg" hidden>Getting the songs ready. This happens once, and Wi-Fi makes it quicker.</div>
 <button id="cpBtn" aria-label="Control panel"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round"><path d="M4 7h10M18 7h2M4 17h4M12 17h8"/><circle cx="16" cy="7" r="2.4"/><circle cx="10" cy="17" r="2.4"/></svg></button>
 <div id="cp" hidden><div class="wrap">
   <header><h2>Control Panel</h2><button id="cpDone">Done</button></header>
+  <p id="cpVer" class="ver"></p>
   <section class="card"><h3>Listening</h3>
     <div class="meter"><i id="cpMeter"></i></div>
     <div class="mrow"><span id="cpLevel">–</span><span id="cpHearing">–</span></div>
@@ -224,6 +231,6 @@
   </div>
 </div></div>
 <div id="gate"><b>Tap to begin</b><small>One tap allows the microphone. After that it runs on its own.</small></div>
-<script type="module" src="app.js"></script>
+<script type="module" src="app.js?v=202609301016"></script>
 </body>
 </html>

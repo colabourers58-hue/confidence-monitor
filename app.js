@@ -1,5 +1,7 @@
 /* Everything runs on this device. No server, no network after the first load. */
-import {Orb} from './orb.js';
+import {Orb} from './orb.js?v=202609301016';
+// Stamped by publish_site.sh on every publish ('dev' when served straight from this Mac).
+const APP_VERSION = '202609301016';
 
 const $ = s => document.querySelector(s);
 const orb = new Orb($('#orb'));
@@ -15,15 +17,15 @@ let dec = null;
 
 /* ---------------- data ---------------- */
 async function loadSongs(){
-  const list = await (await fetch('data/songs.json')).json();
+  const list = await (await fetch('data/songs.json?v=' + APP_VERSION)).json();
   for(const s of list) SONGS[s.id] = s;
 }
 
 /* ---------------- engine (runs in a worker, on device) ---------------- */
 let worker = null, engineReady = false, loadMsgT = 0;
 function startEngine(){
-  try{ worker = new Worker('engine/fp-worker.js', {type:'module'}); }
-  catch(e){ try{ worker = new Worker('engine/fp-worker.js'); }catch(e2){ worker = null; } }
+  try{ worker = new Worker('engine/fp-worker.js?v=202609301016', {type:'module'}); }
+  catch(e){ try{ worker = new Worker('engine/fp-worker.js?v=202609301016'); }catch(e2){ worker = null; } }
   if(!worker){ $('#load').classList.add('done'); return; }
   worker.onmessage = ev => {
     const m = ev.data || {};
@@ -581,16 +583,48 @@ $('#cpCopy').addEventListener('click', async () => {
 document.body.classList.toggle('big', zoom >= 1.35);
 document.body.classList.toggle('huge', zoom >= 1.85);
 
+/* ---------------- always the newest version when online ----------------
+   GitHub keeps serving an old copy for up to 10 minutes after a publish, and the offline store
+   keeps the version it has. So on every open (and whenever it comes back to the front) the app
+   asks what the newest version is, bypassing every cache, and if it's behind it reloads itself
+   onto that exact version. Never while a song is on screen. */
+async function checkUpdate(){
+  if(APP_VERSION === 'dev' || serverMode || st.song || st.words) return;
+  try{
+    const v = (await (await fetch('version.json?t=' + Date.now(), {cache:'no-store'})).json()).version;
+    if(!v || v === APP_VERSION) return;
+    const k = 'cm.upd.' + v;
+    if(sessionStorage.getItem(k)) return;          // already tried this one: don't loop
+    sessionStorage.setItem(k, '1');
+    location.replace(location.pathname + '?v=' + encodeURIComponent(v));
+  }catch(e){}                                      // offline: the stored copy is the right one
+}
+function showVersion(){
+  const pretty = APP_VERSION === 'dev' ? 'running from this Mac'
+    : APP_VERSION.replace(/^(\d{4})(\d\d)(\d\d)(\d\d)(\d\d)$/, (m, y, mo, d, h, mi) =>
+        new Date(+y, +mo - 1, +d, +h, +mi).toLocaleString([], {day:'numeric', month:'short', hour:'numeric', minute:'2-digit'}));
+  $('#cpVer').textContent = 'Version ' + pretty;
+  const q = new URLSearchParams(location.search);
+  if(q.get('v')){                                  // we just updated: say so, then tidy the address
+    const t = $('#toast'); t.textContent = 'Prompter updated'; t.hidden = false;
+    setTimeout(() => { t.hidden = true; }, 3500);
+    q.delete('v'); history.replaceState(null, '', location.pathname + (q.toString() ? '?' + q : ''));
+  }
+}
+document.addEventListener('visibilitychange', () => { if(document.visibilityState === 'visible') checkUpdate(); });
+
 await loadSongs();
 refit();
+showVersion();
 try{ const r = await fetch('fpstatus', {cache:'no-store'}); if(r.ok) serverMode = !!(await r.json()).ready; }catch(e){}
 if(serverMode){
   $('#load').classList.add('done');
   setInterval(pollServer, 500);
 }else{
-  try{ dec = (await import('./decide.js')).createDecider(id => SONGS[id]); }catch(e){ console.warn('decide.js:', e); }
+  try{ dec = (await import('./decide.js?v=' + APP_VERSION)).createDecider(id => SONGS[id]); }catch(e){ console.warn('decide.js:', e); }
   startEngine();
   if('serviceWorker' in navigator) navigator.serviceWorker.register('sw.js').catch(()=>{});
+  checkUpdate();
 }
 
 // for testing without audio:  ?demo=<song id>@<seconds into the song>
