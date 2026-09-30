@@ -107,7 +107,8 @@
   #map .sec.done u{color:var(--label-3)}
 
   /* reveal: when a song is caught the words rise out of the orb's flare */
-  body.caught #view,body.caught #blockView{animation:rise .95s .42s var(--ease) both}
+  /* the words must be readable at once when a song is found: a quick rise, almost no wait */
+  body.caught #view,body.caught #blockView{animation:rise .45s .05s var(--ease) both}
   body.caught #bar,body.caught #mapWrap{animation:fade .8s .6s var(--ease) both}
   @keyframes rise{from{opacity:0;transform:scale(.94);filter:blur(14px)}to{opacity:1;transform:none;filter:none}}
   @keyframes fade{from{opacity:0}to{opacity:1}}
@@ -242,6 +243,6 @@
   </div>
 </div></div>
 <div id="gate"><b>Tap to begin</b><small>One tap allows the microphone. After that it runs on its own.</small></div>
-<script type="module" src="app.js?v=202609301151"></script>
+<script type="module" src="app.js?v=202609301251"></script>
 </body>
 </html>

@@ -274,6 +274,8 @@ export class Orb {
   // doubt: the song on screen stopped matching. In the corner the orb swells 30%, calmly (no
   // flashing: people preach over music), and settles back when the song is confirmed again
   setDoubt(on){ this.doubtTarget = on ? 1 : 0; }
+  // one visible swell that settles back (~1.6 s): the app just corrected itself mid-song
+  pulse(){ this.pulseAt = performance.now(); }
   setAmbient(v){ this.ambTarget = Math.max(0, Math.min(1, v)); }
   setTint(t){ if(t && t.length === 3) this.tintTarget = t.map(c => c.slice(0, 3)); }
   setAtmos(v){ this.atmosTarget = Math.max(0, Math.min(1, v)); }
@@ -314,7 +316,11 @@ export class Orb {
     gl.uniform1f(this.u.uCatch, this.catchV);
     gl.uniform1f(this.u.uRest, this.rest);
     gl.uniform2f(this.u.uCenter, this.center[0], this.center[1]);
-    const swell = this.target.size < 0.5 ? 1 + 0.3 * (this.doubt || 0) : 1;     // only in the corner
+    // in the corner only: doubt holds it 45% bigger; a correction swells it once, up to 70%, then
+    // it eases back (a single smooth rise and fall, never a flash)
+    const pt = this.pulseAt ? (now - this.pulseAt) / 1600 : 1;
+    const bell = pt < 1 ? Math.sin(Math.PI * Math.min(1, pt)) ** 2 : 0;
+    const swell = this.target.size < 0.5 ? 1 + Math.max(0.45 * (this.doubt || 0), 0.7 * bell) : 1;
     gl.uniform1f(this.u.uSize, this.size * swell * (1 - Math.max(0, this.dent) * 0.035));
     gl.uniform2f(this.u.uPokeDir, this.pokeDir[0], this.pokeDir[1]);
     gl.uniform1f(this.u.uDent, this.dent);

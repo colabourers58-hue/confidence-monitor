@@ -1,7 +1,7 @@
 /* Everything runs on this device. No server, no network after the first load. */
-import {Orb} from './orb.js?v=202609301151';
+import {Orb} from './orb.js?v=202609301251';
 // Stamped by publish_site.sh on every publish ('dev' when served straight from this Mac).
-const APP_VERSION = '202609301151';
+const APP_VERSION = '202609301251';
 
 const $ = s => document.querySelector(s);
 // the orb is decoration: if this device can't draw it (old GPU, WebGL off, a shader error), the
@@ -27,8 +27,8 @@ async function loadSongs(){
 /* ---------------- engine (runs in a worker, on device) ---------------- */
 let worker = null, engineReady = false, loadMsgT = 0;
 function startEngine(){
-  try{ worker = new Worker('engine/fp-worker.js?v=202609301151', {type:'module'}); }
-  catch(e){ try{ worker = new Worker('engine/fp-worker.js?v=202609301151'); }catch(e2){ worker = null; } }
+  try{ worker = new Worker('engine/fp-worker.js?v=202609301251', {type:'module'}); }
+  catch(e){ try{ worker = new Worker('engine/fp-worker.js?v=202609301251'); }catch(e2){ worker = null; } }
   if(!worker){ $('#load').classList.add('done'); return; }
   worker.onmessage = ev => {
     const m = ev.data || {};
@@ -274,7 +274,7 @@ function to16k(f, rate){
 }
 function sendWindow(){
   if(serverMode) return sendToServer();
-  if(!worker || !dec || !engineReady || busy || !actx || ringLen < actx.sampleRate*2) return;
+  if(!worker || !dec || !engineReady || busy || !actx || ringLen < actx.sampleRate*1.5) return;   // first look after 1.5 s
   const raw = new Float32Array(ringLen); let o = 0;
   for(const c of ring){ raw.set(c, o); o += c.length; }
   const f = to16k(raw, actx.sampleRate);
@@ -302,6 +302,11 @@ function logIdentified(song, how){
 }
 function catchSong(song, started, how){
   const fresh = !st.song || st.song.id !== song.id || st.words;
+  // a correction while a song is up (another song, or the clock moved): the corner orb swells once
+  // so the stage can see it just re-checked and moved
+  if(st.song && (st.song.id !== song.id || Math.abs(st.started - started) > 1.0)){
+    orb.pulse(); logEvent('heard', st.song.id !== song.id ? `Switched to ${song.title}` : `Corrected the place in ${song.title} by ${(started - st.started > 0 ? '-' : '+') + Math.abs(started - st.started).toFixed(1)} s`);
+  }
   if(fresh) logIdentified(song, how || 'following the track');
   st.words = null; document.body.classList.remove('words');
   st.song = song; st.started = started; st.lastConfirm = performance.now()/1000;

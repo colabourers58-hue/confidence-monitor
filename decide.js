@@ -82,6 +82,8 @@ export const DEFAULTS = {
   TOP_MIN: 6,            // hashes needed at the top of the song
   TOP_SHARE: 0.35,       // ...and at least this share of the best place's hashes
   MID_AGREE_N: 3,        // looks that must agree before starting mid-song after a fresh start
+  TOP_LOCK_VOTES: 14,    // at the top of a song just after the music started, one look this clear...
+  TOP_LOCK_MARGIN: 1.8,  // ...and this far ahead of any other song locks at once
   // ADDING UP THE EVIDENCE. One look that is only partly sure is thrown away by the rules above.
   // But in a car or a big echoey hall every look is partly sure, and ten of them quietly
   // agreeing on the same song AT THE SAME PLACE is proof: chance hits scatter across songs and
@@ -346,6 +348,10 @@ export function createDecider(songs, opts) {
     }
     // a very strong match needs no second opinion
     if (m.votes >= C.LOCK_VOTES && m.margin >= C.LOCK_MARGIN && S.auto) { take(m.song_id, started, now); return true; }
+    // the music has just started and this look puts us at the TOP of a song: songs start at the
+    // top, so that already is the second opinion. One clear look is enough (saves 0.75-1.5 s,
+    // which is the first line)
+    if (m.top === true && m.votes >= C.TOP_LOCK_VOTES && m.margin >= C.TOP_LOCK_MARGIN && S.auto) { take(m.song_id, started, now); return true; }
     // does this confirm what we saw last time?
     if (now - PENDING.at < C.CANDIDATE_TTL && PENDING.song_id === m.song_id &&
         Math.abs(PENDING.started - started) < C.AGREE_SEC) {

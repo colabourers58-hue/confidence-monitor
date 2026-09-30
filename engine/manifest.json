@@ -17,17 +17,17 @@
   "min_votes": 12,
   "max_hits": 8000000,
   "offset_quant_frames": 2,
-  "stoplist": 100
+  "stoplist": 100000000
  },
  "source": {
   "file": "app/library/fingerprints.npz",
-  "postings": 23443907,
-  "bytes": 80796359,
-  "sha256": "fd66a900c87afa18dc95257fbdd6e47a67372c2046500208af090186e01cbd9f",
+  "postings": 25263573,
+  "bytes": 252667937,
+  "sha256": "f9b225617f7cedb210ec336a07a7428f045f86f1b9581df2a1249cbca992ab54",
   "refs_json": true
  },
  "nbuckets": 262657,
- "universe": 15900741,
+ "universe": 16985721,
  "sections": [
   {
    "name": "bucket_bits",
@@ -39,38 +39,42 @@
    "name": "stream",
    "type": "bits",
    "offset": 1050632,
-   "bytes": 45656835,
-   "bits": 365254673
+   "bytes": 66357262,
+   "bits": 530858094
   }
  ],
  "stats": {
-  "distinct_hashes": 2110430,
-  "postings": 16196606,
-  "stream_bits": 365254673,
-  "unary_ones": 15406541,
-  "max_rice_k": 23
+  "distinct_hashes": 2215632,
+  "postings": 25263573,
+  "stream_bits": 530858094,
+  "unary_ones": 24052673,
+  "max_rice_k": 24
  },
  "checksum": [
-  4159633903,
-  2721211695
+  1010062906,
+  191257959
  ],
- "total_bytes": 46707467,
+ "total_bytes": 67407894,
  "shards": [
   {
-   "file": "index/fp-00-b0fda8bb51.bin",
+   "file": "index/fp-00-cac4278847.bin",
    "bytes": 14000000
   },
   {
-   "file": "index/fp-01-0367d9a801.bin",
+   "file": "index/fp-01-2a44783849.bin",
    "bytes": 14000000
   },
   {
-   "file": "index/fp-02-b5ae1bc87a.bin",
+   "file": "index/fp-02-7196548eff.bin",
    "bytes": 14000000
   },
   {
-   "file": "index/fp-03-530007edd1.bin",
-   "bytes": 4707467
+   "file": "index/fp-03-6f643b14df.bin",
+   "bytes": 14000000
+  },
+  {
+   "file": "index/fp-04-fbc1737841.bin",
+   "bytes": 11407894
   }
  ],
  "refs": [
@@ -80,7 +84,7 @@
    "via": "instrumental",
    "live": false,
    "shift": 0.0,
-   "aligned": true,
+   "aligned": false,
    "excluded": false,
    "duration": 729.339,
    "start": 0
@@ -94,7 +98,7 @@
    "aligned": true,
    "excluded": false,
    "duration": 211.722,
-   "start": 45523
+   "start": 45543
   },
   {
    "ref_id": "speakintongues",
@@ -102,10 +106,10 @@
    "via": "instrumental",
    "live": false,
    "shift": 0.0,
-   "aligned": true,
+   "aligned": false,
    "excluded": false,
    "duration": 309.432,
-   "start": 58454
+   "start": 58474
   },
   {
    "ref_id": "ifyoucouldseemenow",
@@ -116,7 +120,7 @@
    "aligned": false,
    "excluded": false,
    "duration": 327.528,
-   "start": 77784
+   "start": 77804
   },
   {
    "ref_id": "whenamanlovesthelord",
@@ -124,10 +128,10 @@
    "via": "instrumental",
    "live": false,
    "shift": 0.0,
-   "aligned": true,
+   "aligned": false,
    "excluded": false,
    "duration": 450.096,
-   "start": 97884
+   "start": 97904
   },
   {
    "ref_id": "turnourcaptivity",
@@ -135,21 +139,21 @@
    "via": "instrumental",
    "live": false,
    "shift": 0.0,
-   "aligned": true,
+   "aligned": false,
    "excluded": false,
    "duration": 302.446,
-   "start": 125958
+   "start": 125978
   },
   {
    "ref_id": "istilllikeyou",
    "song_id": "istilllikeyou",
    "via": "instrumental",
    "live": false,
-   "shift": 0.0,
+   "shift": -0.736,
    "aligned": true,
    "excluded": false,
    "duration": 643.344,
-   "start": 144850
+   "start": 144870
   },
   {
    "ref_id": "theresananointingcoming",
@@ -160,18 +164,18 @@
    "aligned": true,
    "excluded": false,
    "duration": 291.096,
-   "start": 184928
+   "start": 184948
   },
   {
    "ref_id": "newjerusalem",
    "song_id": "newjerusalem",
    "via": "instrumental",
    "live": false,
-   "shift": 0.0,
+   "shift": 0.02,
    "aligned": true,
    "excluded": false,
    "duration": 423.184,
-   "start": 202940
+   "start": 202976
   },
   {
    "ref_id": "loveispatient",
@@ -182,7 +186,7 @@
    "aligned": true,
    "excluded": false,
    "duration": 603.429,
-   "start": 229362
+   "start": 229401
   },
   {
    "ref_id": "nowthatwevefoundchrist",
@@ -190,21 +194,21 @@
    "via": "instrumental",
    "live": false,
    "shift": 0.0,
-   "aligned": true,
+   "aligned": false,
    "excluded": false,
    "duration": 384.078,
-   "start": 267065
+   "start": 267104
   },
   {
    "ref_id": "sistermarryme",
    "song_id": "sistermarryme",
    "via": "instrumental",
    "live": false,
-   "shift": 0.0,
+   "shift": 0.064,
    "aligned": true,
    "excluded": false,
    "duration": 402.456,
-   "start": 291059
+   "start": 291098
   },
   {
    "ref_id": "iknowthyworks",
@@ -215,7 +219,7 @@
    "aligned": true,
    "excluded": false,
    "duration": 435.72,
-   "start": 316116
+   "start": 316155
   },
   {
    "ref_id": "honeyhoney",
@@ -226,7 +230,7 @@
    "aligned": false,
    "excluded": false,
    "duration": 367.491,
-   "start": 343331
+   "start": 343370
   },
   {
    "ref_id": "hardfollower",
@@ -237,7 +241,7 @@
    "aligned": false,
    "excluded": false,
    "duration": 457.718,
-   "start": 365359
+   "start": 365398
   },
   {
    "ref_id": "givehimyourlife",
@@ -248,7 +252,7 @@
    "aligned": true,
    "excluded": false,
    "duration": 350.302,
-   "start": 393604
+   "start": 393703
   },
   {
    "ref_id": "iwanttobemorelikejesus",
@@ -259,7 +263,7 @@
    "aligned": true,
    "excluded": false,
    "duration": 390.06,
-   "start": 415490
+   "start": 415589
   },
   {
    "ref_id": "iwantmylovetolast",
@@ -267,10 +271,10 @@
    "via": "instrumental",
    "live": false,
    "shift": 0.0,
-   "aligned": true,
+   "aligned": false,
    "excluded": false,
    "duration": 204.826,
-   "start": 439832
+   "start": 439954
   },
   {
    "ref_id": "youregonnagotohell",
@@ -278,10 +282,10 @@
    "via": "instrumental",
    "live": false,
    "shift": 0.0,
-   "aligned": true,
+   "aligned": false,
    "excluded": false,
    "duration": 388.68,
-   "start": 452271
+   "start": 452393
   },
   {
    "ref_id": "booksareablessing",
@@ -292,7 +296,7 @@
    "aligned": true,
    "excluded": false,
    "duration": 225.123,
-   "start": 476329
+   "start": 476464
   },
   {
    "ref_id": "hemustincrease",
@@ -303,7 +307,7 @@
    "aligned": true,
    "excluded": false,
    "duration": 343.562,
-   "start": 489991
+   "start": 490133
   },
   {
    "ref_id": "carryme",
@@ -314,18 +318,18 @@
    "aligned": false,
    "excluded": false,
    "duration": 312.372,
-   "start": 511454
+   "start": 511596
   },
   {
    "ref_id": "togetherforever",
    "song_id": "togetherforever",
    "via": "instrumental",
    "live": false,
-   "shift": 0.0,
+   "shift": 0.004,
    "aligned": true,
    "excluded": false,
    "duration": 399.673,
-   "start": 530963
+   "start": 531112
   },
   {
    "ref_id": "donotstirup",
@@ -333,10 +337,10 @@
    "via": "instrumental",
    "live": false,
    "shift": 0.0,
-   "aligned": true,
+   "aligned": false,
    "excluded": false,
    "duration": 586.58,
-   "start": 555927
+   "start": 556083
   },
   {
    "ref_id": "icantgetenough",
@@ -347,7 +351,7 @@
    "aligned": true,
    "excluded": false,
    "duration": 350.485,
-   "start": 592558
+   "start": 592714
   },
   {
    "ref_id": "everybodyneedsalittlehelp",
@@ -358,7 +362,7 @@
    "aligned": true,
    "excluded": false,
    "duration": 445.623,
-   "start": 614458
+   "start": 614614
   },
   {
    "ref_id": "whenyoudied",
@@ -366,21 +370,21 @@
    "via": "instrumental",
    "live": false,
    "shift": 0.0,
-   "aligned": true,
+   "aligned": false,
    "excluded": false,
    "duration": 654.168,
-   "start": 642243
+   "start": 642399
   },
   {
    "ref_id": "wewanttobask",
    "song_id": "wewanttobask",
    "via": "instrumental",
    "live": false,
-   "shift": 0.0,
+   "shift": -0.004,
    "aligned": true,
    "excluded": false,
    "duration": 356.466,
-   "start": 683085
+   "start": 683262
   },
   {
    "ref_id": "obligations",
@@ -388,10 +392,10 @@
    "via": "instrumental",
    "live": false,
    "shift": 0.0,
-   "aligned": true,
+   "aligned": false,
    "excluded": false,
    "duration": 630.883,
-   "start": 705037
+   "start": 705216
   },
   {
    "ref_id": "imresponding",
@@ -402,7 +406,7 @@
    "aligned": true,
    "excluded": false,
    "duration": 259.892,
-   "start": 744454
+   "start": 744633
   },
   {
    "ref_id": "iseeyoujesus",
@@ -413,7 +417,7 @@
    "aligned": true,
    "excluded": false,
    "duration": 300.356,
-   "start": 760150
+   "start": 760329
   },
   {
    "ref_id": "makingupthehedge",
@@ -424,29 +428,29 @@
    "aligned": true,
    "excluded": false,
    "duration": 351.896,
-   "start": 778732
+   "start": 778919
   },
   {
    "ref_id": "multiplythem",
    "song_id": "multiplythem",
    "via": "instrumental",
    "live": false,
-   "shift": 0.0,
+   "shift": 2.104,
    "aligned": true,
    "excluded": false,
    "duration": 320.104,
-   "start": 800489
+   "start": 800690
   },
   {
    "ref_id": "iwaitedpatiently",
    "song_id": "iwaitedpatiently",
    "via": "instrumental",
    "live": false,
-   "shift": 0.0,
+   "shift": -0.008,
    "aligned": true,
    "excluded": false,
    "duration": 294.035,
-   "start": 820282
+   "start": 820484
   },
   {
    "ref_id": "christiansoldier",
@@ -457,7 +461,7 @@
    "aligned": true,
    "excluded": false,
    "duration": 340.088,
-   "start": 838199
+   "start": 838401
   },
   {
    "ref_id": "thewinnertakesthecrown",
@@ -468,7 +472,7 @@
    "aligned": false,
    "excluded": false,
    "duration": 299.363,
-   "start": 859421
+   "start": 859623
   },
   {
    "ref_id": "thefirstthingido",
@@ -479,7 +483,7 @@
    "aligned": true,
    "excluded": false,
    "duration": 319.295,
-   "start": 877051
+   "start": 877263
   },
   {
    "ref_id": "imtheoneyourelookingfor",
@@ -490,7 +494,7 @@
    "aligned": true,
    "excluded": false,
    "duration": 326.472,
-   "start": 896989
+   "start": 897201
   },
   {
    "ref_id": "takemylife",
@@ -501,7 +505,7 @@
    "aligned": false,
    "excluded": false,
    "duration": 395.625,
-   "start": 917067
+   "start": 917279
   },
   {
    "ref_id": "ineedmyquiettime",
@@ -509,10 +513,10 @@
    "via": "instrumental",
    "live": false,
    "shift": 0.0,
-   "aligned": true,
+   "aligned": false,
    "excluded": false,
    "duration": 502.831,
-   "start": 941553
+   "start": 941765
   },
   {
    "ref_id": "lastdays",
@@ -520,10 +524,10 @@
    "via": "instrumental",
    "live": false,
    "shift": 0.0,
-   "aligned": true,
+   "aligned": false,
    "excluded": false,
    "duration": 297.221,
-   "start": 972964
+   "start": 973178
   },
   {
    "ref_id": "wearethechurch",
@@ -531,10 +535,10 @@
    "via": "instrumental",
    "live": false,
    "shift": 0.0,
-   "aligned": true,
+   "aligned": false,
    "excluded": false,
    "duration": 418.299,
-   "start": 991517
+   "start": 991742
   },
   {
    "ref_id": "onlyonetalent",
@@ -545,7 +549,7 @@
    "aligned": true,
    "excluded": false,
    "duration": 643.945,
-   "start": 1016988
+   "start": 1017213
   },
   {
    "ref_id": "lovingmymaker",
@@ -556,7 +560,7 @@
    "aligned": true,
    "excluded": false,
    "duration": 477.336,
-   "start": 1057228
+   "start": 1057454
   },
   {
    "ref_id": "psalm",
@@ -564,10 +568,10 @@
    "via": "instrumental",
    "live": false,
    "shift": 0.0,
-   "aligned": true,
+   "aligned": false,
    "excluded": false,
    "duration": 427.608,
-   "start": 1086883
+   "start": 1087109
   },
   {
    "ref_id": "jesusiloveyou",
@@ -578,7 +582,7 @@
    "aligned": true,
    "excluded": false,
    "duration": 272.222,
-   "start": 1113453
+   "start": 1113679
   },
   {
    "ref_id": "comeuntome",
@@ -589,7 +593,7 @@
    "aligned": false,
    "excluded": false,
    "duration": 464.091,
-   "start": 1129766
+   "start": 1130035
   },
   {
    "ref_id": "endsoftheworld",
@@ -600,7 +604,7 @@
    "aligned": true,
    "excluded": false,
    "duration": 397.08,
-   "start": 1158251
+   "start": 1158532
   },
   {
    "ref_id": "kobbygee",
@@ -608,10 +612,10 @@
    "via": "instrumental",
    "live": false,
    "shift": 0.0,
-   "aligned": true,
+   "aligned": false,
    "excluded": false,
    "duration": 410.376,
-   "start": 1182546
+   "start": 1182827
   },
   {
    "ref_id": "ohmyshepherd",
@@ -619,43 +623,43 @@
    "via": "instrumental",
    "live": false,
    "shift": 0.0,
-   "aligned": true,
+   "aligned": false,
    "excluded": false,
    "duration": 384.744,
-   "start": 1207903
+   "start": 1208184
   },
   {
    "ref_id": "occupytillicome",
    "song_id": "occupytillicome",
    "via": "instrumental",
    "live": false,
-   "shift": 0.0,
+   "shift": -0.016,
    "aligned": true,
    "excluded": false,
    "duration": 556.296,
-   "start": 1230929
+   "start": 1231210
   },
   {
    "ref_id": "iwillbecalling",
    "song_id": "iwillbecalling",
    "via": "instrumental",
    "live": false,
-   "shift": 0.0,
+   "shift": -0.696,
    "aligned": true,
    "excluded": false,
    "duration": 765.288,
-   "start": 1265676
+   "start": 1265966
   },
   {
    "ref_id": "useitorloseit",
    "song_id": "useitorloseit",
    "via": "instrumental",
    "live": false,
-   "shift": 0.0,
+   "shift": 0.092,
    "aligned": true,
    "excluded": false,
    "duration": 316.369,
-   "start": 1313493
+   "start": 1313783
   },
   {
    "ref_id": "shiellastrangewoman",
@@ -663,10 +667,10 @@
    "via": "instrumental",
    "live": false,
    "shift": 0.0,
-   "aligned": true,
+   "aligned": false,
    "excluded": false,
    "duration": 399.412,
-   "start": 1333250
+   "start": 1333540
   },
   {
    "ref_id": "shepherdthepeople",
@@ -677,7 +681,7 @@
    "aligned": true,
    "excluded": false,
    "duration": 308.245,
-   "start": 1358079
+   "start": 1358369
   },
   {
    "ref_id": "icantgowithoutyourpresence",
@@ -688,7 +692,7 @@
    "aligned": false,
    "excluded": false,
    "duration": 495.84,
-   "start": 1376880
+   "start": 1377170
   },
   {
    "ref_id": "iacknowledgedmysin",
@@ -699,7 +703,7 @@
    "aligned": true,
    "excluded": false,
    "duration": 315.664,
-   "start": 1407861
+   "start": 1408151
   },
   {
    "ref_id": "asoulisasoul",
@@ -710,7 +714,7 @@
    "aligned": false,
    "excluded": false,
    "duration": 381.0,
-   "start": 1427576
+   "start": 1427869
   },
   {
    "ref_id": "thedayifoundjesus",
@@ -718,10 +722,10 @@
    "via": "instrumental",
    "live": false,
    "shift": 0.0,
-   "aligned": true,
+   "aligned": false,
    "excluded": false,
    "duration": 357.434,
-   "start": 1450873
+   "start": 1451166
   },
   {
    "ref_id": "igotthecallofgod",
@@ -732,7 +736,7 @@
    "aligned": false,
    "excluded": false,
    "duration": 496.091,
-   "start": 1473191
+   "start": 1473484
   },
   {
    "ref_id": "allthingsworktogether",
@@ -743,7 +747,7 @@
    "aligned": true,
    "excluded": false,
    "duration": 324.168,
-   "start": 1504090
+   "start": 1504383
   },
   {
    "ref_id": "lorditsnotforwhatyougiveme",
@@ -754,7 +758,7 @@
    "aligned": false,
    "excluded": false,
    "duration": 530.887,
-   "start": 1524196
+   "start": 1524489
   },
   {
    "ref_id": "agreatdoor",
@@ -765,7 +769,7 @@
    "aligned": false,
    "excluded": false,
    "duration": 354.978,
-   "start": 1557356
+   "start": 1557662
   },
   {
    "ref_id": "whenwillitbepossibletoseeyou",
@@ -773,21 +777,21 @@
    "via": "instrumental",
    "live": false,
    "shift": 0.0,
-   "aligned": true,
+   "aligned": false,
    "excluded": false,
    "duration": 516.075,
-   "start": 1579516
+   "start": 1579833
   },
   {
    "ref_id": "letthymercies",
    "song_id": "letthymercies",
    "via": "instrumental",
    "live": false,
-   "shift": 0.0,
+   "shift": -0.008,
    "aligned": true,
    "excluded": false,
    "duration": 313.201,
-   "start": 1611765
+   "start": 1612082
   },
   {
    "ref_id": "myfirstlove",
@@ -795,10 +799,10 @@
    "via": "instrumental",
    "live": false,
    "shift": 0.0,
-   "aligned": true,
+   "aligned": false,
    "excluded": false,
    "duration": 355.008,
-   "start": 1630729
+   "start": 1631094
   },
   {
    "ref_id": "cherishtheloveofgod",
@@ -809,18 +813,18 @@
    "aligned": false,
    "excluded": false,
    "duration": 353.228,
-   "start": 1652782
+   "start": 1653147
   },
   {
    "ref_id": "jesusisthebest",
    "song_id": "jesusisthebest",
    "via": "instrumental",
    "live": false,
-   "shift": 0.0,
+   "shift": -0.016,
    "aligned": true,
    "excluded": false,
    "duration": 696.529,
-   "start": 1674619
+   "start": 1674984
   },
   {
    "ref_id": "imimpressed",
@@ -831,7 +835,7 @@
    "aligned": false,
    "excluded": false,
    "duration": 273.11,
-   "start": 1718143
+   "start": 1718508
   },
   {
    "ref_id": "whomshallisend",
@@ -842,40 +846,40 @@
    "aligned": true,
    "excluded": false,
    "duration": 378.253,
-   "start": 1735057
+   "start": 1735422
   },
   {
    "ref_id": "ireallyloveyoujesus",
    "song_id": "ireallyloveyoujesus",
    "via": "instrumental",
    "live": false,
-   "shift": 0.0,
+   "shift": 0.016,
    "aligned": true,
    "excluded": false,
    "duration": 413.44,
-   "start": 1758682
+   "start": 1759047
   },
   {
    "ref_id": "walkingwithjesus",
    "song_id": "walkingwithjesus",
    "via": "instrumental",
    "live": false,
-   "shift": 0.0,
+   "shift": -0.008,
    "aligned": true,
    "excluded": false,
    "duration": 376.869,
-   "start": 1783879
+   "start": 1784244
   },
   {
    "ref_id": "iseeitinyoureyes",
    "song_id": "iseeitinyoureyes",
    "via": "instrumental",
    "live": false,
-   "shift": 0.0,
+   "shift": 1.744,
    "aligned": true,
    "excluded": false,
    "duration": 403.749,
-   "start": 1806983
+   "start": 1807348
   },
   {
    "ref_id": "thankyouinmyownway",
@@ -883,10 +887,10 @@
    "via": "instrumental",
    "live": false,
    "shift": 0.0,
-   "aligned": true,
+   "aligned": false,
    "excluded": false,
    "duration": 298.423,
-   "start": 1831916
+   "start": 1832281
   },
   {
    "ref_id": "thisismyday",
@@ -897,18 +901,18 @@
    "aligned": true,
    "excluded": false,
    "duration": 806.478,
-   "start": 1850358
+   "start": 1850723
   },
   {
    "ref_id": "letmypeoplego",
    "song_id": "letmypeoplego",
    "via": "instrumental",
    "live": false,
-   "shift": 0.0,
+   "shift": 10.952,
    "aligned": true,
    "excluded": false,
    "duration": 428.121,
-   "start": 1900715
+   "start": 1901080
   },
   {
    "ref_id": "iwillblessthelord",
@@ -916,10 +920,10 @@
    "via": "instrumental",
    "live": false,
    "shift": 0.0,
-   "aligned": true,
+   "aligned": false,
    "excluded": false,
    "duration": 425.639,
-   "start": 1927418
+   "start": 1927783
   },
   {
    "ref_id": "thelovelyvoiceofgod",
@@ -927,10 +931,10 @@
    "via": "instrumental",
    "live": false,
    "shift": 0.0,
-   "aligned": true,
+   "aligned": false,
    "excluded": false,
    "duration": 253.205,
-   "start": 1953485
+   "start": 1953877
   },
   {
    "ref_id": "itsworshiptime",
@@ -941,7 +945,7 @@
    "aligned": true,
    "excluded": false,
    "duration": 367.632,
-   "start": 1968766
+   "start": 1969162
   },
   {
    "ref_id": "bornagain",
@@ -952,7 +956,7 @@
    "aligned": false,
    "excluded": false,
    "duration": 259.291,
-   "start": 1991719
+   "start": 1992124
   },
   {
    "ref_id": "ifmypeople",
@@ -963,7 +967,7 @@
    "aligned": true,
    "excluded": false,
    "duration": 441.339,
-   "start": 2007885
+   "start": 2008290
   },
   {
    "ref_id": "bezealouslyaffected",
@@ -974,7 +978,7 @@
    "aligned": false,
    "excluded": false,
    "duration": 566.883,
-   "start": 2035439
+   "start": 2035844
   },
   {
    "ref_id": "7greatprinciples",
@@ -985,18 +989,18 @@
    "aligned": false,
    "excluded": false,
    "duration": 456.098,
-   "start": 2070862
+   "start": 2071267
   },
   {
    "ref_id": "thegracechant",
    "song_id": "thegracechant",
    "via": "instrumental",
    "live": false,
-   "shift": 0.0,
+   "shift": 0.048,
    "aligned": true,
    "excluded": false,
    "duration": 430.054,
-   "start": 2099342
+   "start": 2099747
   },
   {
    "ref_id": "breakup",
@@ -1007,7 +1011,7 @@
    "aligned": false,
    "excluded": false,
    "duration": 285.623,
-   "start": 2126112
+   "start": 2126517
   },
   {
    "ref_id": "blessedjesus",
@@ -1018,7 +1022,7 @@
    "aligned": false,
    "excluded": false,
    "duration": 374.883,
-   "start": 2143724
+   "start": 2144129
   },
   {
    "ref_id": "manonamission",
@@ -1029,7 +1033,7 @@
    "aligned": true,
    "excluded": false,
    "duration": 313.704,
-   "start": 2166917
+   "start": 2167322
   },
   {
    "ref_id": "darebolderprograms",
@@ -1040,29 +1044,29 @@
    "aligned": false,
    "excluded": false,
    "duration": 450.064,
-   "start": 2185953
+   "start": 2186358
   },
   {
    "ref_id": "jesushealsyourheart",
    "song_id": "jesushealsyourheart",
    "via": "instrumental",
    "live": false,
-   "shift": 0.0,
+   "shift": -0.04,
    "aligned": true,
    "excluded": false,
    "duration": 514.038,
-   "start": 2214076
+   "start": 2214481
   },
   {
    "ref_id": "theamericandream",
    "song_id": "theamericandream",
    "via": "instrumental",
    "live": false,
-   "shift": 0.0,
+   "shift": 0.024,
    "aligned": true,
    "excluded": false,
    "duration": 445.153,
-   "start": 2246197
+   "start": 2246602
   },
   {
    "ref_id": "deeper",
@@ -1073,7 +1077,7 @@
    "aligned": true,
    "excluded": false,
    "duration": 356.049,
-   "start": 2273830
+   "start": 2274238
   },
   {
    "ref_id": "reasonableservice",
@@ -1081,21 +1085,21 @@
    "via": "instrumental",
    "live": false,
    "shift": 0.0,
-   "aligned": true,
+   "aligned": false,
    "excluded": false,
    "duration": 413.936,
-   "start": 2295877
+   "start": 2296371
   },
   {
    "ref_id": "themountainofthelordshouse",
    "song_id": "themountainofthelordshouse",
    "via": "instrumental",
    "live": false,
-   "shift": 0.0,
+   "shift": 0.26,
    "aligned": true,
    "excluded": false,
    "duration": 374.712,
-   "start": 2321288
+   "start": 2321809
   },
   {
    "ref_id": "goye",
@@ -1106,7 +1110,7 @@
    "aligned": true,
    "excluded": false,
    "duration": 304.056,
-   "start": 2344236
+   "start": 2344856
   },
   {
    "ref_id": "mybelovedismine",
@@ -1114,10 +1118,10 @@
    "via": "instrumental",
    "live": false,
    "shift": 0.0,
-   "aligned": true,
+   "aligned": false,
    "excluded": false,
    "duration": 459.864,
-   "start": 2363226
+   "start": 2363846
   },
   {
    "ref_id": "gotochurch",
@@ -1128,18 +1132,18 @@
    "aligned": true,
    "excluded": false,
    "duration": 348.369,
-   "start": 2391935
+   "start": 2392577
   },
   {
    "ref_id": "whenamanhasfound",
    "song_id": "whenamanhasfound",
    "via": "instrumental",
    "live": false,
-   "shift": 0.0,
+   "shift": 0.016,
    "aligned": true,
    "excluded": false,
    "duration": 867.291,
-   "start": 2413696
+   "start": 2414338
   },
   {
    "ref_id": "communionsong",
@@ -1150,7 +1154,7 @@
    "aligned": true,
    "excluded": false,
    "duration": 296.359,
-   "start": 2467887
+   "start": 2468529
   },
   {
    "ref_id": "byhiswounds",
@@ -1161,7 +1165,7 @@
    "aligned": true,
    "excluded": false,
    "duration": 342.025,
-   "start": 2486123
+   "start": 2486765
   },
   {
    "ref_id": "iwillbuildyourchurch",
@@ -1169,10 +1173,10 @@
    "via": "instrumental",
    "live": false,
    "shift": 0.0,
-   "aligned": true,
+   "aligned": false,
    "excluded": false,
    "duration": 506.462,
-   "start": 2506113
+   "start": 2506817
   },
   {
    "ref_id": "goingdeeperdoingmore",
@@ -1183,18 +1187,18 @@
    "aligned": false,
    "excluded": false,
    "duration": 460.121,
-   "start": 2537756
+   "start": 2538460
   },
   {
    "ref_id": "iwillpraisetheewithmywholeheart",
    "song_id": "iwillpraisetheewithmywholeheart",
    "via": "instrumental",
    "live": false,
-   "shift": 0.0,
+   "shift": -0.028,
    "aligned": true,
    "excluded": false,
    "duration": 245.081,
-   "start": 2566388
+   "start": 2567130
   },
   {
    "ref_id": "therewillbesaddays",
@@ -1202,32 +1206,32 @@
    "via": "instrumental",
    "live": false,
    "shift": 0.0,
-   "aligned": true,
+   "aligned": false,
    "excluded": false,
    "duration": 478.354,
-   "start": 2581485
+   "start": 2582227
   },
   {
    "ref_id": "partingsouls",
    "song_id": "partingsouls",
    "via": "instrumental",
    "live": false,
-   "shift": 0.0,
+   "shift": 0.044,
    "aligned": true,
    "excluded": false,
    "duration": 965.669,
-   "start": 2611231
+   "start": 2611973
   },
   {
    "ref_id": "livejoyfully",
    "song_id": "livejoyfully",
    "via": "instrumental",
    "live": false,
-   "shift": 0.0,
+   "shift": -0.008,
    "aligned": true,
    "excluded": false,
    "duration": 531.48,
-   "start": 2671531
+   "start": 2672273
   },
   {
    "ref_id": "choosing",
@@ -1238,18 +1242,18 @@
    "aligned": false,
    "excluded": false,
    "duration": 370.207,
-   "start": 2704076
+   "start": 2704818
   },
   {
    "ref_id": "wiseasserpents",
    "song_id": "wiseasserpents",
    "via": "instrumental",
    "live": false,
-   "shift": 0.0,
+   "shift": 0.016,
    "aligned": true,
    "excluded": false,
    "duration": 377.712,
-   "start": 2726683
+   "start": 2727425
   },
   {
    "ref_id": "themoreilovethelessibeloved",
@@ -1260,7 +1264,7 @@
    "aligned": true,
    "excluded": false,
    "duration": 392.855,
-   "start": 2750258
+   "start": 2751000
   },
   {
    "ref_id": "forsaketheworld",
@@ -1271,7 +1275,7 @@
    "aligned": false,
    "excluded": false,
    "duration": 390.949,
-   "start": 2774413
+   "start": 2775170
   },
   {
    "ref_id": "noapologies",
@@ -1279,10 +1283,10 @@
    "via": "instrumental",
    "live": false,
    "shift": 0.0,
-   "aligned": true,
+   "aligned": false,
    "excluded": false,
    "duration": 419.344,
-   "start": 2798000
+   "start": 2798777
   },
   {
    "ref_id": "tithesandofferings",
@@ -1290,10 +1294,10 @@
    "via": "instrumental",
    "live": false,
    "shift": 0.0,
-   "aligned": true,
+   "aligned": false,
    "excluded": false,
    "duration": 324.807,
-   "start": 2824185
+   "start": 2824962
   },
   {
    "ref_id": "ineedyoulord",
@@ -1304,7 +1308,7 @@
    "aligned": true,
    "excluded": false,
    "duration": 488.934,
-   "start": 2844480
+   "start": 2845257
   },
   {
    "ref_id": "thelordthygodinthemidstofthee",
@@ -1312,21 +1316,21 @@
    "via": "instrumental",
    "live": false,
    "shift": 0.0,
-   "aligned": true,
+   "aligned": false,
    "excluded": false,
    "duration": 385.045,
-   "start": 2874763
+   "start": 2875540
   },
   {
    "ref_id": "letmelove",
    "song_id": "letmelove",
    "via": "instrumental",
    "live": false,
-   "shift": 0.0,
+   "shift": 0.024,
    "aligned": true,
    "excluded": false,
    "duration": 260.592,
-   "start": 2898472
+   "start": 2899252
   },
   {
    "ref_id": "whenifell",
@@ -1334,10 +1338,10 @@
    "via": "instrumental",
    "live": false,
    "shift": 0.0,
-   "aligned": true,
+   "aligned": false,
    "excluded": false,
    "duration": 488.664,
-   "start": 2914077
+   "start": 2914862
   },
   {
    "ref_id": "iamthirsty",
@@ -1348,18 +1352,18 @@
    "aligned": true,
    "excluded": false,
    "duration": 347.063,
-   "start": 2944574
+   "start": 2945359
   },
   {
    "ref_id": "gointotheworld",
    "song_id": "gointotheworld",
    "via": "instrumental",
    "live": false,
-   "shift": 0.0,
+   "shift": 0.24,
    "aligned": true,
    "excluded": false,
    "duration": 342.361,
-   "start": 2965911
+   "start": 2966696
   },
   {
    "ref_id": "candleinthedark",
@@ -1370,18 +1374,18 @@
    "aligned": true,
    "excluded": false,
    "duration": 573.283,
-   "start": 2986581
+   "start": 2987381
   },
   {
    "ref_id": "workon",
    "song_id": "workon",
    "via": "instrumental",
    "live": false,
-   "shift": 0.0,
+   "shift": 0.024,
    "aligned": true,
    "excluded": false,
    "duration": 474.331,
-   "start": 3022387
+   "start": 3023187
   },
   {
    "ref_id": "strongchristian",
@@ -1392,7 +1396,7 @@
    "aligned": false,
    "excluded": false,
    "duration": 468.088,
-   "start": 3052014
+   "start": 3052814
   },
   {
    "ref_id": "nononoyoudontlovethelord",
@@ -1403,18 +1407,18 @@
    "aligned": true,
    "excluded": false,
    "duration": 535.719,
-   "start": 3081260
+   "start": 3082060
   },
   {
    "ref_id": "missionarysong",
    "song_id": "missionarysong",
    "via": "instrumental",
    "live": false,
-   "shift": 0.0,
+   "shift": 1.4,
    "aligned": true,
    "excluded": false,
    "duration": 489.9,
-   "start": 3114718
+   "start": 3115518
   },
   {
    "ref_id": "lamentations",
@@ -1422,10 +1426,10 @@
    "via": "instrumental",
    "live": false,
    "shift": 0.0,
-   "aligned": true,
+   "aligned": false,
    "excluded": false,
    "duration": 396.096,
-   "start": 3145326
+   "start": 3146126
   },
   {
    "ref_id": "hesavedyouhesavedme",
@@ -1436,29 +1440,29 @@
    "aligned": false,
    "excluded": false,
    "duration": 305.736,
-   "start": 3169556
+   "start": 3170379
   },
   {
    "ref_id": "sweetmemories",
    "song_id": "sweetmemories",
    "via": "instrumental",
    "live": false,
-   "shift": 0.0,
+   "shift": 0.004,
    "aligned": true,
    "excluded": false,
    "duration": 429.584,
-   "start": 3188624
+   "start": 3189447
   },
   {
    "ref_id": "jesuslovesmeohyeah",
    "song_id": "jesuslovesmeohyeah",
    "via": "instrumental",
    "live": false,
-   "shift": 0.0,
+   "shift": -0.036,
    "aligned": true,
    "excluded": false,
    "duration": 341.734,
-   "start": 3215178
+   "start": 3216001
   },
   {
    "ref_id": "letmestandbeforeyou",
@@ -1466,32 +1470,32 @@
    "via": "instrumental",
    "live": false,
    "shift": 0.0,
-   "aligned": true,
+   "aligned": false,
    "excluded": false,
    "duration": 643.631,
-   "start": 3236531
+   "start": 3237354
   },
   {
    "ref_id": "sunofrighteousness",
    "song_id": "sunofrighteousness",
    "via": "instrumental",
    "live": false,
-   "shift": 0.0,
+   "shift": 2.52,
    "aligned": true,
    "excluded": false,
    "duration": 379.246,
-   "start": 3276743
+   "start": 3277566
   },
   {
    "ref_id": "walkwithyou",
    "song_id": "walkwithyou",
    "via": "instrumental",
    "live": false,
-   "shift": 0.0,
+   "shift": -0.24,
    "aligned": true,
    "excluded": false,
    "duration": 488.777,
-   "start": 3299710
+   "start": 3300533
   },
   {
    "ref_id": "alliwantisachristiangirl",
@@ -1502,7 +1506,7 @@
    "aligned": false,
    "excluded": false,
    "duration": 400.065,
-   "start": 3330034
+   "start": 3330857
   },
   {
    "ref_id": "pleasedontpullmeback",
@@ -1510,21 +1514,21 @@
    "via": "instrumental",
    "live": false,
    "shift": 0.0,
-   "aligned": true,
+   "aligned": false,
    "excluded": false,
    "duration": 357.094,
-   "start": 3355029
+   "start": 3355852
   },
   {
    "ref_id": "letthewearyrest",
    "song_id": "letthewearyrest",
    "via": "instrumental",
    "live": false,
-   "shift": 0.0,
+   "shift": 4.584,
    "aligned": true,
    "excluded": false,
    "duration": 275.0,
-   "start": 3377324
+   "start": 3378147
   },
   {
    "ref_id": "bestronginthelord",
@@ -1535,7 +1539,7 @@
    "aligned": false,
    "excluded": false,
    "duration": 388.676,
-   "start": 3394087
+   "start": 3394910
   },
   {
    "ref_id": "iguessyouremember",
@@ -1546,7 +1550,7 @@
    "aligned": false,
    "excluded": false,
    "duration": 357.904,
-   "start": 3418318
+   "start": 3419141
   },
   {
    "ref_id": "bearmuchfruit",
@@ -1557,7 +1561,7 @@
    "aligned": true,
    "excluded": false,
    "duration": 348.108,
-   "start": 3440672
+   "start": 3441498
   },
   {
    "ref_id": "amegachurch",
@@ -1568,7 +1572,7 @@
    "aligned": false,
    "excluded": false,
    "duration": 453.12,
-   "start": 3462419
+   "start": 3463250
   },
   {
    "ref_id": "walkbyfaith",
@@ -1576,32 +1580,32 @@
    "via": "instrumental",
    "live": false,
    "shift": 0.0,
-   "aligned": true,
+   "aligned": false,
    "excluded": false,
    "duration": 432.692,
-   "start": 3489426
+   "start": 3490257
   },
   {
    "ref_id": "thanksforreaching",
    "song_id": "thanksforreaching",
    "via": "instrumental",
    "live": false,
-   "shift": 0.0,
+   "shift": -1.416,
    "aligned": true,
    "excluded": false,
    "duration": 512.836,
-   "start": 3516265
+   "start": 3517096
   },
   {
    "ref_id": "myfatherslove",
    "song_id": "myfatherslove",
    "via": "instrumental",
    "live": false,
-   "shift": 0.0,
+   "shift": 0.032,
    "aligned": true,
    "excluded": false,
    "duration": 324.816,
-   "start": 3548122
+   "start": 3548953
   },
   {
    "ref_id": "eunuchsinthepalace",
@@ -1612,18 +1616,18 @@
    "aligned": true,
    "excluded": false,
    "duration": 429.505,
-   "start": 3568101
+   "start": 3568932
   },
   {
    "ref_id": "vengeanceismine",
    "song_id": "vengeanceismine",
    "via": "instrumental",
    "live": false,
-   "shift": 0.0,
+   "shift": 0.824,
    "aligned": true,
    "excluded": false,
    "duration": 330.057,
-   "start": 3594941
+   "start": 3595772
   },
   {
    "ref_id": "imustwork",
@@ -1634,7 +1638,7 @@
    "aligned": true,
    "excluded": false,
    "duration": 602.514,
-   "start": 3615470
+   "start": 3616303
   },
   {
    "ref_id": "favouritechild",
@@ -1645,7 +1649,7 @@
    "aligned": true,
    "excluded": false,
    "duration": 293.46,
-   "start": 3653032
+   "start": 3653874
   },
   {
    "ref_id": "nowisthetime",
@@ -1653,10 +1657,10 @@
    "via": "instrumental",
    "live": false,
    "shift": 0.0,
-   "aligned": true,
+   "aligned": false,
    "excluded": false,
    "duration": 387.344,
-   "start": 3670875
+   "start": 3671738
   },
   {
    "ref_id": "godslovehastodealwithit",
@@ -1667,18 +1671,18 @@
    "aligned": true,
    "excluded": false,
    "duration": 291.161,
-   "start": 3694501
+   "start": 3695364
   },
   {
    "ref_id": "wastingmylife",
    "song_id": "wastingmylife",
    "via": "instrumental",
    "live": false,
-   "shift": 0.0,
+   "shift": -0.008,
    "aligned": true,
    "excluded": false,
    "duration": 403.958,
-   "start": 3712687
+   "start": 3713550
   },
   {
    "ref_id": "proposal",
@@ -1686,10 +1690,10 @@
    "via": "instrumental",
    "live": false,
    "shift": 0.0,
-   "aligned": true,
+   "aligned": false,
    "excluded": false,
    "duration": 286.955,
-   "start": 3737458
+   "start": 3738321
   },
   {
    "ref_id": "cometomemydear",
@@ -1700,7 +1704,7 @@
    "aligned": true,
    "excluded": false,
    "duration": 295.248,
-   "start": 3755119
+   "start": 3755992
   },
   {
    "ref_id": "mustardseed",
@@ -1708,10 +1712,10 @@
    "via": "instrumental",
    "live": false,
    "shift": 0.0,
-   "aligned": true,
+   "aligned": false,
    "excluded": false,
    "duration": 179.722,
-   "start": 3773551
+   "start": 3774435
   },
   {
    "ref_id": "fulfillyourministry",
@@ -1722,7 +1726,7 @@
    "aligned": false,
    "excluded": false,
    "duration": 274.495,
-   "start": 3784555
+   "start": 3785439
   },
   {
    "ref_id": "keepondotheworkofgod",
@@ -1730,21 +1734,21 @@
    "via": "instrumental",
    "live": false,
    "shift": 0.0,
-   "aligned": true,
+   "aligned": false,
    "excluded": false,
    "duration": 360.124,
-   "start": 3801503
+   "start": 3802387
   },
   {
    "ref_id": "reigningfromsixteen",
    "song_id": "reigningfromsixteen",
    "via": "instrumental",
    "live": false,
-   "shift": 0.0,
+   "shift": 0.224,
    "aligned": true,
    "excluded": false,
    "duration": 306.129,
-   "start": 3823985
+   "start": 3824874
   },
   {
    "ref_id": "iandthechildren",
@@ -1755,7 +1759,7 @@
    "aligned": true,
    "excluded": false,
    "duration": 458.109,
-   "start": 3842925
+   "start": 3843814
   },
   {
    "ref_id": "jesusyourebeautiful",
@@ -1766,29 +1770,29 @@
    "aligned": true,
    "excluded": false,
    "duration": 591.569,
-   "start": 3871020
+   "start": 3871909
   },
   {
    "ref_id": "worshiphim",
    "song_id": "worshiphim",
    "via": "instrumental",
    "live": false,
-   "shift": 0.0,
+   "shift": 2.76,
    "aligned": true,
    "excluded": false,
    "duration": 240.04,
-   "start": 3907568
+   "start": 3908469
   },
   {
    "ref_id": "womanofzebedee",
    "song_id": "womanofzebedee",
    "via": "instrumental",
    "live": false,
-   "shift": 0.0,
+   "shift": 1.336,
    "aligned": true,
    "excluded": false,
    "duration": 243.2,
-   "start": 3922226
+   "start": 3923127
   },
   {
    "ref_id": "choosemeuseme",
@@ -1799,7 +1803,7 @@
    "aligned": false,
    "excluded": false,
    "duration": 500.375,
-   "start": 3937044
+   "start": 3937945
   },
   {
    "ref_id": "honeymoon",
@@ -1810,7 +1814,7 @@
    "aligned": false,
    "excluded": false,
    "duration": 802.403,
-   "start": 3968293
+   "start": 3969204
   },
   {
    "ref_id": "thankful",
@@ -1821,7 +1825,7 @@
    "aligned": true,
    "excluded": false,
    "duration": 278.1,
-   "start": 4018387
+   "start": 4019325
   },
   {
    "ref_id": "ilikethewayyoulikeme",
@@ -1832,7 +1836,7 @@
    "aligned": true,
    "excluded": false,
    "duration": 355.109,
-   "start": 4035440
+   "start": 4036378
   },
   {
    "ref_id": "ibelieveicantry",
@@ -1843,7 +1847,7 @@
    "aligned": false,
    "excluded": false,
    "duration": 522.083,
-   "start": 4057500
+   "start": 4058438
   },
   {
    "ref_id": "ihavefoundanewlife",
@@ -1854,18 +1858,18 @@
    "aligned": false,
    "excluded": false,
    "duration": 375.118,
-   "start": 4090066
+   "start": 4091034
   },
   {
    "ref_id": "jesussavoiuroftheworld",
    "song_id": "jesussavoiuroftheworld",
    "via": "instrumental",
    "live": false,
-   "shift": 0.0,
+   "shift": 1.288,
    "aligned": true,
    "excluded": false,
    "duration": 402.599,
-   "start": 4113497
+   "start": 4114469
   },
   {
    "ref_id": "giveyourlifetochrist",
@@ -1876,7 +1880,7 @@
    "aligned": false,
    "excluded": false,
    "duration": 355.84,
-   "start": 4138466
+   "start": 4139438
   },
   {
    "ref_id": "afaithfulfriend",
@@ -1887,7 +1891,7 @@
    "aligned": false,
    "excluded": false,
    "duration": 300.096,
-   "start": 4160299
+   "start": 4161271
   },
   {
    "ref_id": "nowbroughtnear",
@@ -1895,10 +1899,10 @@
    "via": "instrumental",
    "live": false,
    "shift": 0.0,
-   "aligned": true,
+   "aligned": false,
    "excluded": false,
    "duration": 433.371,
-   "start": 4178583
+   "start": 4179565
   },
   {
    "ref_id": "wonderfulchurch",
@@ -1909,7 +1913,7 @@
    "aligned": false,
    "excluded": false,
    "duration": 330.841,
-   "start": 4205515
+   "start": 4206497
   },
   {
    "ref_id": "peterdoyouloveme",
@@ -1917,10 +1921,10 @@
    "via": "instrumental",
    "live": false,
    "shift": 0.0,
-   "aligned": true,
+   "aligned": false,
    "excluded": false,
    "duration": 494.655,
-   "start": 4225682
+   "start": 4226664
   },
   {
    "ref_id": "mydearjesus",
@@ -1931,7 +1935,7 @@
    "aligned": true,
    "excluded": false,
    "duration": 360.15,
-   "start": 4256582
+   "start": 4257564
   },
   {
    "ref_id": "blindbartimaeus",
@@ -1942,18 +1946,18 @@
    "aligned": true,
    "excluded": false,
    "duration": 451.997,
-   "start": 4279085
+   "start": 4280067
   },
   {
    "ref_id": "readyourbibleprayeveryday",
    "song_id": "readyourbibleprayeveryday",
    "via": "instrumental",
    "live": false,
-   "shift": 0.0,
+   "shift": -0.032,
    "aligned": true,
    "excluded": false,
    "duration": 361.639,
-   "start": 4307328
+   "start": 4308310
   },
   {
    "ref_id": "whydidicomeintotheworld",
@@ -1964,7 +1968,7 @@
    "aligned": false,
    "excluded": false,
    "duration": 559.386,
-   "start": 4329906
+   "start": 4330888
   },
   {
    "ref_id": "hethathathmycommandments",
@@ -1972,32 +1976,32 @@
    "via": "instrumental",
    "live": false,
    "shift": 0.0,
-   "aligned": true,
+   "aligned": false,
    "excluded": false,
    "duration": 523.572,
-   "start": 4364848
+   "start": 4365830
   },
   {
    "ref_id": "promiseme",
    "song_id": "promiseme",
    "via": "instrumental",
    "live": false,
-   "shift": 0.0,
+   "shift": -0.352,
    "aligned": true,
    "excluded": false,
    "duration": 416.366,
-   "start": 4397355
+   "start": 4398337
   },
   {
    "ref_id": "werenotcloseanymore",
    "song_id": "werenotcloseanymore",
    "via": "instrumental",
    "live": false,
-   "shift": 0.0,
+   "shift": -0.5,
    "aligned": true,
    "excluded": false,
    "duration": 485.12,
-   "start": 4423021
+   "start": 4424003
   },
   {
    "ref_id": "thesower",
@@ -2005,21 +2009,21 @@
    "via": "instrumental",
    "live": false,
    "shift": 0.0,
-   "aligned": true,
+   "aligned": false,
    "excluded": false,
    "duration": 571.22,
-   "start": 4453007
+   "start": 4453990
   },
   {
    "ref_id": "iwish",
    "song_id": "iwish",
    "via": "instrumental",
    "live": false,
-   "shift": 0.0,
+   "shift": 0.016,
    "aligned": true,
    "excluded": false,
    "duration": 336.096,
-   "start": 4488141
+   "start": 4489124
   },
   {
    "ref_id": "jesusreallyneedstoknow",
@@ -2027,10 +2031,10 @@
    "via": "instrumental",
    "live": false,
    "shift": 0.0,
-   "aligned": true,
+   "aligned": false,
    "excluded": false,
    "duration": 317.832,
-   "start": 4509022
+   "start": 4510027
   },
   {
    "ref_id": "ireallylikesundaymorning",
@@ -2041,18 +2045,18 @@
    "aligned": false,
    "excluded": false,
    "duration": 356.424,
-   "start": 4528840
+   "start": 4529862
   },
   {
    "ref_id": "thankyoulord",
    "song_id": "thankyoulord",
    "via": "instrumental",
    "live": false,
-   "shift": 0.0,
+   "shift": -0.016,
    "aligned": true,
    "excluded": false,
    "duration": 548.64,
-   "start": 4550780
+   "start": 4551802
   },
   {
    "ref_id": "proposetome",
@@ -2060,10 +2064,10 @@
    "via": "instrumental",
    "live": false,
    "shift": 0.0,
-   "aligned": true,
+   "aligned": false,
    "excluded": false,
    "duration": 307.08,
-   "start": 4585064
+   "start": 4586086
   },
   {
    "ref_id": "iwannabeavirtuouswoman",
@@ -2071,10 +2075,10 @@
    "via": "instrumental",
    "live": false,
    "shift": 0.0,
-   "aligned": true,
+   "aligned": false,
    "excluded": false,
    "duration": 360.124,
-   "start": 4603315
+   "start": 4604375
   },
   {
    "ref_id": "iwillmissyou",
@@ -2082,10 +2086,10 @@
    "via": "instrumental",
    "live": false,
    "shift": 0.0,
-   "aligned": true,
+   "aligned": false,
    "excluded": false,
    "duration": 322.978,
-   "start": 4625808
+   "start": 4626868
   },
   {
    "ref_id": "inoticeothergirls",
@@ -2093,21 +2097,21 @@
    "via": "instrumental",
    "live": false,
    "shift": 0.0,
-   "aligned": true,
+   "aligned": false,
    "excluded": false,
    "duration": 622.942,
-   "start": 4645974
+   "start": 4647034
   },
   {
    "ref_id": "singanewsong",
    "song_id": "singanewsong",
    "via": "instrumental",
    "live": false,
-   "shift": 0.0,
+   "shift": 0.7,
    "aligned": true,
    "excluded": false,
    "duration": 493.714,
-   "start": 4684894
+   "start": 4685955
   },
   {
    "ref_id": "iknowireallylikeyou",
@@ -2118,7 +2122,7 @@
    "aligned": true,
    "excluded": false,
    "duration": 361.247,
-   "start": 4715366
+   "start": 4716427
   },
   {
    "ref_id": "dowhathelikes",
@@ -2129,18 +2133,18 @@
    "aligned": true,
    "excluded": false,
    "duration": 616.464,
-   "start": 4737925
+   "start": 4738994
   },
   {
    "ref_id": "sosendiyou",
    "song_id": "sosendiyou",
    "via": "instrumental",
    "live": false,
-   "shift": 0.0,
+   "shift": 0.28,
    "aligned": true,
    "excluded": false,
    "duration": 844.983,
-   "start": 4776367
+   "start": 4777492
   },
   {
    "ref_id": "givethyselfwholly",
@@ -2151,7 +2155,7 @@
    "aligned": false,
    "excluded": false,
    "duration": 401.189,
-   "start": 4829007
+   "start": 4830132
   },
   {
    "ref_id": "whatisthebestwaytopray",
@@ -2159,10 +2163,10 @@
    "via": "instrumental",
    "live": false,
    "shift": 0.0,
-   "aligned": true,
+   "aligned": false,
    "excluded": false,
    "duration": 323.082,
-   "start": 4854049
+   "start": 4855176
   },
   {
    "ref_id": "gooninthespirit",
@@ -2173,7 +2177,7 @@
    "aligned": false,
    "excluded": false,
    "duration": 544.313,
-   "start": 4873816
+   "start": 4874943
   },
   {
    "ref_id": "blockedmyview",
@@ -2184,7 +2188,7 @@
    "aligned": true,
    "excluded": false,
    "duration": 376.477,
-   "start": 4906954
+   "start": 4908081
   },
   {
    "ref_id": "isoughtthelord",
@@ -2192,32 +2196,32 @@
    "via": "instrumental",
    "live": false,
    "shift": 0.0,
-   "aligned": true,
+   "aligned": false,
    "excluded": false,
    "duration": 531.931,
-   "start": 4929774
+   "start": 4930901
   },
   {
    "ref_id": "letuscomeboldly",
    "song_id": "letuscomeboldly",
    "via": "instrumental",
    "live": false,
-   "shift": 0.0,
+   "shift": 0.24,
    "aligned": true,
    "excluded": false,
    "duration": 336.953,
-   "start": 4962974
+   "start": 4964101
   },
   {
    "ref_id": "loitellyouamystery",
    "song_id": "loitellyouamystery",
    "via": "instrumental",
    "live": false,
-   "shift": 0.0,
+   "shift": -0.4,
    "aligned": true,
    "excluded": false,
    "duration": 416.967,
-   "start": 4984023
+   "start": 4985150
   },
   {
    "ref_id": "allhavesinned",
@@ -2228,7 +2232,7 @@
    "aligned": true,
    "excluded": false,
    "duration": 560.808,
-   "start": 5009980
+   "start": 5011107
   },
   {
    "ref_id": "watchandpray",
@@ -2236,10 +2240,10 @@
    "via": "instrumental",
    "live": false,
    "shift": 0.0,
-   "aligned": true,
+   "aligned": false,
    "excluded": false,
    "duration": 221.989,
-   "start": 5044939
+   "start": 5046066
   },
   {
    "ref_id": "youllneverfindajob",
@@ -2247,10 +2251,10 @@
    "via": "instrumental",
    "live": false,
    "shift": 0.0,
-   "aligned": true,
+   "aligned": false,
    "excluded": false,
    "duration": 426.266,
-   "start": 5058765
+   "start": 5059892
   },
   {
    "ref_id": "seekyefirst",
@@ -2258,10 +2262,10 @@
    "via": "instrumental",
    "live": false,
    "shift": 0.0,
-   "aligned": true,
+   "aligned": false,
    "excluded": false,
    "duration": 317.78,
-   "start": 5084825
+   "start": 5085952
   },
   {
    "ref_id": "peterlover",
@@ -2269,10 +2273,10 @@
    "via": "instrumental",
    "live": false,
    "shift": 0.0,
-   "aligned": true,
+   "aligned": false,
    "excluded": false,
    "duration": 232.752,
-   "start": 5104306
+   "start": 5105433
   },
   {
    "ref_id": "idontwannafailinmymission",
@@ -2283,7 +2287,7 @@
    "aligned": true,
    "excluded": false,
    "duration": 313.496,
-   "start": 5118572
+   "start": 5119718
   },
   {
    "ref_id": "keepondreamin",
@@ -2294,18 +2298,18 @@
    "aligned": false,
    "excluded": false,
    "duration": 468.552,
-   "start": 5138146
+   "start": 5139293
   },
   {
    "ref_id": "yeshallreceivepower",
    "song_id": "yeshallreceivepower",
    "via": "instrumental",
    "live": false,
-   "shift": 0.0,
+   "shift": 0.136,
    "aligned": true,
    "excluded": false,
    "duration": 369.946,
-   "start": 5167404
+   "start": 5168567
   },
   {
    "ref_id": "hieverybody",
@@ -2316,7 +2320,7 @@
    "aligned": false,
    "excluded": false,
    "duration": 423.523,
-   "start": 5190454
+   "start": 5191617
   },
   {
    "ref_id": "singpraises",
@@ -2324,10 +2328,10 @@
    "via": "instrumental",
    "live": false,
    "shift": 0.0,
-   "aligned": true,
+   "aligned": false,
    "excluded": false,
    "duration": 309.055,
-   "start": 5216897
+   "start": 5218060
   },
   {
    "ref_id": "jesusprayed",
@@ -2335,10 +2339,10 @@
    "via": "instrumental",
    "live": false,
    "shift": 0.0,
-   "aligned": true,
+   "aligned": false,
    "excluded": false,
    "duration": 274.077,
-   "start": 5236203
+   "start": 5237366
   },
   {
    "ref_id": "benice",
@@ -2349,7 +2353,7 @@
    "aligned": true,
    "excluded": false,
    "duration": 378.018,
-   "start": 5252517
+   "start": 5253716
   },
   {
    "ref_id": "blessedarethouohlord",
@@ -2360,18 +2364,18 @@
    "aligned": true,
    "excluded": false,
    "duration": 335.22,
-   "start": 5275943
+   "start": 5277143
   },
   {
    "ref_id": "jesusipromise",
    "song_id": "jesusipromise",
    "via": "instrumental",
    "live": false,
-   "shift": 0.0,
+   "shift": 0.024,
    "aligned": true,
    "excluded": false,
    "duration": 480.104,
-   "start": 5295444
+   "start": 5296644
   },
   {
    "ref_id": "imstartingmyjourney",
@@ -2382,7 +2386,7 @@
    "aligned": true,
    "excluded": false,
    "duration": 215.432,
-   "start": 5324925
+   "start": 5326127
   },
   {
    "ref_id": "herewestand",
@@ -2393,7 +2397,7 @@
    "aligned": false,
    "excluded": false,
    "duration": 312.372,
-   "start": 5338241
+   "start": 5339457
   },
   {
    "ref_id": "theislesshallwaitforthee",
@@ -2401,10 +2405,10 @@
    "via": "instrumental",
    "live": false,
    "shift": 0.0,
-   "aligned": true,
+   "aligned": false,
    "excluded": false,
    "duration": 528.718,
-   "start": 5357742
+   "start": 5358966
   },
   {
    "ref_id": "loveisasstrongasdeath",
@@ -2412,10 +2416,10 @@
    "via": "instrumental",
    "live": false,
    "shift": 0.0,
-   "aligned": true,
+   "aligned": false,
    "excluded": false,
    "duration": 307.08,
-   "start": 5390371
+   "start": 5391595
   },
   {
    "ref_id": "didyoureadmyletter",
@@ -2426,7 +2430,7 @@
    "aligned": true,
    "excluded": false,
    "duration": 512.993,
-   "start": 5409484
+   "start": 5410766
   },
   {
    "ref_id": "losingsufferinganddying",
@@ -2437,7 +2441,7 @@
    "aligned": true,
    "excluded": false,
    "duration": 454.687,
-   "start": 5441519
+   "start": 5442817
   },
   {
    "ref_id": "callmeifyouloveme",
@@ -2448,7 +2452,7 @@
    "aligned": true,
    "excluded": false,
    "duration": 501.943,
-   "start": 5469893
+   "start": 5471210
   },
   {
    "ref_id": "whatexactlydoyoumean",
@@ -2459,7 +2463,7 @@
    "aligned": true,
    "excluded": false,
    "duration": 290.09,
-   "start": 5501220
+   "start": 5502557
   },
   {
    "ref_id": "youaremygod",
@@ -2470,7 +2474,7 @@
    "aligned": true,
    "excluded": false,
    "duration": 346.776,
-   "start": 5518360
+   "start": 5519697
   },
   {
    "ref_id": "iwillpaytheeall",
@@ -2478,32 +2482,32 @@
    "via": "instrumental",
    "live": false,
    "shift": 0.0,
-   "aligned": true,
+   "aligned": false,
    "excluded": false,
    "duration": 584.568,
-   "start": 5539566
+   "start": 5540903
   },
   {
    "ref_id": "whenigettoheaven",
    "song_id": "whenigettoheaven",
    "via": "instrumental",
    "live": false,
-   "shift": 0.0,
+   "shift": 1.432,
    "aligned": true,
    "excluded": false,
    "duration": 355.752,
-   "start": 5575988
+   "start": 5577336
   },
   {
    "ref_id": "rememberyourcreator",
    "song_id": "rememberyourcreator",
    "via": "instrumental",
    "live": false,
-   "shift": 0.0,
+   "shift": 0.12,
    "aligned": true,
    "excluded": false,
    "duration": 377.256,
-   "start": 5598186
+   "start": 5599534
   },
   {
    "ref_id": "spiritofhumility",
@@ -2511,10 +2515,10 @@
    "via": "instrumental",
    "live": false,
    "shift": 0.0,
-   "aligned": true,
+   "aligned": false,
    "excluded": false,
    "duration": 396.643,
-   "start": 5621595
+   "start": 5622943
   },
   {
    "ref_id": "icantbelieveitstrue",
@@ -2525,7 +2529,7 @@
    "aligned": true,
    "excluded": false,
    "duration": 280.947,
-   "start": 5645946
+   "start": 5647294
   },
   {
    "ref_id": "gosomewhere",
@@ -2533,10 +2537,10 @@
    "via": "instrumental",
    "live": false,
    "shift": 0.0,
-   "aligned": true,
+   "aligned": false,
    "excluded": false,
    "duration": 380.317,
-   "start": 5663416
+   "start": 5664764
   },
   {
    "ref_id": "keeppreaching",
@@ -2544,10 +2548,10 @@
    "via": "instrumental",
    "live": false,
    "shift": 0.0,
-   "aligned": true,
+   "aligned": false,
    "excluded": false,
    "duration": 197.538,
-   "start": 5686004
+   "start": 5687352
   },
   {
    "ref_id": "goodfriday",
@@ -2558,7 +2562,7 @@
    "aligned": false,
    "excluded": false,
    "duration": 511.465,
-   "start": 5698072
+   "start": 5699420
   },
   {
    "ref_id": "readyattwenty",
@@ -2569,7 +2573,7 @@
    "aligned": true,
    "excluded": false,
    "duration": 601.94,
-   "start": 5730022
+   "start": 5731382
   },
   {
    "ref_id": "bequicktoobey",
@@ -2580,7 +2584,7 @@
    "aligned": false,
    "excluded": false,
    "duration": 514.377,
-   "start": 5767630
+   "start": 5768992
   },
   {
    "ref_id": "stirupthegiftofgod",
@@ -2588,21 +2592,21 @@
    "via": "instrumental",
    "live": false,
    "shift": 0.0,
-   "aligned": true,
+   "aligned": false,
    "excluded": false,
    "duration": 323.318,
-   "start": 5799751
+   "start": 5801113
   },
   {
    "ref_id": "waragoodwarfare",
    "song_id": "waragoodwarfare",
    "via": "instrumental",
    "live": false,
-   "shift": 0.0,
+   "shift": 0.004,
    "aligned": true,
    "excluded": false,
    "duration": 414.668,
-   "start": 5819937
+   "start": 5821306
   },
   {
    "ref_id": "ifigivemylifeforyou",
@@ -2613,18 +2617,18 @@
    "aligned": false,
    "excluded": false,
    "duration": 457.718,
-   "start": 5845823
+   "start": 5847192
   },
   {
    "ref_id": "therewillbetraitors",
    "song_id": "therewillbetraitors",
    "via": "instrumental",
    "live": false,
-   "shift": 0.0,
+   "shift": -0.728,
    "aligned": true,
    "excluded": false,
    "duration": 336.118,
-   "start": 5874417
+   "start": 5875786
   },
   {
    "ref_id": "ifyouneedsomeonetosend",
@@ -2635,18 +2639,18 @@
    "aligned": false,
    "excluded": false,
    "duration": 273.216,
-   "start": 5894984
+   "start": 5896353
   },
   {
    "ref_id": "sweetmamapoorlover",
    "song_id": "sweetmamapoorlover",
    "via": "instrumental",
    "live": false,
-   "shift": 0.0,
+   "shift": -0.872,
    "aligned": true,
    "excluded": false,
    "duration": 414.642,
-   "start": 5911672
+   "start": 5913041
   },
   {
    "ref_id": "praypraywhydontyouriseupandpray",
@@ -2657,7 +2661,7 @@
    "aligned": true,
    "excluded": false,
    "duration": 287.06,
-   "start": 5937548
+   "start": 5938919
   },
   {
    "ref_id": "anointme",
@@ -2668,7 +2672,7 @@
    "aligned": true,
    "excluded": false,
    "duration": 469.584,
-   "start": 5955482
+   "start": 5956853
   },
   {
    "ref_id": "ifellinlovewithgod",
@@ -2679,7 +2683,7 @@
    "aligned": false,
    "excluded": false,
    "duration": 306.547,
-   "start": 5984799
+   "start": 5986192
   },
   {
    "ref_id": "goodmaster",
@@ -2690,7 +2694,7 @@
    "aligned": true,
    "excluded": false,
    "duration": 387.762,
-   "start": 6003930
+   "start": 6005331
   },
   {
    "ref_id": "hijames",
@@ -2701,7 +2705,7 @@
    "aligned": true,
    "excluded": false,
    "duration": 453.46,
-   "start": 6027452
+   "start": 6028853
   },
   {
    "ref_id": "whoisjesus",
@@ -2709,21 +2713,21 @@
    "via": "instrumental",
    "live": false,
    "shift": 0.0,
-   "aligned": true,
+   "aligned": false,
    "excluded": false,
    "duration": 622.263,
-   "start": 6054243
+   "start": 6055644
   },
   {
    "ref_id": "hewillcarryme",
    "song_id": "hewillcarryme",
    "via": "instrumental",
    "live": false,
-   "shift": 0.0,
+   "shift": -0.008,
    "aligned": true,
    "excluded": false,
    "duration": 284.0,
-   "start": 6093106
+   "start": 6094507
   },
   {
    "ref_id": "donotlovetheworldmybrother",
@@ -2734,7 +2738,7 @@
    "aligned": false,
    "excluded": false,
    "duration": 808.934,
-   "start": 6110439
+   "start": 6111847
   },
   {
    "ref_id": "preparationofthegospel",
@@ -2745,7 +2749,7 @@
    "aligned": true,
    "excluded": false,
    "duration": 327.34,
-   "start": 6160991
+   "start": 6162399
   },
   {
    "ref_id": "altarcall",
@@ -2756,7 +2760,7 @@
    "aligned": false,
    "excluded": false,
    "duration": 357.93,
-   "start": 6181439
+   "start": 6182847
   },
   {
    "ref_id": "letmetellyounow",
@@ -2764,10 +2768,10 @@
    "via": "instrumental",
    "live": false,
    "shift": 0.0,
-   "aligned": true,
+   "aligned": false,
    "excluded": false,
    "duration": 382.563,
-   "start": 6203788
+   "start": 6205212
   },
   {
    "ref_id": "maximumimpact",
@@ -2775,10 +2779,10 @@
    "via": "instrumental",
    "live": false,
    "shift": 0.0,
-   "aligned": true,
+   "aligned": false,
    "excluded": false,
    "duration": 428.121,
-   "start": 6227668
+   "start": 6229105
   },
   {
    "ref_id": "bearyourcross",
@@ -2789,7 +2793,7 @@
    "aligned": true,
    "excluded": false,
    "duration": 546.403,
-   "start": 6254371
+   "start": 6255808
   },
   {
    "ref_id": "godsloveisgreater",
@@ -2800,7 +2804,7 @@
    "aligned": false,
    "excluded": false,
    "duration": 233.456,
-   "start": 6288454
+   "start": 6289933
   },
   {
    "ref_id": "buildyourhouseontherock",
@@ -2811,7 +2815,7 @@
    "aligned": false,
    "excluded": false,
    "duration": 515.318,
-   "start": 6302600
+   "start": 6304114
   },
   {
    "ref_id": "knowingmeknowingyou",
@@ -2822,7 +2826,7 @@
    "aligned": true,
    "excluded": false,
    "duration": 408.085,
-   "start": 6334788
+   "start": 6336302
   },
   {
    "ref_id": "theresnooneilovelikeyoujesus",
@@ -2830,10 +2834,10 @@
    "via": "instrumental",
    "live": false,
    "shift": 0.0,
-   "aligned": true,
+   "aligned": false,
    "excluded": false,
    "duration": 264.984,
-   "start": 6360157
+   "start": 6361671
   },
   {
    "ref_id": "theanointing",
@@ -2841,32 +2845,32 @@
    "via": "instrumental",
    "live": false,
    "shift": 0.0,
-   "aligned": true,
+   "aligned": false,
    "excluded": false,
    "duration": 352.731,
-   "start": 6376397
+   "start": 6377911
   },
   {
    "ref_id": "youmustlovethelord",
    "song_id": "youmustlovethelord",
    "via": "instrumental",
    "live": false,
-   "shift": 0.0,
+   "shift": -0.48,
    "aligned": true,
    "excluded": false,
    "duration": 301.192,
-   "start": 6398425
+   "start": 6399943
   },
   {
    "ref_id": "twentyfivetofifty",
    "song_id": "twentyfivetofifty",
    "via": "instrumental",
    "live": false,
-   "shift": 0.0,
+   "shift": 0.752,
    "aligned": true,
    "excluded": false,
    "duration": 421.721,
-   "start": 6417223
+   "start": 6418753
   },
   {
    "ref_id": "nowthatiknow",
@@ -2874,10 +2878,10 @@
    "via": "instrumental",
    "live": false,
    "shift": 0.0,
-   "aligned": true,
+   "aligned": false,
    "excluded": false,
    "duration": 294.478,
-   "start": 6443364
+   "start": 6444894
   },
   {
    "ref_id": "alovelydiamond",
@@ -2888,7 +2892,7 @@
    "aligned": false,
    "excluded": false,
    "duration": 349.1,
-   "start": 6461760
+   "start": 6463290
   },
   {
    "ref_id": "whoisjesus::aurelian-collection",
@@ -2896,21 +2900,21 @@
    "via": "release",
    "live": false,
    "shift": 0.0,
-   "aligned": false,
+   "aligned": true,
    "excluded": false,
    "duration": 358.114,
-   "start": 6483297
+   "start": 6484827
   },
   {
    "ref_id": "partingsouls::aurelian-collection",
    "song_id": "partingsouls",
    "via": "release",
    "live": false,
-   "shift": -0.06,
+   "shift": 0.0,
    "aligned": true,
    "excluded": false,
    "duration": 598.179,
-   "start": 6505244
+   "start": 6506774
   },
   {
    "ref_id": "ifmypeople::aurelian-collection",
@@ -2921,29 +2925,29 @@
    "aligned": true,
    "excluded": false,
    "duration": 418.429,
-   "start": 6542184
+   "start": 6543714
   },
   {
    "ref_id": "loitellyouamystery::aurelian-collection",
    "song_id": "loitellyouamystery",
    "via": "release",
    "live": false,
-   "shift": 0.376,
+   "shift": 0.0,
    "aligned": true,
    "excluded": false,
    "duration": 375.928,
-   "start": 6567713
+   "start": 6569243
   },
   {
    "ref_id": "reigningfromsixteen::aurelian-collection",
    "song_id": "reigningfromsixteen",
    "via": "release",
    "live": false,
-   "shift": -0.256,
+   "shift": 0.0,
    "aligned": true,
    "excluded": false,
    "duration": 308.114,
-   "start": 6591137
+   "start": 6592667
   },
   {
    "ref_id": "sosendiyou::aurelian-collection",
@@ -2951,21 +2955,21 @@
    "via": "release",
    "live": false,
    "shift": 0.0,
-   "aligned": false,
+   "aligned": true,
    "excluded": false,
    "duration": 500.35,
-   "start": 6610255
+   "start": 6611866
   },
   {
    "ref_id": "workon::aurelian-collection",
    "song_id": "workon",
    "via": "release",
    "live": false,
-   "shift": -0.04,
+   "shift": -0.008,
    "aligned": true,
    "excluded": false,
    "duration": 404.533,
-   "start": 6641207
+   "start": 6642818
   },
   {
    "ref_id": "whomshallisend::aurelian-collection",
@@ -2976,7 +2980,7 @@
    "aligned": true,
    "excluded": false,
    "duration": 313.262,
-   "start": 6666206
+   "start": 6667817
   },
   {
    "ref_id": "goingdeeperdoingmore::aurelian-collection",
@@ -2987,7 +2991,7 @@
    "aligned": true,
    "excluded": false,
    "duration": 374.78,
-   "start": 6685549
+   "start": 6687160
   },
   {
    "ref_id": "goodmaster::aurelian-collection",
@@ -2998,7 +3002,7 @@
    "aligned": true,
    "excluded": false,
    "duration": 275.67,
-   "start": 6708890
+   "start": 6710501
   },
   {
    "ref_id": "theislesshallwaitforthee::aurelian-collection",
@@ -3006,10 +3010,10 @@
    "via": "release",
    "live": false,
    "shift": 0.0,
-   "aligned": false,
+   "aligned": true,
    "excluded": false,
    "duration": 388.232,
-   "start": 6725878
+   "start": 6727489
   },
   {
    "ref_id": "iwillblessthelord::aurelian-collection",
@@ -3017,10 +3021,10 @@
    "via": "release",
    "live": false,
    "shift": 0.0,
-   "aligned": false,
+   "aligned": true,
    "excluded": false,
    "duration": 425.639,
-   "start": 6749512
+   "start": 6751144
   },
   {
    "ref_id": "occupytillicome::aurelian-collection",
@@ -3028,10 +3032,10 @@
    "via": "release",
    "live": false,
    "shift": 0.0,
-   "aligned": false,
+   "aligned": true,
    "excluded": false,
    "duration": 389.712,
-   "start": 6775579
+   "start": 6777239
   },
   {
    "ref_id": "bearmuchfruit::aurelian-collection",
@@ -3042,7 +3046,7 @@
    "aligned": true,
    "excluded": false,
    "duration": 345.131,
-   "start": 6799012
+   "start": 6800679
   },
   {
    "ref_id": "eunuchsinthepalace::aurelian-collection",
@@ -3053,18 +3057,18 @@
    "aligned": false,
    "excluded": false,
    "duration": 602.672,
-   "start": 6820079
+   "start": 6821746
   },
   {
-   "ref_id": "thefirstthingido::aurelian-collection",
-   "song_id": "thefirstthingido",
+   "ref_id": "firstthingido::aurelian-collection",
+   "song_id": "firstthingido",
    "via": "release",
    "live": false,
    "shift": 0.0,
    "aligned": true,
-   "excluded": false,
+   "excluded": true,
    "duration": 265.275,
-   "start": 6857236
+   "start": 6858921
   },
   {
    "ref_id": "hemustincrease::aurelian-collection",
@@ -3075,29 +3079,29 @@
    "aligned": true,
    "excluded": false,
    "duration": 304.772,
-   "start": 6873320
+   "start": 6875005
   },
   {
    "ref_id": "yeshallreceivepower::aurelian-collection",
    "song_id": "yeshallreceivepower",
    "via": "release",
    "live": false,
-   "shift": -0.108,
+   "shift": -0.008,
    "aligned": true,
    "excluded": false,
    "duration": 308.638,
-   "start": 6892254
+   "start": 6893939
   },
   {
    "ref_id": "reasonableservice::aurelian-collection",
    "song_id": "reasonableservice",
    "via": "release",
    "live": false,
-   "shift": 0.0,
-   "aligned": false,
+   "shift": -0.012,
+   "aligned": true,
    "excluded": false,
    "duration": 358.4,
-   "start": 6911068
+   "start": 6912753
   },
   {
    "ref_id": "jesusisthebest::aurelian-collection",
@@ -3105,10 +3109,10 @@
    "via": "release",
    "live": false,
    "shift": 0.0,
-   "aligned": false,
+   "aligned": true,
    "excluded": false,
    "duration": 679.915,
-   "start": 6933273
+   "start": 6934992
   },
   {
    "ref_id": "ifellinlovewithgod::aurelian-collection",
@@ -3119,7 +3123,7 @@
    "aligned": true,
    "excluded": false,
    "duration": 302.551,
-   "start": 6975592
+   "start": 6977340
   },
   {
    "ref_id": "anointme::aurelian-collection",
@@ -3130,7 +3134,7 @@
    "aligned": true,
    "excluded": false,
    "duration": 391.289,
-   "start": 6994411
+   "start": 6996159
   },
   {
    "ref_id": "lorditsnotforwhatyougiveme::aurelian-collection",
@@ -3141,7 +3145,7 @@
    "aligned": true,
    "excluded": false,
    "duration": 491.521,
-   "start": 7018714
+   "start": 7020462
   },
   {
    "ref_id": "havemercyonus::aurelian-collection",
@@ -3152,7 +3156,7 @@
    "aligned": true,
    "excluded": false,
    "duration": 213.656,
-   "start": 7048498
+   "start": 7050269
   },
   {
    "ref_id": "iknowthyworks::aurelian-collection",
@@ -3163,40 +3167,40 @@
    "aligned": true,
    "excluded": false,
    "duration": 282.456,
-   "start": 7061410
+   "start": 7063181
   },
   {
    "ref_id": "psalm::aurelian-collection",
    "song_id": "psalm",
    "via": "release",
    "live": false,
-   "shift": 0.0,
-   "aligned": false,
+   "shift": -0.008,
+   "aligned": true,
    "excluded": false,
    "duration": 392.229,
-   "start": 7078799
+   "start": 7080590
   },
   {
    "ref_id": "nowbroughtnear::aurelian-collection",
    "song_id": "nowbroughtnear",
    "via": "release",
    "live": false,
-   "shift": 0.0,
-   "aligned": false,
+   "shift": -0.008,
+   "aligned": true,
    "excluded": false,
    "duration": 381.675,
-   "start": 7103047
+   "start": 7104838
   },
   {
    "ref_id": "newjerusalem::aurelian-collection",
    "song_id": "newjerusalem",
    "via": "release",
    "live": false,
-   "shift": 0.0,
-   "aligned": false,
+   "shift": -0.008,
+   "aligned": true,
    "excluded": false,
    "duration": 367.544,
-   "start": 7126684
+   "start": 7128475
   },
   {
    "ref_id": "imtheoneyourelookingfor::aida-live-in-munich",
@@ -3207,7 +3211,7 @@
    "aligned": false,
    "excluded": false,
    "duration": 397.776,
-   "start": 7149607
+   "start": 7151402
   },
   {
    "ref_id": "whenamanlovesthelord::aida-live-in-munich",
@@ -3218,7 +3222,18 @@
    "aligned": false,
    "excluded": false,
    "duration": 352.56,
-   "start": 7174087
+   "start": 7175882
+  },
+  {
+   "ref_id": "donotstirupmylove::aida-live-at-i-want-my-love-to-last-conc",
+   "song_id": "donotstirupmylove",
+   "via": "release",
+   "live": true,
+   "shift": 0.0,
+   "aligned": false,
+   "excluded": true,
+   "duration": 370.077,
+   "start": 7197541
   },
   {
    "ref_id": "loveisasstrongasdeath::aida-live-at-i-want-my-love-to-last-conc",
@@ -3229,7 +3244,7 @@
    "aligned": false,
    "excluded": false,
    "duration": 300.748,
-   "start": 7195738
+   "start": 7220338
   },
   {
    "ref_id": "proposal::aida-live-at-i-want-my-love-to-last-conc",
@@ -3240,7 +3255,7 @@
    "aligned": false,
    "excluded": false,
    "duration": 313.025,
-   "start": 7214327
+   "start": 7238969
   },
   {
    "ref_id": "alliwantisachristiangirl::aida-live-at-i-want-my-love-to-last-conc",
@@ -3251,7 +3266,7 @@
    "aligned": false,
    "excluded": false,
    "duration": 300.539,
-   "start": 7233634
+   "start": 7258279
   },
   {
    "ref_id": "mustardseed::aida-live-at-i-want-my-love-to-last-conc",
@@ -3262,7 +3277,7 @@
    "aligned": false,
    "excluded": false,
    "duration": 178.887,
-   "start": 7252115
+   "start": 7276760
   },
   {
    "ref_id": "fulfillyourministry::aida-live-at-i-want-my-love-to-last-conc",
@@ -3273,7 +3288,7 @@
    "aligned": false,
    "excluded": false,
    "duration": 276.532,
-   "start": 7263142
+   "start": 7287787
   },
   {
    "ref_id": "walkbyfaith::aida-live-at-i-want-my-love-to-last-conc",
@@ -3284,7 +3299,7 @@
    "aligned": false,
    "excluded": false,
    "duration": 388.989,
-   "start": 7279915
+   "start": 7304571
   },
   {
    "ref_id": "whatisthebestwaytopray::aida-live-at-i-want-my-love-to-last-conc",
@@ -3295,7 +3310,7 @@
    "aligned": false,
    "excluded": false,
    "duration": 319.478,
-   "start": 7303928
+   "start": 7328585
   },
   {
    "ref_id": "choosing::aida-live-at-i-want-my-love-to-last-conc",
@@ -3306,7 +3321,7 @@
    "aligned": false,
    "excluded": false,
    "duration": 316.369,
-   "start": 7323706
+   "start": 7348363
   },
   {
    "ref_id": "benice::aida-live-at-i-want-my-love-to-last-conc",
@@ -3317,7 +3332,7 @@
    "aligned": false,
    "excluded": false,
    "duration": 328.829,
-   "start": 7343162
+   "start": 7367819
   },
   {
    "ref_id": "promiseme::aida-live-at-i-want-my-love-to-last-conc",
@@ -3328,7 +3343,7 @@
    "aligned": false,
    "excluded": false,
    "duration": 288.522,
-   "start": 7363277
+   "start": 7387937
   },
   {
    "ref_id": "iwantmylovetolast::aida-live-at-i-want-my-love-to-last-conc",
@@ -3339,7 +3354,7 @@
    "aligned": false,
    "excluded": false,
    "duration": 200.725,
-   "start": 7380769
+   "start": 7405429
   },
   {
    "ref_id": "breakup::propose-to-me-concert",
@@ -3350,7 +3365,7 @@
    "aligned": true,
    "excluded": false,
    "duration": 290.247,
-   "start": 7393133
+   "start": 7417793
   },
   {
    "ref_id": "hijames::propose-to-me-concert",
@@ -3361,7 +3376,7 @@
    "aligned": false,
    "excluded": false,
    "duration": 505.443,
-   "start": 7410856
+   "start": 7435516
   },
   {
    "ref_id": "ihavefoundanewlife::propose-to-me-concert",
@@ -3372,7 +3387,7 @@
    "aligned": true,
    "excluded": false,
    "duration": 369.293,
-   "start": 7442103
+   "start": 7466763
   },
   {
    "ref_id": "mybelovedismine::propose-to-me-concert",
@@ -3380,10 +3395,10 @@
    "via": "release",
    "live": true,
    "shift": 0.0,
-   "aligned": false,
+   "aligned": true,
    "excluded": false,
    "duration": 434.39,
-   "start": 7464825
+   "start": 7489485
   },
   {
    "ref_id": "proposetome::propose-to-me-concert",
@@ -3391,10 +3406,10 @@
    "via": "release",
    "live": true,
    "shift": 0.0,
-   "aligned": false,
+   "aligned": true,
    "excluded": false,
    "duration": 298.527,
-   "start": 7491303
+   "start": 7515963
   },
   {
    "ref_id": "seekyefirst::propose-to-me-concert",
@@ -3402,10 +3417,10 @@
    "via": "release",
    "live": true,
    "shift": 0.0,
-   "aligned": false,
+   "aligned": true,
    "excluded": false,
    "duration": 313.914,
-   "start": 7509343
+   "start": 7534003
   },
   {
    "ref_id": "takemylife::propose-to-me-concert",
@@ -3416,7 +3431,7 @@
    "aligned": false,
    "excluded": false,
    "duration": 385.567,
-   "start": 7528270
+   "start": 7552930
   },
   {
    "ref_id": "giveyourlifetochrist::together-forever-concert",
@@ -3427,7 +3442,7 @@
    "aligned": true,
    "excluded": false,
    "duration": 355.528,
-   "start": 7551978
+   "start": 7576655
   },
   {
    "ref_id": "agreatdoor::together-forever-concert",
@@ -3438,7 +3453,7 @@
    "aligned": true,
    "excluded": false,
    "duration": 274.208,
-   "start": 7574146
+   "start": 7598838
   },
   {
    "ref_id": "ireallyloveyoujesus::together-forever-concert",
@@ -3449,7 +3464,7 @@
    "aligned": false,
    "excluded": false,
    "duration": 410.124,
-   "start": 7590812
+   "start": 7615504
   },
   {
    "ref_id": "iwillpaytheeall::together-forever-concert",
@@ -3460,7 +3475,7 @@
    "aligned": false,
    "excluded": false,
    "duration": 447.844,
-   "start": 7616072
+   "start": 7640764
   },
   {
    "ref_id": "thelordthygodinthemidstofthee::together-forever-concert",
@@ -3471,7 +3486,7 @@
    "aligned": false,
    "excluded": false,
    "duration": 385.255,
-   "start": 7643471
+   "start": 7668198
   },
   {
    "ref_id": "spiritofhumility::together-forever-concert",
@@ -3479,10 +3494,10 @@
    "via": "release",
    "live": true,
    "shift": 0.0,
-   "aligned": false,
+   "aligned": true,
    "excluded": false,
    "duration": 421.33,
-   "start": 7667183
+   "start": 7691910
   },
   {
    "ref_id": "sweetmemories::together-forever-concert",
@@ -3493,7 +3508,7 @@
    "aligned": false,
    "excluded": false,
    "duration": 407.459,
-   "start": 7692922
+   "start": 7717649
   },
   {
    "ref_id": "togetherforever::together-forever-concert",
@@ -3501,10 +3516,10 @@
    "via": "release",
    "live": true,
    "shift": 0.0,
-   "aligned": false,
+   "aligned": true,
    "excluded": false,
    "duration": 399.753,
-   "start": 7717659
+   "start": 7742418
   },
   {
    "ref_id": "waragoodwarfare::together-forever-concert",
@@ -3512,10 +3527,10 @@
    "via": "release",
    "live": true,
    "shift": 0.0,
-   "aligned": false,
+   "aligned": true,
    "excluded": false,
    "duration": 362.45,
-   "start": 7742166
+   "start": 7766925
   },
   {
    "ref_id": "bearmuchfruit::eunuchs-in-the-palace-concert",
@@ -3526,7 +3541,7 @@
    "aligned": true,
    "excluded": false,
    "duration": 345.131,
-   "start": 7764539
+   "start": 7789298
   },
   {
    "ref_id": "iseeyoujesus::eunuchs-in-the-palace-concert",
@@ -3537,7 +3552,18 @@
    "aligned": false,
    "excluded": false,
    "duration": 600.791,
-   "start": 7785606
+   "start": 7810365
+  },
+  {
+   "ref_id": "gotochurchalways::eunuchs-in-the-palace-concert",
+   "song_id": "gotochurchalways",
+   "via": "release",
+   "live": true,
+   "shift": 0.0,
+   "aligned": false,
+   "excluded": true,
+   "duration": 255.661,
+   "start": 7847688
   },
   {
    "ref_id": "whomshallisend::eunuchs-in-the-palace-concert",
@@ -3548,7 +3574,7 @@
    "aligned": false,
    "excluded": false,
    "duration": 313.262,
-   "start": 7822929
+   "start": 7863380
   },
   {
    "ref_id": "blessedjesus::eunuchs-in-the-palace-concert",
@@ -3559,7 +3585,7 @@
    "aligned": false,
    "excluded": false,
    "duration": 662.179,
-   "start": 7842272
+   "start": 7882723
   },
   {
    "ref_id": "jesusiloveyou::eunuchs-in-the-palace-concert",
@@ -3570,7 +3596,7 @@
    "aligned": false,
    "excluded": false,
    "duration": 262.061,
-   "start": 7882715
+   "start": 7923166
   },
   {
    "ref_id": "iseeitinyoureyes::eunuchs-in-the-palace-concert",
@@ -3578,10 +3604,10 @@
    "via": "release",
    "live": true,
    "shift": 0.0,
-   "aligned": false,
+   "aligned": true,
    "excluded": false,
    "duration": 398.969,
-   "start": 7898911
+   "start": 7939362
   },
   {
    "ref_id": "iwish::eunuchs-in-the-palace-concert",
@@ -3589,10 +3615,10 @@
    "via": "release",
    "live": true,
    "shift": 0.0,
-   "aligned": false,
+   "aligned": true,
    "excluded": false,
    "duration": 326.871,
-   "start": 7923621
+   "start": 7964072
   },
   {
    "ref_id": "eunuchsinthepalace::eunuchs-in-the-palace-concert",
@@ -3603,7 +3629,7 @@
    "aligned": true,
    "excluded": false,
    "duration": 602.672,
-   "start": 7943529
+   "start": 7984032
   },
   {
    "ref_id": "icantbelieveitstrue::eunuchs-in-the-palace-concert",
@@ -3614,29 +3640,29 @@
    "aligned": true,
    "excluded": false,
    "duration": 281.105,
-   "start": 7980686
+   "start": 8021207
   },
   {
-   "ref_id": "icantgetenough::eunuchs-in-the-palace-concert",
-   "song_id": "icantgetenough",
+   "ref_id": "icantgetenoughofyou::eunuchs-in-the-palace-concert",
+   "song_id": "icantgetenoughofyou",
    "via": "release",
    "live": true,
    "shift": 0.0,
    "aligned": false,
-   "excluded": false,
+   "excluded": true,
    "duration": 254.016,
-   "start": 7997961
+   "start": 8038482
   },
   {
-   "ref_id": "thefirstthingido::eunuchs-in-the-palace-concert",
-   "song_id": "thefirstthingido",
+   "ref_id": "firstthingido::eunuchs-in-the-palace-concert",
+   "song_id": "firstthingido",
    "via": "release",
    "live": true,
    "shift": 0.0,
    "aligned": false,
-   "excluded": false,
+   "excluded": true,
    "duration": 265.275,
-   "start": 8013310
+   "start": 8053831
   },
   {
    "ref_id": "nowisthetime::aida-live-at-taita-hills",
@@ -3644,10 +3670,10 @@
    "via": "release",
    "live": true,
    "shift": 0.0,
-   "aligned": false,
+   "aligned": true,
    "excluded": false,
    "duration": 276.428,
-   "start": 8029394
+   "start": 8069915
   },
   {
    "ref_id": "everybodyneedsalittlehelp::aida-live-at-taita-hills",
@@ -3658,7 +3684,7 @@
    "aligned": false,
    "excluded": false,
    "duration": 224.94,
-   "start": 8046665
+   "start": 8087186
   },
   {
    "ref_id": "takeupyourcross::aida-live-at-taita-hills",
@@ -3669,7 +3695,7 @@
    "aligned": false,
    "excluded": false,
    "duration": 276.428,
-   "start": 8060717
+   "start": 8101240
   },
   {
    "ref_id": "bequicktoobey::jazzberry-collection",
@@ -3680,7 +3706,7 @@
    "aligned": true,
    "excluded": false,
    "duration": 422.304,
-   "start": 8077926
+   "start": 8118449
   },
   {
    "ref_id": "bornagain::jazzberry-collection",
@@ -3691,7 +3717,7 @@
    "aligned": true,
    "excluded": false,
    "duration": 256.209,
-   "start": 8103940
+   "start": 8144486
   },
   {
    "ref_id": "wonderfulchurch::jazzberry-collection",
@@ -3702,7 +3728,7 @@
    "aligned": true,
    "excluded": false,
    "duration": 364.487,
-   "start": 8119747
+   "start": 8160305
   },
   {
    "ref_id": "comeuntome::jazzberry-collection",
@@ -3713,7 +3739,7 @@
    "aligned": true,
    "excluded": false,
    "duration": 457.718,
-   "start": 8142436
+   "start": 8182994
   },
   {
    "ref_id": "wearethechurch::jazzberry-collection",
@@ -3721,10 +3747,10 @@
    "via": "release",
    "live": false,
    "shift": 0.0,
-   "aligned": false,
+   "aligned": true,
    "excluded": false,
    "duration": 326.217,
-   "start": 8169986
+   "start": 8210551
   },
   {
    "ref_id": "gooninthespirit::jazzberry-collection",
@@ -3735,7 +3761,7 @@
    "aligned": true,
    "excluded": false,
    "duration": 370.416,
-   "start": 8190071
+   "start": 8230665
   },
   {
    "ref_id": "iguessyouremember::jazzberry-collection",
@@ -3746,7 +3772,7 @@
    "aligned": true,
    "excluded": false,
    "duration": 395.102,
-   "start": 8212719
+   "start": 8253340
   },
   {
    "ref_id": "ihavefoundanewlife::jazzberry-collection",
@@ -3757,18 +3783,18 @@
    "aligned": false,
    "excluded": false,
    "duration": 289.855,
-   "start": 8237363
+   "start": 8277984
   },
   {
    "ref_id": "womanofzebedee::jazzberry-collection",
    "song_id": "womanofzebedee",
    "via": "release",
    "live": false,
-   "shift": -1.36,
+   "shift": 0.0,
    "aligned": true,
    "excluded": false,
    "duration": 241.894,
-   "start": 8255349
+   "start": 8295970
   },
   {
    "ref_id": "bestronginthelord::jazzberry-collection",
@@ -3779,7 +3805,7 @@
    "aligned": true,
    "excluded": false,
    "duration": 341.029,
-   "start": 8270011
+   "start": 8310690
   },
   {
    "ref_id": "didyoureadmyletter::jazzberry-collection",
@@ -3790,7 +3816,7 @@
    "aligned": true,
    "excluded": false,
    "duration": 433.972,
-   "start": 8290822
+   "start": 8331501
   },
   {
    "ref_id": "keepondotheworkofgod::jazzberry-collection",
@@ -3798,10 +3824,10 @@
    "via": "release",
    "live": false,
    "shift": 0.0,
-   "aligned": false,
+   "aligned": true,
    "excluded": false,
    "duration": 306.233,
-   "start": 8317642
+   "start": 8358321
   },
   {
    "ref_id": "letmetellyounow::jazzberry-collection",
@@ -3809,21 +3835,21 @@
    "via": "release",
    "live": false,
    "shift": 0.0,
-   "aligned": false,
+   "aligned": true,
    "excluded": false,
    "duration": 334.89,
-   "start": 8336529
+   "start": 8377208
   },
   {
    "ref_id": "themountainofthelordshouse::jazzberry-collection",
    "song_id": "themountainofthelordshouse",
    "via": "release",
    "live": false,
-   "shift": -0.272,
+   "shift": 0.0,
    "aligned": true,
    "excluded": false,
    "duration": 370.416,
-   "start": 8357264
+   "start": 8397943
   },
   {
    "ref_id": "watchandpray::jazzberry-collection",
@@ -3831,10 +3857,10 @@
    "via": "release",
    "live": false,
    "shift": 0.0,
-   "aligned": false,
+   "aligned": true,
    "excluded": false,
    "duration": 317.328,
-   "start": 8380203
+   "start": 8420882
   },
   {
    "ref_id": "hesavedyouhesavedme::jazzberry-collection",
@@ -3845,7 +3871,7 @@
    "aligned": true,
    "excluded": false,
    "duration": 309.865,
-   "start": 8399786
+   "start": 8440481
   },
   {
    "ref_id": "donotlovetheworldmybrother::jazzberry-collection",
@@ -3856,18 +3882,18 @@
    "aligned": true,
    "excluded": false,
    "duration": 267.442,
-   "start": 8419109
+   "start": 8459804
   },
   {
    "ref_id": "letmypeoplego::jazzberry-collection",
    "song_id": "letmypeoplego",
    "via": "release",
    "live": false,
-   "shift": -10.96,
+   "shift": 0.0,
    "aligned": true,
    "excluded": false,
    "duration": 370.914,
-   "start": 8435681
+   "start": 8476376
   },
   {
    "ref_id": "maximumimpact::jazzberry-collection",
@@ -3875,10 +3901,10 @@
    "via": "release",
    "live": false,
    "shift": 0.0,
-   "aligned": false,
+   "aligned": true,
    "excluded": false,
    "duration": 313.051,
-   "start": 8458138
+   "start": 8498833
   },
   {
    "ref_id": "thedayifoundjesus::jazzberry-collection",
@@ -3886,10 +3912,21 @@
    "via": "release",
    "live": false,
    "shift": 0.0,
-   "aligned": false,
+   "aligned": true,
    "excluded": false,
    "duration": 285.001,
-   "start": 8477301
+   "start": 8517996
+  },
+  {
+   "ref_id": "bornagainstars::love-concert",
+   "song_id": "bornagainstars",
+   "via": "release",
+   "live": true,
+   "shift": 0.0,
+   "aligned": true,
+   "excluded": true,
+   "duration": 257.04,
+   "start": 8535558
   },
   {
    "ref_id": "godsloveisgreater::love-concert",
@@ -3900,7 +3937,7 @@
    "aligned": true,
    "excluded": false,
    "duration": 230.808,
-   "start": 8494863
+   "start": 8551353
   },
   {
    "ref_id": "hieverybody::love-concert",
@@ -3911,7 +3948,7 @@
    "aligned": true,
    "excluded": false,
    "duration": 424.536,
-   "start": 8509156
+   "start": 8565646
   },
   {
    "ref_id": "hijames::love-concert",
@@ -3922,7 +3959,7 @@
    "aligned": true,
    "excluded": false,
    "duration": 524.856,
-   "start": 8535391
+   "start": 8591881
   },
   {
    "ref_id": "newjerusalem::love-concert",
@@ -3933,7 +3970,7 @@
    "aligned": false,
    "excluded": false,
    "duration": 237.168,
-   "start": 8567815
+   "start": 8624305
   },
   {
    "ref_id": "whenamanlovesthelord::love-concert",
@@ -3941,10 +3978,10 @@
    "via": "release",
    "live": true,
    "shift": 0.0,
-   "aligned": false,
+   "aligned": true,
    "excluded": false,
    "duration": 356.64,
-   "start": 8582497
+   "start": 8638987
   },
   {
    "ref_id": "youregonnagotohell::love-concert",
@@ -3952,10 +3989,10 @@
    "via": "release",
    "live": true,
    "shift": 0.0,
-   "aligned": false,
+   "aligned": true,
    "excluded": false,
    "duration": 391.56,
-   "start": 8604462
+   "start": 8660952
   },
   {
    "ref_id": "icantgowithoutyourpresence::mulberry-collection",
@@ -3966,7 +4003,7 @@
    "aligned": true,
    "excluded": false,
    "duration": 270.315,
-   "start": 8628721
+   "start": 8685211
   },
   {
    "ref_id": "ineedmyquiettime::mulberry-collection",
@@ -3974,10 +4011,10 @@
    "via": "release",
    "live": false,
    "shift": 0.0,
-   "aligned": false,
+   "aligned": true,
    "excluded": false,
    "duration": 342.648,
-   "start": 8645476
+   "start": 8701966
   },
   {
    "ref_id": "iwillbuildyourchurch::mulberry-collection",
@@ -3985,10 +4022,10 @@
    "via": "release",
    "live": false,
    "shift": 0.0,
-   "aligned": false,
+   "aligned": true,
    "excluded": false,
    "duration": 422.008,
-   "start": 8666509
+   "start": 8722999
   },
   {
    "ref_id": "ifyouneedsomeonetosend::mulberry-collection",
@@ -3999,18 +4036,18 @@
    "aligned": true,
    "excluded": false,
    "duration": 269.952,
-   "start": 8692664
+   "start": 8749154
   },
   {
    "ref_id": "missionarysong::mulberry-collection",
    "song_id": "missionarysong",
    "via": "release",
    "live": false,
-   "shift": -1.416,
+   "shift": 0.0,
    "aligned": true,
    "excluded": false,
    "duration": 381.858,
-   "start": 8709186
+   "start": 8765676
   },
   {
    "ref_id": "speakintongues::mulberry-collection",
@@ -4018,54 +4055,54 @@
    "via": "release",
    "live": false,
    "shift": 0.0,
-   "aligned": false,
+   "aligned": true,
    "excluded": false,
    "duration": 274.808,
-   "start": 8732690
+   "start": 8789180
   },
   {
-   "ref_id": "thewinnertakesthecrown::mulberry-collection",
-   "song_id": "thewinnertakesthecrown",
+   "ref_id": "winnertakesthecrown::mulberry-collection",
+   "song_id": "winnertakesthecrown",
    "via": "release",
    "live": false,
    "shift": 0.0,
    "aligned": true,
-   "excluded": false,
+   "excluded": true,
    "duration": 286.354,
-   "start": 8749707
+   "start": 8806197
   },
   {
    "ref_id": "kobbygee::mulberry-collection",
    "song_id": "kobbygee",
    "via": "release",
    "live": false,
-   "shift": 0.0,
-   "aligned": false,
+   "shift": -0.008,
+   "aligned": true,
    "excluded": false,
    "duration": 291.631,
-   "start": 8767458
+   "start": 8823988
   },
   {
    "ref_id": "rememberyourcreator::mulberry-collection",
    "song_id": "rememberyourcreator",
    "via": "release",
    "live": false,
-   "shift": -0.136,
+   "shift": 0.0,
    "aligned": true,
    "excluded": false,
    "duration": 376.085,
-   "start": 8785498
+   "start": 8842028
   },
   {
    "ref_id": "seekyefirst::mulberry-collection",
    "song_id": "seekyefirst",
    "via": "release",
    "live": false,
-   "shift": 0.0,
-   "aligned": false,
+   "shift": -5.74,
+   "aligned": true,
    "excluded": false,
    "duration": 302.968,
-   "start": 8808745
+   "start": 8865307
   },
   {
    "ref_id": "whatisthebestwaytopray::mulberry-collection",
@@ -4073,10 +4110,10 @@
    "via": "release",
    "live": false,
    "shift": 0.0,
-   "aligned": false,
+   "aligned": true,
    "excluded": false,
    "duration": 319.321,
-   "start": 8827346
+   "start": 8883909
   },
   {
    "ref_id": "youaremygod::mulberry-collection",
@@ -4087,7 +4124,7 @@
    "aligned": false,
    "excluded": false,
    "duration": 347.899,
-   "start": 8847137
+   "start": 8903700
   },
   {
    "ref_id": "youregonnagotohell::mulberry-collection",
@@ -4098,7 +4135,7 @@
    "aligned": false,
    "excluded": false,
    "duration": 374.909,
-   "start": 8868687
+   "start": 8925250
   },
   {
    "ref_id": "cherishtheloveofgod::mulberry-collection",
@@ -4109,7 +4146,7 @@
    "aligned": true,
    "excluded": false,
    "duration": 352.862,
-   "start": 8892006
+   "start": 8948585
   },
   {
    "ref_id": "ibelieveicantry::mulberry-collection",
@@ -4120,7 +4157,7 @@
    "aligned": true,
    "excluded": false,
    "duration": 554.057,
-   "start": 8913794
+   "start": 8970373
   },
   {
    "ref_id": "ifyoucouldseemenow::mulberry-collection",
@@ -4131,18 +4168,18 @@
    "aligned": true,
    "excluded": false,
    "duration": 323.553,
-   "start": 8947091
+   "start": 9003670
   },
   {
    "ref_id": "pleasedontpullmeback::mulberry-collection",
    "song_id": "pleasedontpullmeback",
    "via": "release",
    "live": false,
-   "shift": -1.504,
+   "shift": 0.0,
    "aligned": true,
    "excluded": false,
    "duration": 343.197,
-   "start": 8967141
+   "start": 9023739
   },
   {
    "ref_id": "afaithfulfriend::mulberry-collection",
@@ -4153,7 +4190,7 @@
    "aligned": true,
    "excluded": false,
    "duration": 300.07,
-   "start": 8988087
+   "start": 9044685
   },
   {
    "ref_id": "godslovehastodealwithit::mulberry-collection",
@@ -4164,7 +4201,7 @@
    "aligned": true,
    "excluded": false,
    "duration": 265.64,
-   "start": 9006364
+   "start": 9062962
   },
   {
    "ref_id": "praypraywhydontyouriseupandpray::mulberry-collection",
@@ -4175,18 +4212,18 @@
    "aligned": true,
    "excluded": false,
    "duration": 287.087,
-   "start": 9022845
+   "start": 9079443
   },
   {
    "ref_id": "watchandpray::mulberry-collection",
    "song_id": "watchandpray",
    "via": "release",
    "live": false,
-   "shift": 0.0,
-   "aligned": false,
+   "shift": -0.008,
+   "aligned": true,
    "excluded": false,
    "duration": 316.224,
-   "start": 9040678
+   "start": 9097276
   },
   {
    "ref_id": "whenifell::mulberry-collection",
@@ -4194,10 +4231,10 @@
    "via": "release",
    "live": false,
    "shift": 0.0,
-   "aligned": false,
+   "aligned": true,
    "excluded": false,
    "duration": 440.472,
-   "start": 9060261
+   "start": 9116875
   },
   {
    "ref_id": "whenyoudied::mulberry-collection",
@@ -4205,10 +4242,10 @@
    "via": "release",
    "live": false,
    "shift": 0.0,
-   "aligned": false,
+   "aligned": true,
    "excluded": false,
    "duration": 442.646,
-   "start": 9087575
+   "start": 9144189
   },
   {
    "ref_id": "whydidicomeintotheworld::mulberry-collection",
@@ -4219,18 +4256,18 @@
    "aligned": true,
    "excluded": false,
    "duration": 438.937,
-   "start": 9115090
+   "start": 9171708
   },
   {
    "ref_id": "wiseasserpents::mulberry-collection",
    "song_id": "wiseasserpents",
    "via": "release",
    "live": false,
-   "shift": -0.032,
+   "shift": 0.0,
    "aligned": true,
    "excluded": false,
    "duration": 365.641,
-   "start": 9142417
+   "start": 9199085
   },
   {
    "ref_id": "womanofzebedee::aida-live-at-hard-follower-camp",
@@ -4241,7 +4278,7 @@
    "aligned": false,
    "excluded": false,
    "duration": 244.062,
-   "start": 9165004
+   "start": 9221672
   },
   {
    "ref_id": "icantgowithoutyourpresence::aida-live-at-hard-follower-camp",
@@ -4252,7 +4289,7 @@
    "aligned": false,
    "excluded": false,
    "duration": 288.052,
-   "start": 9179770
+   "start": 9236484
   },
   {
    "ref_id": "peterlover::aida-live-at-hard-follower-camp",
@@ -4263,7 +4300,7 @@
    "aligned": false,
    "excluded": false,
    "duration": 237.819,
-   "start": 9197211
+   "start": 9253925
   },
   {
    "ref_id": "kobbygee::aida-live-at-hard-follower-camp",
@@ -4274,7 +4311,7 @@
    "aligned": false,
    "excluded": false,
    "duration": 294.06,
-   "start": 9211828
+   "start": 9268542
   },
   {
    "ref_id": "hardfollower::aida-live-at-hard-follower-camp",
@@ -4285,7 +4322,7 @@
    "aligned": false,
    "excluded": false,
    "duration": 408.059,
-   "start": 9229827
+   "start": 9286556
   },
   {
    "ref_id": "imtheoneyourelookingfor::aida-live-at-hard-follower-camp",
@@ -4296,7 +4333,7 @@
    "aligned": false,
    "excluded": false,
    "duration": 324.728,
-   "start": 9254973
+   "start": 9311702
   },
   {
    "ref_id": "thelovelyvoiceofgod::aida-live-at-hard-follower-camp",
@@ -4307,7 +4344,7 @@
    "aligned": false,
    "excluded": false,
    "duration": 242.077,
-   "start": 9275024
+   "start": 9331753
   },
   {
    "ref_id": "loveisasstrongasdeath::aida-live-at-hard-follower-camp",
@@ -4318,7 +4355,7 @@
    "aligned": false,
    "excluded": false,
    "duration": 282.07,
-   "start": 9289745
+   "start": 9346497
   },
   {
    "ref_id": "themountainofthelordshouse::aida-live-at-hard-follower-camp",
@@ -4329,7 +4366,7 @@
    "aligned": false,
    "excluded": false,
    "duration": 268.069,
-   "start": 9307046
+   "start": 9363798
   },
   {
    "ref_id": "alliwantisachristiangirl::candle-in-the-dark",
@@ -4340,7 +4377,7 @@
    "aligned": true,
    "excluded": false,
    "duration": 353.04,
-   "start": 9323560
+   "start": 9380312
   },
   {
    "ref_id": "altarcall::candle-in-the-dark",
@@ -4351,7 +4388,7 @@
    "aligned": true,
    "excluded": false,
    "duration": 358.632,
-   "start": 9345103
+   "start": 9401902
   },
   {
    "ref_id": "candleinthedark::candle-in-the-dark",
@@ -4362,7 +4399,7 @@
    "aligned": true,
    "excluded": false,
    "duration": 553.776,
-   "start": 9367337
+   "start": 9424140
   },
   {
    "ref_id": "inoticeothergirls::candle-in-the-dark",
@@ -4370,10 +4407,10 @@
    "via": "release",
    "live": false,
    "shift": 0.0,
-   "aligned": false,
+   "aligned": true,
    "excluded": false,
    "duration": 495.552,
-   "start": 9401428
+   "start": 9458231
   },
   {
    "ref_id": "carryme::candle-in-the-dark",
@@ -4384,18 +4421,18 @@
    "aligned": false,
    "excluded": false,
    "duration": 380.232,
-   "start": 9431778
+   "start": 9488581
   },
   {
    "ref_id": "werenotcloseanymore::candle-in-the-dark",
    "song_id": "werenotcloseanymore",
    "via": "release",
    "live": false,
-   "shift": 0.48,
+   "shift": 0.0,
    "aligned": true,
    "excluded": false,
    "duration": 396.144,
-   "start": 9455088
+   "start": 9511901
   },
   {
    "ref_id": "alliwantisachristiangirl::aida-live-at-twenty-five-to-fifty",
@@ -4406,7 +4443,7 @@
    "aligned": false,
    "excluded": false,
    "duration": 316.056,
-   "start": 9479200
+   "start": 9536043
   },
   {
    "ref_id": "candleinthedark::aida-live-at-twenty-five-to-fifty",
@@ -4417,7 +4454,18 @@
    "aligned": false,
    "excluded": false,
    "duration": 528.065,
-   "start": 9498754
+   "start": 9555597
+  },
+  {
+   "ref_id": "gosomewherepreachsomewhere::aida-live-at-twenty-five-to-fifty",
+   "song_id": "gosomewherepreachsomewhere",
+   "via": "release",
+   "live": true,
+   "shift": 0.0,
+   "aligned": false,
+   "excluded": true,
+   "duration": 326.06,
+   "start": 9588317
   },
   {
    "ref_id": "hieverybody::aida-live-at-twenty-five-to-fifty",
@@ -4428,7 +4476,7 @@
    "aligned": false,
    "excluded": false,
    "duration": 404.062,
-   "start": 9531474
+   "start": 9608389
   },
   {
    "ref_id": "honeyhoney::aida-live-at-twenty-five-to-fifty",
@@ -4439,7 +4487,7 @@
    "aligned": false,
    "excluded": false,
    "duration": 316.056,
-   "start": 9556455
+   "start": 9633370
   },
   {
    "ref_id": "idontwannafailinmymission::aida-live-at-twenty-five-to-fifty",
@@ -4450,7 +4498,7 @@
    "aligned": false,
    "excluded": false,
    "duration": 288.052,
-   "start": 9575735
+   "start": 9652654
   },
   {
    "ref_id": "inoticeothergirls::aida-live-at-twenty-five-to-fifty",
@@ -4461,7 +4509,7 @@
    "aligned": false,
    "excluded": false,
    "duration": 488.072,
-   "start": 9593322
+   "start": 9670241
   },
   {
    "ref_id": "iwantmylovetolast::aida-live-at-twenty-five-to-fifty",
@@ -4472,7 +4520,7 @@
    "aligned": false,
    "excluded": false,
    "duration": 204.069,
-   "start": 9623447
+   "start": 9700366
   },
   {
    "ref_id": "mybelovedismine::aida-live-at-twenty-five-to-fifty",
@@ -4483,7 +4531,7 @@
    "aligned": false,
    "excluded": false,
    "duration": 402.077,
-   "start": 9635936
+   "start": 9712873
   },
   {
    "ref_id": "rememberyourcreator::aida-live-at-twenty-five-to-fifty",
@@ -4494,7 +4542,7 @@
    "aligned": false,
    "excluded": false,
    "duration": 376.059,
-   "start": 9660789
+   "start": 9737738
   },
   {
    "ref_id": "stirupthegiftofgod::aida-live-at-twenty-five-to-fifty",
@@ -4502,10 +4550,10 @@
    "via": "release",
    "live": true,
    "shift": 0.0,
-   "aligned": false,
+   "aligned": true,
    "excluded": false,
    "duration": 362.057,
-   "start": 9684036
+   "start": 9761017
   },
   {
    "ref_id": "twentyfivetofifty::aida-live-at-twenty-five-to-fifty",
@@ -4516,7 +4564,7 @@
    "aligned": false,
    "excluded": false,
    "duration": 360.072,
-   "start": 9706413
+   "start": 9783394
   },
   {
    "ref_id": "choosemeuseme::misty-rose-reggae-collection",
@@ -4527,7 +4575,7 @@
    "aligned": true,
    "excluded": false,
    "duration": 315.001,
-   "start": 9728491
+   "start": 9805487
   },
   {
    "ref_id": "amegachurch::misty-rose-reggae-collection",
@@ -4538,7 +4586,7 @@
    "aligned": true,
    "excluded": false,
    "duration": 432.901,
-   "start": 9748064
+   "start": 9825060
   },
   {
    "ref_id": "theanointing::misty-rose-reggae-collection",
@@ -4546,21 +4594,21 @@
    "via": "release",
    "live": false,
    "shift": 0.0,
-   "aligned": false,
+   "aligned": true,
    "excluded": false,
    "duration": 334.655,
-   "start": 9774835
+   "start": 9851831
   },
   {
    "ref_id": "readyourbibleprayeveryday::misty-rose-reggae-collection",
    "song_id": "readyourbibleprayeveryday",
    "via": "release",
    "live": false,
-   "shift": 0.024,
+   "shift": 0.0,
    "aligned": true,
    "excluded": false,
    "duration": 285.415,
-   "start": 9795379
+   "start": 9872375
   },
   {
    "ref_id": "honeyhoney::misty-rose-reggae-collection",
@@ -4571,7 +4619,7 @@
    "aligned": true,
    "excluded": false,
    "duration": 304.144,
-   "start": 9813087
+   "start": 9890083
   },
   {
    "ref_id": "bezealouslyaffected::misty-rose-reggae-collection",
@@ -4582,18 +4630,29 @@
    "aligned": true,
    "excluded": false,
    "duration": 460.723,
-   "start": 9831909
+   "start": 9908911
   },
   {
    "ref_id": "twentyfivetofifty::misty-rose-reggae-collection",
    "song_id": "twentyfivetofifty",
    "via": "release",
    "live": false,
-   "shift": -0.756,
+   "shift": 0.0,
    "aligned": true,
    "excluded": false,
    "duration": 360.072,
-   "start": 9860466
+   "start": 9937468
+  },
+  {
+   "ref_id": "gosomewherepreachsomewhere::misty-rose-reggae-collection",
+   "song_id": "gosomewherepreachsomewhere",
+   "via": "release",
+   "live": false,
+   "shift": 0.0,
+   "aligned": true,
+   "excluded": true,
+   "duration": 325.982,
+   "start": 9959561
   },
   {
    "ref_id": "dowhathelikes::misty-rose-reggae-collection",
@@ -4604,7 +4663,7 @@
    "aligned": true,
    "excluded": false,
    "duration": 448.128,
-   "start": 9882544
+   "start": 9979634
   },
   {
    "ref_id": "bestronginthelord::misty-rose-reggae-collection",
@@ -4615,7 +4674,7 @@
    "aligned": true,
    "excluded": false,
    "duration": 341.029,
-   "start": 9910138
+   "start": 10007228
   },
   {
    "ref_id": "idontwannafailinmymission::misty-rose-reggae-collection",
@@ -4626,18 +4685,18 @@
    "aligned": true,
    "excluded": false,
    "duration": 288.47,
-   "start": 9930949
+   "start": 10028039
   },
   {
    "ref_id": "jesuslovesmeohyeah::misty-rose-reggae-collection",
    "song_id": "jesuslovesmeohyeah",
    "via": "release",
    "live": false,
-   "shift": 0.016,
+   "shift": 0.0,
    "aligned": true,
    "excluded": false,
    "duration": 327.054,
-   "start": 9948537
+   "start": 10045627
   },
   {
    "ref_id": "buildyourhouseontherock::misty-rose-reggae-collection",
@@ -4648,7 +4707,7 @@
    "aligned": true,
    "excluded": false,
    "duration": 339.409,
-   "start": 9968717
+   "start": 10065807
   },
   {
    "ref_id": "nowthatwevefoundchrist::misty-rose-reggae-collection",
@@ -4656,10 +4715,10 @@
    "via": "release",
    "live": false,
    "shift": 0.0,
-   "aligned": false,
+   "aligned": true,
    "excluded": false,
    "duration": 300.905,
-   "start": 9989309
+   "start": 10086399
   },
   {
    "ref_id": "ifigivemylifeforyou::misty-rose-reggae-collection",
@@ -4670,7 +4729,7 @@
    "aligned": true,
    "excluded": false,
    "duration": 419.422,
-   "start": 10007901
+   "start": 10104991
   },
   {
    "ref_id": "whenamanhasfound::misty-rose-reggae-collection",
@@ -4678,10 +4737,10 @@
    "via": "release",
    "live": false,
    "shift": 0.0,
-   "aligned": false,
+   "aligned": true,
    "excluded": false,
    "duration": 253.897,
-   "start": 10033565
+   "start": 10130655
   },
   {
    "ref_id": "igotthecallofgod::misty-rose-reggae-collection",
@@ -4692,7 +4751,7 @@
    "aligned": true,
    "excluded": false,
    "duration": 423.445,
-   "start": 10049017
+   "start": 10146107
   },
   {
    "ref_id": "hieverybody::misty-rose-reggae-collection",
@@ -4703,7 +4762,7 @@
    "aligned": true,
    "excluded": false,
    "duration": 425.376,
-   "start": 10075070
+   "start": 10172199
   },
   {
    "ref_id": "jesushealsyourheart::misty-rose-reggae-collection",
@@ -4711,21 +4770,32 @@
    "via": "release",
    "live": false,
    "shift": 0.0,
-   "aligned": false,
+   "aligned": true,
    "excluded": false,
    "duration": 437.055,
-   "start": 10101305
+   "start": 10198434
   },
   {
    "ref_id": "jesussavoiuroftheworld::misty-rose-reggae-collection",
    "song_id": "jesussavoiuroftheworld",
    "via": "release",
    "live": false,
-   "shift": -1.296,
+   "shift": 0.0,
    "aligned": true,
    "excluded": false,
    "duration": 360.202,
-   "start": 10128425
+   "start": 10225554
+  },
+  {
+   "ref_id": "donotstirupmylove::misty-rose-reggae-collection",
+   "song_id": "donotstirupmylove",
+   "via": "release",
+   "live": false,
+   "shift": 0.032,
+   "aligned": true,
+   "excluded": true,
+   "duration": 340.585,
+   "start": 10247906
   },
   {
    "ref_id": "bearyourcross::misty-rose-reggae-collection",
@@ -4736,7 +4806,7 @@
    "aligned": true,
    "excluded": false,
    "duration": 379.009,
-   "start": 10150777
+   "start": 10269088
   },
   {
    "ref_id": "givethyselfwholly::misty-rose-reggae-collection",
@@ -4747,7 +4817,7 @@
    "aligned": true,
    "excluded": false,
    "duration": 398.576,
-   "start": 10174153
+   "start": 10292464
   },
   {
    "ref_id": "noapologies::misty-rose-reggae-collection",
@@ -4755,21 +4825,21 @@
    "via": "release",
    "live": false,
    "shift": 0.0,
-   "aligned": false,
+   "aligned": true,
    "excluded": false,
    "duration": 373.734,
-   "start": 10198829
+   "start": 10317140
   },
   {
    "ref_id": "letmelove::cerulean-collection",
    "song_id": "letmelove",
    "via": "release",
    "live": false,
-   "shift": -0.04,
+   "shift": -0.008,
    "aligned": true,
    "excluded": false,
    "duration": 253.206,
-   "start": 10221325
+   "start": 10339636
   },
   {
    "ref_id": "iandthechildren::cerulean-collection",
@@ -4780,7 +4850,7 @@
    "aligned": true,
    "excluded": false,
    "duration": 417.621,
-   "start": 10236973
+   "start": 10355284
   },
   {
    "ref_id": "imresponding::cerulean-collection",
@@ -4791,18 +4861,18 @@
    "aligned": true,
    "excluded": false,
    "duration": 252.919,
-   "start": 10262836
+   "start": 10381147
   },
   {
    "ref_id": "thankyouinmyownway::cerulean-collection",
    "song_id": "thankyouinmyownway",
    "via": "release",
    "live": false,
-   "shift": 2.92,
+   "shift": 0.0,
    "aligned": true,
    "excluded": false,
    "duration": 302.054,
-   "start": 10278376
+   "start": 10396690
   },
   {
    "ref_id": "ineedyoulord::cerulean-collection",
@@ -4813,7 +4883,7 @@
    "aligned": true,
    "excluded": false,
    "duration": 345.966,
-   "start": 10296671
+   "start": 10414985
   },
   {
    "ref_id": "iamthirsty::cerulean-collection",
@@ -4824,7 +4894,7 @@
    "aligned": true,
    "excluded": false,
    "duration": 319.556,
-   "start": 10317887
+   "start": 10436201
   },
   {
    "ref_id": "thelordthygodinthemidstofthee::cerulean-collection",
@@ -4832,32 +4902,32 @@
    "via": "release",
    "live": false,
    "shift": 0.0,
-   "aligned": false,
+   "aligned": true,
    "excluded": false,
    "duration": 385.255,
-   "start": 10337393
+   "start": 10455707
   },
   {
    "ref_id": "letuscomeboldly::cerulean-collection",
    "song_id": "letuscomeboldly",
    "via": "release",
    "live": false,
-   "shift": -0.24,
+   "shift": -0.008,
    "aligned": true,
    "excluded": false,
    "duration": 308.194,
-   "start": 10361105
+   "start": 10479419
   },
   {
    "ref_id": "lamentations::cerulean-collection",
    "song_id": "lamentations",
    "via": "release",
    "live": false,
-   "shift": 0.0,
-   "aligned": false,
+   "shift": -0.008,
+   "aligned": true,
    "excluded": false,
    "duration": 392.648,
-   "start": 10379970
+   "start": 10498317
   },
   {
    "ref_id": "everybodyneedsalittlehelp::cerulean-collection",
@@ -4868,7 +4938,7 @@
    "aligned": true,
    "excluded": false,
    "duration": 410.28,
-   "start": 10404268
+   "start": 10522615
   },
   {
    "ref_id": "iseeyoujesus::cerulean-collection",
@@ -4879,7 +4949,18 @@
    "aligned": true,
    "excluded": false,
    "duration": 600.791,
-   "start": 10429396
+   "start": 10547768
+  },
+  {
+   "ref_id": "gotochurchalways::cerulean-collection",
+   "song_id": "gotochurchalways",
+   "via": "release",
+   "live": false,
+   "shift": 0.0,
+   "aligned": true,
+   "excluded": true,
+   "duration": 255.661,
+   "start": 10585091
   },
   {
    "ref_id": "icantbelieveitstrue::cerulean-collection",
@@ -4890,7 +4971,7 @@
    "aligned": true,
    "excluded": false,
    "duration": 281.105,
-   "start": 10466719
+   "start": 10600783
   },
   {
    "ref_id": "iacknowledgedmysin::cerulean-collection",
@@ -4901,7 +4982,7 @@
    "aligned": true,
    "excluded": false,
    "duration": 285.18,
-   "start": 10483994
+   "start": 10618058
   },
   {
    "ref_id": "alovelydiamond::cerulean-collection",
@@ -4912,7 +4993,7 @@
    "aligned": true,
    "excluded": false,
    "duration": 344.138,
-   "start": 10501555
+   "start": 10635650
   },
   {
    "ref_id": "blindbartimaeus::cerulean-collection",
@@ -4923,7 +5004,7 @@
    "aligned": true,
    "excluded": false,
    "duration": 339.175,
-   "start": 10522754
+   "start": 10656849
   },
   {
    "ref_id": "wastingmylife::cerulean-collection",
@@ -4934,7 +5015,7 @@
    "aligned": true,
    "excluded": false,
    "duration": 368.849,
-   "start": 10543557
+   "start": 10677652
   },
   {
    "ref_id": "goye::cerulean-collection",
@@ -4945,7 +5026,7 @@
    "aligned": true,
    "excluded": false,
    "duration": 285.388,
-   "start": 10566419
+   "start": 10700534
   },
   {
    "ref_id": "goodfriday::cerulean-collection",
@@ -4956,18 +5037,18 @@
    "aligned": true,
    "excluded": false,
    "duration": 385.567,
-   "start": 10583806
+   "start": 10717921
   },
   {
    "ref_id": "thankyoulord::cerulean-collection",
    "song_id": "thankyoulord",
    "via": "release",
    "live": false,
-   "shift": -0.016,
+   "shift": 0.0,
    "aligned": true,
    "excluded": false,
    "duration": 400.056,
-   "start": 10607659
+   "start": 10741774
   },
   {
    "ref_id": "allthingsworktogether::cerulean-collection",
@@ -4978,29 +5059,29 @@
    "aligned": true,
    "excluded": false,
    "duration": 323.396,
-   "start": 10631958
+   "start": 10766073
   },
   {
    "ref_id": "letmestandbeforeyou::cerulean-collection",
    "song_id": "letmestandbeforeyou",
    "via": "release",
    "live": false,
-   "shift": 0.48,
+   "shift": 0.0,
    "aligned": true,
    "excluded": false,
    "duration": 506.018,
-   "start": 10651778
+   "start": 10785905
   },
   {
    "ref_id": "therewillbetraitors::cerulean-collection",
    "song_id": "therewillbetraitors",
    "via": "release",
    "live": false,
-   "shift": 0.72,
+   "shift": 0.0,
    "aligned": true,
    "excluded": false,
    "duration": 338.025,
-   "start": 10682990
+   "start": 10817117
   },
   {
    "ref_id": "therewillbesaddays::cerulean-collection",
@@ -5008,10 +5089,10 @@
    "via": "release",
    "live": false,
    "shift": 0.0,
-   "aligned": false,
+   "aligned": true,
    "excluded": false,
    "duration": 476.029,
-   "start": 10703580
+   "start": 10837707
   },
   {
    "ref_id": "takeupyourcross::cerulean-collection",
@@ -5019,10 +5100,10 @@
    "via": "release",
    "live": false,
    "shift": 0.0,
-   "aligned": false,
+   "aligned": true,
    "excluded": false,
    "duration": 582.427,
-   "start": 10732806
+   "start": 10866933
   },
   {
    "ref_id": "allhavesinned::cerulean-collection",
@@ -5033,7 +5114,7 @@
    "aligned": true,
    "excluded": false,
    "duration": 287.832,
-   "start": 10768854
+   "start": 10902993
   },
   {
    "ref_id": "iwillpaytheeall::cerulean-collection",
@@ -5041,10 +5122,10 @@
    "via": "release",
    "live": false,
    "shift": 0.0,
-   "aligned": false,
+   "aligned": true,
    "excluded": false,
    "duration": 447.844,
-   "start": 10786393
+   "start": 10920532
   },
   {
    "ref_id": "peterdoyouloveme::cerulean-collection",
@@ -5052,10 +5133,10 @@
    "via": "release",
    "live": false,
    "shift": 0.0,
-   "aligned": false,
+   "aligned": true,
    "excluded": false,
    "duration": 380.709,
-   "start": 10813792
+   "start": 10947966
   },
   {
    "ref_id": "imustwork::cerulean-collection",
@@ -5066,7 +5147,7 @@
    "aligned": true,
    "excluded": false,
    "duration": 369.555,
-   "start": 10837317
+   "start": 10971518
   },
   {
    "ref_id": "darebolderprograms::cerulean-collection",
@@ -5077,29 +5158,40 @@
    "aligned": true,
    "excluded": false,
    "duration": 393.691,
-   "start": 10860018
+   "start": 10994262
   },
   {
    "ref_id": "jesusipromise::cerulean-collection",
    "song_id": "jesusipromise",
    "via": "release",
    "live": false,
-   "shift": -0.04,
+   "shift": -0.008,
    "aligned": true,
    "excluded": false,
    "duration": 477.937,
-   "start": 10884404
+   "start": 11018648
   },
   {
    "ref_id": "iwillpraisetheewithmywholeheart::cerulean-collection",
    "song_id": "iwillpraisetheewithmywholeheart",
    "via": "release",
    "live": false,
-   "shift": -0.008,
+   "shift": -0.004,
    "aligned": true,
    "excluded": false,
    "duration": 225.647,
-   "start": 10914162
+   "start": 11048406
+  },
+  {
+   "ref_id": "awakeosleeper::aida-live-in-port-elizabeth",
+   "song_id": "awakeosleeper",
+   "via": "release",
+   "live": true,
+   "shift": 0.0,
+   "aligned": false,
+   "excluded": true,
+   "duration": 373.004,
+   "start": 11062317
   },
   {
    "ref_id": "workon::aida-live-in-port-elizabeth",
@@ -5110,29 +5202,29 @@
    "aligned": false,
    "excluded": false,
    "duration": 353.02,
-   "start": 10927974
+   "start": 11085621
   },
   {
    "ref_id": "theislesshallwaitforthee::when-will-it-be-possible-to-see-you",
    "song_id": "theislesshallwaitforthee",
    "via": "release",
    "live": false,
-   "shift": 0.0,
-   "aligned": false,
+   "shift": -0.008,
+   "aligned": true,
    "excluded": false,
    "duration": 388.232,
-   "start": 10949944
+   "start": 11107591
   },
   {
    "ref_id": "iwillblessthelord::when-will-it-be-possible-to-see-you",
    "song_id": "iwillblessthelord",
    "via": "release",
    "live": false,
-   "shift": 0.0,
-   "aligned": false,
+   "shift": -0.008,
+   "aligned": true,
    "excluded": false,
    "duration": 425.639,
-   "start": 10973578
+   "start": 11131246
   },
   {
    "ref_id": "allhavesinned::when-will-it-be-possible-to-see-you",
@@ -5143,29 +5235,29 @@
    "aligned": true,
    "excluded": false,
    "duration": 287.832,
-   "start": 10999645
+   "start": 11157341
   },
   {
    "ref_id": "thankyoulord::when-will-it-be-possible-to-see-you",
    "song_id": "thankyoulord",
    "via": "release",
    "live": false,
-   "shift": -0.016,
+   "shift": -0.008,
    "aligned": true,
    "excluded": false,
    "duration": 400.056,
-   "start": 11017184
+   "start": 11174880
   },
   {
    "ref_id": "whenwillitbepossibletoseeyou::when-will-it-be-possible-to-see-you",
    "song_id": "whenwillitbepossibletoseeyou",
    "via": "release",
    "live": false,
-   "shift": 0.0,
-   "aligned": false,
+   "shift": -0.008,
+   "aligned": true,
    "excluded": false,
    "duration": 420.075,
-   "start": 11041483
+   "start": 11199179
   },
   {
    "ref_id": "iknowthyworks::when-will-it-be-possible-to-see-you",
@@ -5176,18 +5268,18 @@
    "aligned": true,
    "excluded": false,
    "duration": 282.456,
-   "start": 11067461
+   "start": 11225157
   },
   {
    "ref_id": "occupytillicome::when-will-it-be-possible-to-see-you",
    "song_id": "occupytillicome",
    "via": "release",
    "live": false,
-   "shift": 0.0,
-   "aligned": false,
+   "shift": -0.008,
+   "aligned": true,
    "excluded": false,
    "duration": 389.712,
-   "start": 11084850
+   "start": 11242566
   },
   {
    "ref_id": "cometomemydear::when-will-it-be-possible-to-see-you",
@@ -5198,18 +5290,62 @@
    "aligned": true,
    "excluded": false,
    "duration": 294.818,
-   "start": 11108283
+   "start": 11266006
   },
   {
    "ref_id": "jesusisthebest::when-will-it-be-possible-to-see-you",
    "song_id": "jesusisthebest",
    "via": "release",
    "live": false,
-   "shift": 0.0,
-   "aligned": false,
+   "shift": -0.008,
+   "aligned": true,
    "excluded": false,
    "duration": 679.915,
-   "start": 11126407
+   "start": 11284187
+  },
+  {
+   "ref_id": "doingbusinessingreatwaters::doing-business-in-great-waters",
+   "song_id": "doingbusinessingreatwaters",
+   "via": "release",
+   "live": false,
+   "shift": 0.0,
+   "aligned": true,
+   "excluded": false,
+   "duration": 337.849,
+   "start": 11326535
+  },
+  {
+   "ref_id": "awakeosleeper::doing-business-in-great-waters",
+   "song_id": "awakeosleeper",
+   "via": "release",
+   "live": false,
+   "shift": 0.0,
+   "aligned": true,
+   "excluded": false,
+   "duration": 373.333,
+   "start": 11346776
+  },
+  {
+   "ref_id": "beholdmyservant::doing-business-in-great-waters",
+   "song_id": "beholdmyservant",
+   "via": "release",
+   "live": false,
+   "shift": 0.0,
+   "aligned": true,
+   "excluded": false,
+   "duration": 347.273,
+   "start": 11369919
+  },
+  {
+   "ref_id": "hewantedme::doing-business-in-great-waters",
+   "song_id": "hewantedme",
+   "via": "release",
+   "live": false,
+   "shift": 0.0,
+   "aligned": true,
+   "excluded": false,
+   "duration": 351.113,
+   "start": 11390970
   },
   {
    "ref_id": "buildyourhouseontherock::aida-live-in-gaborone",
@@ -5220,7 +5356,7 @@
    "aligned": false,
    "excluded": false,
    "duration": 344.686,
-   "start": 11168726
+   "start": 11412742
   },
   {
    "ref_id": "hieverybody::aida-live-in-gaborone",
@@ -5231,7 +5367,7 @@
    "aligned": false,
    "excluded": false,
    "duration": 427.677,
-   "start": 11190162
+   "start": 11434178
   },
   {
    "ref_id": "thelovelyvoiceofgod::aida-live-in-gaborone",
@@ -5242,7 +5378,7 @@
    "aligned": false,
    "excluded": false,
    "duration": 239.987,
-   "start": 11216657
+   "start": 11460673
   },
   {
    "ref_id": "myfirstlove::aida-live-in-gaborone",
@@ -5253,7 +5389,7 @@
    "aligned": false,
    "excluded": false,
    "duration": 353.176,
-   "start": 11231439
+   "start": 11475484
   },
   {
    "ref_id": "peterlover::aida-live-in-gaborone",
@@ -5264,7 +5400,7 @@
    "aligned": false,
    "excluded": false,
    "duration": 239.125,
-   "start": 11253286
+   "start": 11497331
   },
   {
    "ref_id": "blessedjesus::aida-live-at-adelaide-chapel",
@@ -5275,7 +5411,7 @@
    "aligned": false,
    "excluded": false,
    "duration": 238.055,
-   "start": 11268004
+   "start": 11512049
   },
   {
    "ref_id": "iwillblessthelord::aida-live-at-adelaide-chapel",
@@ -5286,18 +5422,95 @@
    "aligned": false,
    "excluded": false,
    "duration": 352.053,
-   "start": 11282700
+   "start": 11526745
   },
   {
-   "ref_id": "gotochurch::living-waters",
-   "song_id": "gotochurch",
+   "ref_id": "noordinarywater::living-waters",
+   "song_id": "noordinarywater",
    "via": "release",
    "live": false,
    "shift": 0.0,
    "aligned": false,
-   "excluded": true,
+   "excluded": false,
+   "duration": 431.5,
+   "start": 11548444
+  },
+  {
+   "ref_id": "firstlovelovefirst::living-waters",
+   "song_id": "firstlovelovefirst",
+   "via": "release",
+   "live": false,
+   "shift": 0.0,
+   "aligned": true,
+   "excluded": false,
+   "duration": 254.5,
+   "start": 11574995
+  },
+  {
+   "ref_id": "jesusyouresocool::living-waters",
+   "song_id": "jesusyouresocool",
+   "via": "release",
+   "live": false,
+   "shift": 0.0,
+   "aligned": true,
+   "excluded": false,
+   "duration": 330.0,
+   "start": 11590434
+  },
+  {
+   "ref_id": "livingwaters::living-waters",
+   "song_id": "livingwaters",
+   "via": "release",
+   "live": false,
+   "shift": 0.0,
+   "aligned": true,
+   "excluded": false,
+   "duration": 297.025,
+   "start": 11610332
+  },
+  {
+   "ref_id": "roseofsharon::living-waters",
+   "song_id": "roseofsharon",
+   "via": "release",
+   "live": false,
+   "shift": -0.028,
+   "aligned": true,
+   "excluded": false,
+   "duration": 351.0,
+   "start": 11628295
+  },
+  {
+   "ref_id": "jesusisthedoor::living-waters",
+   "song_id": "jesusisthedoor",
+   "via": "release",
+   "live": false,
+   "shift": 0.0,
+   "aligned": true,
+   "excluded": false,
+   "duration": 302.75,
+   "start": 11649819
+  },
+  {
+   "ref_id": "giveyourlifetothelord::living-waters",
+   "song_id": "giveyourlifetothelord",
+   "via": "release",
+   "live": false,
+   "shift": 0.0,
+   "aligned": true,
+   "excluded": false,
+   "duration": 318.0,
+   "start": 11668348
+  },
+  {
+   "ref_id": "gochurch::living-waters",
+   "song_id": "gochurch",
+   "via": "release",
+   "live": false,
+   "shift": 0.0,
+   "aligned": true,
+   "excluded": false,
    "duration": 371.218,
-   "start": 11304399
+   "start": 11687498
   },
   {
    "ref_id": "alliwantisachristiangirl::aida-live-in-orlando",
@@ -5308,7 +5521,18 @@
    "aligned": false,
    "excluded": false,
    "duration": 356.807,
-   "start": 11327210
+   "start": 11710309
+  },
+  {
+   "ref_id": "gosomewherepreachsomewhere::aida-live-in-orlando",
+   "song_id": "gosomewherepreachsomewhere",
+   "via": "release",
+   "live": true,
+   "shift": 0.0,
+   "aligned": false,
+   "excluded": true,
+   "duration": 330.527,
+   "start": 11732360
   },
   {
    "ref_id": "ihavefoundanewlife::aida-live-in-orlando",
@@ -5319,7 +5543,7 @@
    "aligned": false,
    "excluded": false,
    "duration": 297.404,
-   "start": 11349261
+   "start": 11752476
   },
   {
    "ref_id": "ineedmyquiettime::aida-live-in-orlando",
@@ -5330,7 +5554,7 @@
    "aligned": false,
    "excluded": false,
    "duration": 342.648,
-   "start": 11367516
+   "start": 11770731
   },
   {
    "ref_id": "peterlover::aida-live-in-orlando",
@@ -5341,7 +5565,7 @@
    "aligned": false,
    "excluded": false,
    "duration": 235.807,
-   "start": 11388549
+   "start": 11791764
   },
   {
    "ref_id": "proposal::aida-live-in-orlando",
@@ -5352,7 +5576,7 @@
    "aligned": false,
    "excluded": false,
    "duration": 292.049,
-   "start": 11403066
+   "start": 11806281
   },
   {
    "ref_id": "werenotcloseanymore::aida-live-in-orlando",
@@ -5363,7 +5587,7 @@
    "aligned": false,
    "excluded": false,
    "duration": 428.016,
-   "start": 11420966
+   "start": 11824181
   },
   {
    "ref_id": "takemylife::take-my-life-single",
@@ -5374,7 +5598,7 @@
    "aligned": true,
    "excluded": false,
    "duration": 374.073,
-   "start": 11447454
+   "start": 11850669
   },
   {
    "ref_id": "iacknowledgedmysin::a-lovely-diamond-concert",
@@ -5385,7 +5609,7 @@
    "aligned": false,
    "excluded": false,
    "duration": 285.18,
-   "start": 11470454
+   "start": 11873669
   },
   {
    "ref_id": "themoreilovethelessibeloved::a-lovely-diamond-concert",
@@ -5396,7 +5620,7 @@
    "aligned": false,
    "excluded": false,
    "duration": 392.334,
-   "start": 11488015
+   "start": 11891261
   },
   {
    "ref_id": "goingdeeperdoingmore::a-lovely-diamond-concert",
@@ -5407,7 +5631,7 @@
    "aligned": true,
    "excluded": false,
    "duration": 374.78,
-   "start": 11512142
+   "start": 11915388
   },
   {
    "ref_id": "useitorloseit::a-lovely-diamond-concert",
@@ -5415,10 +5639,10 @@
    "via": "release",
    "live": true,
    "shift": 0.0,
-   "aligned": false,
+   "aligned": true,
    "excluded": false,
    "duration": 303.074,
-   "start": 11535483
+   "start": 11938729
   },
   {
    "ref_id": "keepondreamin::a-lovely-diamond-concert",
@@ -5429,7 +5653,7 @@
    "aligned": false,
    "excluded": false,
    "duration": 378.672,
-   "start": 11554138
+   "start": 11957384
   },
   {
    "ref_id": "hemustincrease::a-lovely-diamond-concert",
@@ -5440,7 +5664,7 @@
    "aligned": true,
    "excluded": false,
    "duration": 304.772,
-   "start": 11577251
+   "start": 11980497
   },
   {
    "ref_id": "turnourcaptivity::a-lovely-diamond-concert",
@@ -5448,10 +5672,10 @@
    "via": "release",
    "live": true,
    "shift": 0.0,
-   "aligned": false,
+   "aligned": true,
    "excluded": false,
    "duration": 284.004,
-   "start": 11596185
+   "start": 11999431
   },
   {
    "ref_id": "singpraises::a-lovely-diamond-concert",
@@ -5459,10 +5683,10 @@
    "via": "release",
    "live": true,
    "shift": 0.0,
-   "aligned": false,
+   "aligned": true,
    "excluded": false,
    "duration": 235.73,
-   "start": 11613724
+   "start": 12016970
   },
   {
    "ref_id": "alovelydiamond::a-lovely-diamond-concert",
@@ -5473,7 +5697,7 @@
    "aligned": true,
    "excluded": false,
    "duration": 344.138,
-   "start": 11628062
+   "start": 12031308
   },
   {
    "ref_id": "iwillpraisetheewithmywholeheart::a-lovely-diamond-concert",
@@ -5481,10 +5705,10 @@
    "via": "release",
    "live": true,
    "shift": 0.0,
-   "aligned": false,
+   "aligned": true,
    "excluded": false,
    "duration": 225.647,
-   "start": 11649261
+   "start": 12052507
   },
   {
    "ref_id": "blindbartimaeus::a-lovely-diamond-concert",
@@ -5495,7 +5719,7 @@
    "aligned": true,
    "excluded": false,
    "duration": 339.175,
-   "start": 11663073
+   "start": 12066418
   },
   {
    "ref_id": "letuscomeboldly::a-lovely-diamond-concert",
@@ -5503,10 +5727,10 @@
    "via": "release",
    "live": true,
    "shift": 0.0,
-   "aligned": false,
+   "aligned": true,
    "excluded": false,
    "duration": 308.194,
-   "start": 11683876
+   "start": 12087221
   },
   {
    "ref_id": "yeshallreceivepower::a-lovely-diamond-concert",
@@ -5514,10 +5738,10 @@
    "via": "release",
    "live": true,
    "shift": 0.0,
-   "aligned": false,
+   "aligned": true,
    "excluded": false,
    "duration": 308.638,
-   "start": 11702741
+   "start": 12106119
   },
   {
    "ref_id": "lorditsnotforwhatyougiveme::a-lovely-diamond-concert",
@@ -5528,7 +5752,7 @@
    "aligned": false,
    "excluded": false,
    "duration": 491.521,
-   "start": 11721555
+   "start": 12124933
   },
   {
    "ref_id": "theanointing::aida-live-in-kingston",
@@ -5539,7 +5763,7 @@
    "aligned": false,
    "excluded": false,
    "duration": 334.752,
-   "start": 11751339
+   "start": 12154740
   },
   {
    "ref_id": "honeyhoney::aida-live-in-kingston",
@@ -5550,7 +5774,7 @@
    "aligned": false,
    "excluded": false,
    "duration": 304.128,
-   "start": 11771882
+   "start": 12175283
   },
   {
    "ref_id": "keepondotheworkofgod::aida-live-in-kingston",
@@ -5561,7 +5785,7 @@
    "aligned": false,
    "excluded": false,
    "duration": 432.912,
-   "start": 11790703
+   "start": 12194110
   },
   {
    "ref_id": "hijames::aida-live-in-kingston",
@@ -5572,7 +5796,7 @@
    "aligned": false,
    "excluded": false,
    "duration": 502.2,
-   "start": 11817551
+   "start": 12220958
   },
   {
    "ref_id": "bestronginthelord::aida-live-at-niagara-falls",
@@ -5583,7 +5807,7 @@
    "aligned": false,
    "excluded": false,
    "duration": 477.205,
-   "start": 11848795
+   "start": 12252202
   },
   {
    "ref_id": "endsoftheworld::aida-live-at-niagara-falls",
@@ -5594,7 +5818,7 @@
    "aligned": false,
    "excluded": false,
    "duration": 378.096,
-   "start": 11878291
+   "start": 12281698
   },
   {
    "ref_id": "idontwannafailinmymission::aida-live-at-niagara-falls",
@@ -5605,7 +5829,7 @@
    "aligned": false,
    "excluded": false,
    "duration": 284.056,
-   "start": 11901811
+   "start": 12305218
   },
   {
    "ref_id": "imtheoneyourelookingfor::aida-live-at-niagara-falls",
@@ -5616,7 +5840,7 @@
    "aligned": false,
    "excluded": false,
    "duration": 328.02,
-   "start": 11919393
+   "start": 12322813
   },
   {
    "ref_id": "maximumimpact::aida-live-at-niagara-falls",
@@ -5627,7 +5851,7 @@
    "aligned": false,
    "excluded": false,
    "duration": 302.002,
-   "start": 11939391
+   "start": 12342811
   },
   {
    "ref_id": "asoulisasoul::aida-live-at-niagara-falls",
@@ -5638,7 +5862,7 @@
    "aligned": false,
    "excluded": false,
    "duration": 393.796,
-   "start": 11957803
+   "start": 12361223
   },
   {
    "ref_id": "youmustlovethelord::aida-live-at-niagara-falls",
@@ -5649,7 +5873,7 @@
    "aligned": false,
    "excluded": false,
    "duration": 297.482,
-   "start": 11981943
+   "start": 12385363
   },
   {
    "ref_id": "speakintongues::aida-live-in-leysin",
@@ -5660,7 +5884,7 @@
    "aligned": false,
    "excluded": false,
    "duration": 284.579,
-   "start": 12000439
+   "start": 12403859
   },
   {
    "ref_id": "peterlover::aida-live-in-leysin",
@@ -5671,7 +5895,7 @@
    "aligned": false,
    "excluded": false,
    "duration": 233.875,
-   "start": 12017886
+   "start": 12421306
   },
   {
    "ref_id": "nowthatwevefoundchrist::aida-live-in-leysin",
@@ -5682,7 +5906,7 @@
    "aligned": false,
    "excluded": false,
    "duration": 301.141,
-   "start": 12032390
+   "start": 12435810
   },
   {
    "ref_id": "kobbygee::aida-live-in-leysin",
@@ -5693,7 +5917,18 @@
    "aligned": false,
    "excluded": false,
    "duration": 299.782,
-   "start": 12051077
+   "start": 12454497
+  },
+  {
+   "ref_id": "gosomewherepreachsomewhere::aida-live-in-leysin",
+   "song_id": "gosomewherepreachsomewhere",
+   "via": "release",
+   "live": true,
+   "shift": 0.0,
+   "aligned": false,
+   "excluded": true,
+   "duration": 478.695,
+   "start": 12473102
   },
   {
    "ref_id": "letmelove::call-me-if-you-love-me-concert",
@@ -5701,10 +5936,10 @@
    "via": "release",
    "live": true,
    "shift": 0.0,
-   "aligned": false,
+   "aligned": true,
    "excluded": false,
    "duration": 253.206,
-   "start": 12069682
+   "start": 12502910
   },
   {
    "ref_id": "workon::call-me-if-you-love-me-concert",
@@ -5712,10 +5947,10 @@
    "via": "release",
    "live": true,
    "shift": 0.0,
-   "aligned": false,
+   "aligned": true,
    "excluded": false,
    "duration": 404.533,
-   "start": 12085330
+   "start": 12518558
   },
   {
    "ref_id": "newjerusalem::call-me-if-you-love-me-concert",
@@ -5723,10 +5958,10 @@
    "via": "release",
    "live": true,
    "shift": 0.0,
-   "aligned": false,
+   "aligned": true,
    "excluded": false,
    "duration": 367.544,
-   "start": 12110329
+   "start": 12543557
   },
   {
    "ref_id": "ifellinlovewithgod::call-me-if-you-love-me-concert",
@@ -5737,7 +5972,7 @@
    "aligned": true,
    "excluded": false,
    "duration": 80.615,
-   "start": 12133252
+   "start": 12566484
   },
   {
    "ref_id": "jesusipromise::call-me-if-you-love-me-concert",
@@ -5745,10 +5980,10 @@
    "via": "release",
    "live": true,
    "shift": 0.0,
-   "aligned": false,
+   "aligned": true,
    "excluded": false,
    "duration": 477.937,
-   "start": 12138280
+   "start": 12571512
   },
   {
    "ref_id": "iandthechildren::call-me-if-you-love-me-concert",
@@ -5759,7 +5994,7 @@
    "aligned": true,
    "excluded": false,
    "duration": 66.483,
-   "start": 12168038
+   "start": 12601270
   },
   {
    "ref_id": "lamentations::call-me-if-you-love-me-concert",
@@ -5767,10 +6002,10 @@
    "via": "release",
    "live": true,
    "shift": 0.0,
-   "aligned": false,
+   "aligned": true,
    "excluded": false,
    "duration": 392.648,
-   "start": 12172078
+   "start": 12605310
   },
   {
    "ref_id": "everybodyneedsalittlehelp::call-me-if-you-love-me-concert",
@@ -5781,7 +6016,7 @@
    "aligned": true,
    "excluded": false,
    "duration": 58.489,
-   "start": 12196376
+   "start": 12629608
   },
   {
    "ref_id": "imresponding::call-me-if-you-love-me-concert",
@@ -5792,7 +6027,7 @@
    "aligned": false,
    "excluded": false,
    "duration": 252.919,
-   "start": 12199877
+   "start": 12633133
   },
   {
    "ref_id": "anointme::call-me-if-you-love-me-concert",
@@ -5803,7 +6038,7 @@
    "aligned": false,
    "excluded": false,
    "duration": 391.289,
-   "start": 12215417
+   "start": 12648676
   },
   {
    "ref_id": "callmeifyouloveme::call-me-if-you-love-me-concert",
@@ -5814,18 +6049,18 @@
    "aligned": true,
    "excluded": false,
    "duration": 84.533,
-   "start": 12239720
+   "start": 12672979
   },
   {
    "ref_id": "ireallyloveyoujesus::rouge-collection",
    "song_id": "ireallyloveyoujesus",
    "via": "release",
    "live": false,
-   "shift": -0.032,
+   "shift": 0.0,
    "aligned": true,
    "excluded": false,
    "duration": 410.097,
-   "start": 12244734
+   "start": 12677993
   },
   {
    "ref_id": "jesusiloveyou::rouge-collection",
@@ -5836,7 +6071,7 @@
    "aligned": true,
    "excluded": false,
    "duration": 262.061,
-   "start": 12269992
+   "start": 12703251
   },
   {
    "ref_id": "whenwillitbepossibletoseeyou::rouge-collection",
@@ -5844,10 +6079,10 @@
    "via": "release",
    "live": false,
    "shift": 0.0,
-   "aligned": false,
+   "aligned": true,
    "excluded": false,
    "duration": 420.075,
-   "start": 12286188
+   "start": 12719447
   },
   {
    "ref_id": "deeper::rouge-collection",
@@ -5858,73 +6093,73 @@
    "aligned": true,
    "excluded": false,
    "duration": 348.344,
-   "start": 12312166
+   "start": 12745425
   },
   {
-   "ref_id": "jesusyourebeautiful::rouge-collection",
-   "song_id": "jesusyourebeautiful",
+   "ref_id": "jesusyouresobeautiful::rouge-collection",
+   "song_id": "jesusyouresobeautiful",
    "via": "release",
    "live": false,
    "shift": 0.0,
    "aligned": true,
-   "excluded": false,
+   "excluded": true,
    "duration": 485.93,
-   "start": 12333794
+   "start": 12767079
   },
   {
    "ref_id": "thanksforreaching::rouge-collection",
    "song_id": "thanksforreaching",
    "via": "release",
    "live": false,
-   "shift": 1.404,
+   "shift": 0.0,
    "aligned": true,
    "excluded": false,
    "duration": 439.066,
-   "start": 12363834
+   "start": 12797119
   },
   {
-   "ref_id": "icantgetenough::rouge-collection",
-   "song_id": "icantgetenough",
+   "ref_id": "icantgetenoughofyou::rouge-collection",
+   "song_id": "icantgetenoughofyou",
    "via": "release",
    "live": false,
    "shift": 0.0,
    "aligned": true,
-   "excluded": false,
+   "excluded": true,
    "duration": 254.016,
-   "start": 12391012
+   "start": 12824297
   },
   {
    "ref_id": "useitorloseit::rouge-collection",
    "song_id": "useitorloseit",
    "via": "release",
    "live": false,
-   "shift": -0.128,
+   "shift": -0.008,
    "aligned": true,
    "excluded": false,
    "duration": 303.074,
-   "start": 12406361
+   "start": 12839646
   },
   {
    "ref_id": "turnourcaptivity::rouge-collection",
    "song_id": "turnourcaptivity",
    "via": "release",
    "live": false,
-   "shift": 0.0,
-   "aligned": false,
+   "shift": -0.004,
+   "aligned": true,
    "excluded": false,
    "duration": 284.004,
-   "start": 12425016
+   "start": 12858301
   },
   {
    "ref_id": "singpraises::rouge-collection",
    "song_id": "singpraises",
    "via": "release",
    "live": false,
-   "shift": 0.0,
-   "aligned": false,
+   "shift": -0.008,
+   "aligned": true,
    "excluded": false,
    "duration": 235.73,
-   "start": 12442555
+   "start": 12875840
   },
   {
    "ref_id": "walkingwithjesus::rouge-collection",
@@ -5935,18 +6170,18 @@
    "aligned": true,
    "excluded": false,
    "duration": 326.452,
-   "start": 12456893
+   "start": 12890178
   },
   {
    "ref_id": "thegracechant::rouge-collection",
    "song_id": "thegracechant",
    "via": "release",
    "live": false,
-   "shift": 0.0,
-   "aligned": false,
+   "shift": -0.008,
+   "aligned": true,
    "excluded": false,
    "duration": 280.189,
-   "start": 12477121
+   "start": 12910406
   },
   {
    "ref_id": "itsworshiptime::rouge-collection",
@@ -5957,7 +6192,7 @@
    "aligned": true,
    "excluded": false,
    "duration": 323.336,
-   "start": 12494426
+   "start": 12927711
   },
   {
    "ref_id": "iknowireallylikeyou::rouge-collection",
@@ -5968,7 +6203,7 @@
    "aligned": true,
    "excluded": false,
    "duration": 335.36,
-   "start": 12514445
+   "start": 12947755
   },
   {
    "ref_id": "iwillbecalling::rouge-collection",
@@ -5976,10 +6211,10 @@
    "via": "release",
    "live": false,
    "shift": 0.0,
-   "aligned": false,
+   "aligned": true,
    "excluded": false,
    "duration": 616.909,
-   "start": 12534848
+   "start": 12968158
   },
   {
    "ref_id": "istilllikeyou::rouge-collection",
@@ -5987,10 +6222,10 @@
    "via": "release",
    "live": false,
    "shift": 0.0,
-   "aligned": false,
+   "aligned": true,
    "excluded": false,
    "duration": 493.872,
-   "start": 12572883
+   "start": 13006236
   },
   {
    "ref_id": "ilikethewayyoulikeme::rouge-collection",
@@ -6001,7 +6236,7 @@
    "aligned": true,
    "excluded": false,
    "duration": 352.575,
-   "start": 12603475
+   "start": 13036828
   },
   {
    "ref_id": "honeymoon::rouge-collection",
@@ -6012,7 +6247,7 @@
    "aligned": true,
    "excluded": false,
    "duration": 512.261,
-   "start": 12625325
+   "start": 13058678
   },
   {
    "ref_id": "callmeifyouloveme::rouge-collection",
@@ -6023,7 +6258,7 @@
    "aligned": true,
    "excluded": false,
    "duration": 482.483,
-   "start": 12656802
+   "start": 13090155
   },
   {
    "ref_id": "blessedjesus::rouge-collection",
@@ -6034,29 +6269,29 @@
    "aligned": true,
    "excluded": false,
    "duration": 331.077,
-   "start": 12686909
+   "start": 13120262
   },
   {
    "ref_id": "iseeitinyoureyes::rouge-collection",
    "song_id": "iseeitinyoureyes",
    "via": "release",
    "live": false,
-   "shift": -1.756,
+   "shift": -0.008,
    "aligned": true,
    "excluded": false,
    "duration": 398.969,
-   "start": 12706658
+   "start": 13140011
   },
   {
    "ref_id": "iwish::rouge-collection",
    "song_id": "iwish",
    "via": "release",
    "live": false,
-   "shift": -0.048,
+   "shift": -0.008,
    "aligned": true,
    "excluded": false,
    "duration": 326.871,
-   "start": 12731368
+   "start": 13164721
   },
   {
    "ref_id": "themoreilovethelessibeloved::rouge-collection",
@@ -6067,7 +6302,7 @@
    "aligned": true,
    "excluded": false,
    "duration": 392.334,
-   "start": 12751276
+   "start": 13184681
   },
   {
    "ref_id": "keepondreamin::rouge-collection",
@@ -6078,7 +6313,7 @@
    "aligned": true,
    "excluded": false,
    "duration": 378.672,
-   "start": 12775403
+   "start": 13208808
   },
   {
    "ref_id": "imimpressed::rouge-collection",
@@ -6089,7 +6324,7 @@
    "aligned": true,
    "excluded": false,
    "duration": 240.065,
-   "start": 12798516
+   "start": 13231921
   },
   {
    "ref_id": "livejoyfully::rouge-collection",
@@ -6100,7 +6335,7 @@
    "aligned": true,
    "excluded": false,
    "duration": 422.635,
-   "start": 12813174
+   "start": 13246579
   },
   {
    "ref_id": "blockedmyview::rouge-collection",
@@ -6111,7 +6346,7 @@
    "aligned": true,
    "excluded": false,
    "duration": 343.641,
-   "start": 12839334
+   "start": 13272763
   },
   {
    "ref_id": "sweetmemories::rouge-collection",
@@ -6119,10 +6354,10 @@
    "via": "release",
    "live": false,
    "shift": 0.0,
-   "aligned": false,
+   "aligned": true,
    "excluded": false,
    "duration": 407.459,
-   "start": 12860536
+   "start": 13293965
   },
   {
    "ref_id": "cometomemydear::rouge-collection",
@@ -6133,40 +6368,40 @@
    "aligned": true,
    "excluded": false,
    "duration": 294.818,
-   "start": 12885273
+   "start": 13318734
   },
   {
    "ref_id": "shiellastrangewoman::sunglow-collection",
    "song_id": "shiellastrangewoman",
    "via": "release",
    "live": false,
-   "shift": 0.0,
-   "aligned": false,
+   "shift": -0.008,
+   "aligned": true,
    "excluded": false,
    "duration": 356.101,
-   "start": 12903397
+   "start": 13336915
   },
   {
    "ref_id": "keeppreaching::sunglow-collection",
    "song_id": "keeppreaching",
    "via": "release",
    "live": false,
-   "shift": 0.448,
+   "shift": 0.0,
    "aligned": true,
    "excluded": false,
    "duration": 238.393,
-   "start": 12925133
+   "start": 13358653
   },
   {
    "ref_id": "wearethechurch::sunglow-collection",
    "song_id": "wearethechurch",
    "via": "release",
    "live": false,
-   "shift": 0.0,
-   "aligned": false,
+   "shift": -0.008,
+   "aligned": true,
    "excluded": false,
    "duration": 326.165,
-   "start": 12939738
+   "start": 13373258
   },
   {
    "ref_id": "altarcall::sunglow-collection",
@@ -6177,7 +6412,7 @@
    "aligned": true,
    "excluded": false,
    "duration": 358.632,
-   "start": 12959823
+   "start": 13393372
   },
   {
    "ref_id": "forsaketheworld::sunglow-collection",
@@ -6188,7 +6423,7 @@
    "aligned": true,
    "excluded": false,
    "duration": 378.671,
-   "start": 12982057
+   "start": 13415610
   },
   {
    "ref_id": "strongchristian::sunglow-collection",
@@ -6199,7 +6434,7 @@
    "aligned": true,
    "excluded": false,
    "duration": 313.313,
-   "start": 13005412
+   "start": 13438965
   },
   {
    "ref_id": "carryme::sunglow-collection",
@@ -6210,7 +6445,7 @@
    "aligned": true,
    "excluded": false,
    "duration": 312.059,
-   "start": 13024985
+   "start": 13458539
   },
   {
    "ref_id": "hardfollower::sunglow-collection",
@@ -6221,7 +6456,7 @@
    "aligned": true,
    "excluded": false,
    "duration": 420.78,
-   "start": 13043732
+   "start": 13477286
   },
   {
    "ref_id": "mustardseed::sunglow-collection",
@@ -6229,10 +6464,10 @@
    "via": "release",
    "live": false,
    "shift": 0.0,
-   "aligned": false,
+   "aligned": true,
    "excluded": false,
    "duration": 178.834,
-   "start": 13069747
+   "start": 13503301
   },
   {
    "ref_id": "fulfillyourministry::sunglow-collection",
@@ -6243,7 +6478,7 @@
    "aligned": true,
    "excluded": false,
    "duration": 276.402,
-   "start": 13080775
+   "start": 13514329
   },
   {
    "ref_id": "asoulisasoul::sunglow-collection",
@@ -6254,7 +6489,7 @@
    "aligned": true,
    "excluded": false,
    "duration": 407.249,
-   "start": 13097549
+   "start": 13531114
   },
   {
    "ref_id": "endsoftheworld::sunglow-collection",
@@ -6265,7 +6500,7 @@
    "aligned": true,
    "excluded": false,
    "duration": 378.07,
-   "start": 13122766
+   "start": 13556331
   },
   {
    "ref_id": "candleinthedark::sunglow-collection",
@@ -6276,18 +6511,18 @@
    "aligned": true,
    "excluded": false,
    "duration": 553.776,
-   "start": 13146251
+   "start": 13579816
   },
   {
    "ref_id": "whatisthebestwaytopray::sunglow-collection",
    "song_id": "whatisthebestwaytopray",
    "via": "release",
    "live": false,
-   "shift": 0.0,
-   "aligned": false,
+   "shift": -0.012,
+   "aligned": true,
    "excluded": false,
    "duration": 319.269,
-   "start": 13180342
+   "start": 13613907
   },
   {
    "ref_id": "choosing::sunglow-collection",
@@ -6298,18 +6533,18 @@
    "aligned": true,
    "excluded": false,
    "duration": 316.186,
-   "start": 13200133
+   "start": 13633698
   },
   {
    "ref_id": "missionarysong::sunglow-collection",
    "song_id": "missionarysong",
    "via": "release",
    "live": false,
-   "shift": -1.416,
+   "shift": -0.008,
    "aligned": true,
    "excluded": false,
    "duration": 381.989,
-   "start": 13219590
+   "start": 13653155
   },
   {
    "ref_id": "benice::sunglow-collection",
@@ -6320,29 +6555,29 @@
    "aligned": true,
    "excluded": false,
    "duration": 328.542,
-   "start": 13243094
+   "start": 13676659
   },
   {
    "ref_id": "twentyfivetofifty::sunglow-collection",
    "song_id": "twentyfivetofifty",
    "via": "release",
    "live": false,
-   "shift": -0.756,
+   "shift": -0.008,
    "aligned": true,
    "excluded": false,
    "duration": 360.072,
-   "start": 13263210
+   "start": 13696778
   },
   {
    "ref_id": "promiseme::sunglow-collection",
    "song_id": "promiseme",
    "via": "release",
    "live": false,
-   "shift": 0.412,
+   "shift": 0.064,
    "aligned": true,
    "excluded": false,
    "duration": 356.304,
-   "start": 13285288
+   "start": 13718871
   },
   {
    "ref_id": "walkbyfaith::sunglow-collection",
@@ -6350,21 +6585,21 @@
    "via": "release",
    "live": false,
    "shift": 0.0,
-   "aligned": false,
+   "aligned": true,
    "excluded": false,
    "duration": 388.859,
-   "start": 13307455
+   "start": 13741038
   },
   {
    "ref_id": "ohmyshepherd::sunglow-collection",
    "song_id": "ohmyshepherd",
    "via": "release",
    "live": false,
-   "shift": 0.0,
-   "aligned": false,
+   "shift": 0.004,
+   "aligned": true,
    "excluded": false,
    "duration": 368.17,
-   "start": 13331469
+   "start": 13765053
   },
   {
    "ref_id": "lastdays::sunglow-collection",
@@ -6372,10 +6607,10 @@
    "via": "release",
    "live": false,
    "shift": 0.0,
-   "aligned": false,
+   "aligned": true,
    "excluded": false,
    "duration": 228.101,
-   "start": 13354263
+   "start": 13787847
   },
   {
    "ref_id": "sweetmamapoorlover::sunglow-collection",
@@ -6383,10 +6618,10 @@
    "via": "release",
    "live": false,
    "shift": 0.0,
-   "aligned": false,
+   "aligned": true,
    "excluded": false,
    "duration": 372.409,
-   "start": 13368264
+   "start": 13801848
   },
   {
    "ref_id": "thesower::sunglow-collection",
@@ -6394,10 +6629,10 @@
    "via": "release",
    "live": false,
    "shift": 0.0,
-   "aligned": false,
+   "aligned": true,
    "excluded": false,
    "duration": 563.521,
-   "start": 13391437
+   "start": 13825044
   },
   {
    "ref_id": "7greatprinciples::sunglow-collection",
@@ -6408,7 +6643,7 @@
    "aligned": true,
    "excluded": false,
    "duration": 283.089,
-   "start": 13426502
+   "start": 13860109
   },
   {
    "ref_id": "hieverybody::crimson-collection",
@@ -6419,7 +6654,7 @@
    "aligned": false,
    "excluded": false,
    "duration": 403.853,
-   "start": 13444166
+   "start": 13877773
   },
   {
    "ref_id": "myfirstlove::crimson-collection",
@@ -6427,10 +6662,10 @@
    "via": "release",
    "live": false,
    "shift": 0.0,
-   "aligned": false,
+   "aligned": true,
    "excluded": false,
    "duration": 343.04,
-   "start": 13469154
+   "start": 13902761
   },
   {
    "ref_id": "godsloveisgreater::crimson-collection",
@@ -6441,7 +6676,7 @@
    "aligned": true,
    "excluded": false,
    "duration": 230.661,
-   "start": 13490465
+   "start": 13924072
   },
   {
    "ref_id": "theresnooneilovelikeyoujesus::crimson-collection",
@@ -6449,10 +6684,10 @@
    "via": "release",
    "live": false,
    "shift": 0.0,
-   "aligned": false,
+   "aligned": true,
    "excluded": false,
    "duration": 270.916,
-   "start": 13504759
+   "start": 13938366
   },
   {
    "ref_id": "jesusreallyneedstoknow::crimson-collection",
@@ -6460,10 +6695,10 @@
    "via": "release",
    "live": false,
    "shift": 0.0,
-   "aligned": false,
+   "aligned": true,
    "excluded": false,
    "duration": 291.971,
-   "start": 13520797
+   "start": 13954404
   },
   {
    "ref_id": "isoughtthelord::crimson-collection",
@@ -6471,10 +6706,10 @@
    "via": "release",
    "live": false,
    "shift": 0.0,
-   "aligned": false,
+   "aligned": true,
    "excluded": false,
    "duration": 388.801,
-   "start": 13538753
+   "start": 13972360
   },
   {
    "ref_id": "youmustlovethelord::crimson-collection",
@@ -6482,10 +6717,10 @@
    "via": "release",
    "live": false,
    "shift": 0.0,
-   "aligned": false,
+   "aligned": true,
    "excluded": false,
    "duration": 309.943,
-   "start": 13562853
+   "start": 13996460
   },
   {
    "ref_id": "iwannabeavirtuouswoman::crimson-collection",
@@ -6493,10 +6728,10 @@
    "via": "release",
    "live": false,
    "shift": 0.0,
-   "aligned": false,
+   "aligned": true,
    "excluded": false,
    "duration": 397.897,
-   "start": 13582106
+   "start": 14015723
   },
   {
    "ref_id": "peterlover::crimson-collection",
@@ -6504,10 +6739,10 @@
    "via": "release",
    "live": false,
    "shift": 0.0,
-   "aligned": false,
+   "aligned": true,
    "excluded": false,
    "duration": 234.266,
-   "start": 13606664
+   "start": 14040281
   },
   {
    "ref_id": "takemylife::crimson-collection",
@@ -6518,7 +6753,7 @@
    "aligned": true,
    "excluded": false,
    "duration": 373.995,
-   "start": 13621172
+   "start": 14054789
   },
   {
    "ref_id": "kobbygee::crimson-collection",
@@ -6526,10 +6761,10 @@
    "via": "release",
    "live": false,
    "shift": 0.0,
-   "aligned": false,
+   "aligned": true,
    "excluded": false,
    "duration": 291.631,
-   "start": 13644173
+   "start": 14077790
   },
   {
    "ref_id": "shiellastrangewoman::crimson-collection",
@@ -6537,10 +6772,10 @@
    "via": "release",
    "live": false,
    "shift": 0.0,
-   "aligned": false,
+   "aligned": true,
    "excluded": false,
    "duration": 356.728,
-   "start": 13662213
+   "start": 14095830
   },
   {
    "ref_id": "hijames::crimson-collection",
@@ -6551,7 +6786,7 @@
    "aligned": true,
    "excluded": false,
    "duration": 503.208,
-   "start": 13683949
+   "start": 14117568
   },
   {
    "ref_id": "loveisasstrongasdeath::crimson-collection",
@@ -6559,10 +6794,10 @@
    "via": "release",
    "live": false,
    "shift": 0.0,
-   "aligned": false,
+   "aligned": true,
    "excluded": false,
    "duration": 300.617,
-   "start": 13715193
+   "start": 14148812
   },
   {
    "ref_id": "favouritechild::crimson-collection",
@@ -6573,7 +6808,18 @@
    "aligned": true,
    "excluded": false,
    "duration": 298.789,
-   "start": 13733783
+   "start": 14167444
+  },
+  {
+   "ref_id": "donotstirupmylove::crimson-collection",
+   "song_id": "donotstirupmylove",
+   "via": "release",
+   "live": false,
+   "shift": 0.0,
+   "aligned": true,
+   "excluded": true,
+   "duration": 354.666,
+   "start": 14185796
   },
   {
    "ref_id": "whenamanlovesthelord::crimson-collection",
@@ -6584,18 +6830,18 @@
    "aligned": false,
    "excluded": false,
    "duration": 349.884,
-   "start": 13752120
+   "start": 14207861
   },
   {
    "ref_id": "thankyouinmyownway::reasonable-service",
    "song_id": "thankyouinmyownway",
    "via": "release",
    "live": false,
-   "shift": 2.92,
+   "shift": -0.008,
    "aligned": true,
    "excluded": false,
    "duration": 302.054,
-   "start": 13773692
+   "start": 14229433
   },
   {
    "ref_id": "reasonableservice::reasonable-service",
@@ -6603,10 +6849,10 @@
    "via": "release",
    "live": false,
    "shift": 0.0,
-   "aligned": false,
+   "aligned": true,
    "excluded": false,
    "duration": 358.4,
-   "start": 13791987
+   "start": 14247728
   },
   {
    "ref_id": "ineedyoulord::reasonable-service",
@@ -6617,7 +6863,7 @@
    "aligned": true,
    "excluded": false,
    "duration": 344.242,
-   "start": 13814192
+   "start": 14269967
   },
   {
    "ref_id": "blockedmyview::reasonable-service",
@@ -6628,7 +6874,7 @@
    "aligned": true,
    "excluded": false,
    "duration": 343.641,
-   "start": 13835582
+   "start": 14291357
   },
   {
    "ref_id": "iamthirsty::reasonable-service",
@@ -6639,7 +6885,7 @@
    "aligned": true,
    "excluded": false,
    "duration": 319.556,
-   "start": 13856784
+   "start": 14312559
   },
   {
    "ref_id": "itsworshiptime::reasonable-service",
@@ -6650,7 +6896,7 @@
    "aligned": true,
    "excluded": false,
    "duration": 323.336,
-   "start": 13876290
+   "start": 14332065
   },
   {
    "ref_id": "darebolderprograms::reasonable-service",
@@ -6661,7 +6907,7 @@
    "aligned": true,
    "excluded": false,
    "duration": 393.691,
-   "start": 13896309
+   "start": 14352109
   },
   {
    "ref_id": "psalm::reasonable-service",
@@ -6669,10 +6915,10 @@
    "via": "release",
    "live": false,
    "shift": 0.0,
-   "aligned": false,
+   "aligned": true,
    "excluded": false,
    "duration": 392.229,
-   "start": 13920695
+   "start": 14376495
   },
   {
    "ref_id": "goodfriday::reasonable-service",
@@ -6683,7 +6929,7 @@
    "aligned": true,
    "excluded": false,
    "duration": 385.567,
-   "start": 13944943
+   "start": 14400743
   },
   {
    "ref_id": "thelovelyvoiceofgod::periwinkle-collection",
@@ -6694,7 +6940,7 @@
    "aligned": true,
    "excluded": false,
    "duration": 234.083,
-   "start": 13968796
+   "start": 14424596
   },
   {
    "ref_id": "ireallylikesundaymorning::periwinkle-collection",
@@ -6705,29 +6951,29 @@
    "aligned": true,
    "excluded": false,
    "duration": 334.89,
-   "start": 13983191
+   "start": 14438994
   },
   {
    "ref_id": "myfatherslove::periwinkle-collection",
    "song_id": "myfatherslove",
    "via": "release",
    "live": false,
-   "shift": -0.056,
+   "shift": 0.0,
    "aligned": true,
    "excluded": false,
    "duration": 324.768,
-   "start": 14003889
+   "start": 14459692
   },
   {
    "ref_id": "seekyefirst::periwinkle-collection",
    "song_id": "seekyefirst",
    "via": "release",
    "live": false,
-   "shift": 0.0,
-   "aligned": false,
+   "shift": -5.74,
+   "aligned": true,
    "excluded": false,
    "duration": 303.543,
-   "start": 14023803
+   "start": 14479606
   },
   {
    "ref_id": "jesusprayed::periwinkle-collection",
@@ -6735,10 +6981,10 @@
    "via": "release",
    "live": false,
    "shift": 0.0,
-   "aligned": false,
+   "aligned": true,
    "excluded": false,
    "duration": 258.011,
-   "start": 14042404
+   "start": 14498208
   },
   {
    "ref_id": "loveispatient::periwinkle-collection",
@@ -6749,7 +6995,7 @@
    "aligned": true,
    "excluded": false,
    "duration": 261.878,
-   "start": 14057942
+   "start": 14513746
   },
   {
    "ref_id": "thankful::periwinkle-collection",
@@ -6760,7 +7006,7 @@
    "aligned": true,
    "excluded": false,
    "duration": 273.921,
-   "start": 14074004
+   "start": 14529927
   },
   {
    "ref_id": "christiansoldier::periwinkle-collection",
@@ -6771,29 +7017,29 @@
    "aligned": true,
    "excluded": false,
    "duration": 374.413,
-   "start": 14091081
+   "start": 14547004
   },
   {
    "ref_id": "theamericandream::periwinkle-collection",
    "song_id": "theamericandream",
    "via": "release",
    "live": false,
-   "shift": -0.036,
+   "shift": 0.0,
    "aligned": true,
    "excluded": false,
    "duration": 445.127,
-   "start": 14114362
+   "start": 14570285
   },
   {
    "ref_id": "mustardseed::periwinkle-collection",
    "song_id": "mustardseed",
    "via": "release",
    "live": false,
-   "shift": 0.0,
-   "aligned": false,
+   "shift": -0.008,
+   "aligned": true,
    "excluded": false,
    "duration": 178.808,
-   "start": 14141982
+   "start": 14597920
   },
   {
    "ref_id": "hesavedyouhesavedme::periwinkle-collection",
@@ -6804,7 +7050,7 @@
    "aligned": true,
    "excluded": false,
    "duration": 309.865,
-   "start": 14153010
+   "start": 14608948
   },
   {
    "ref_id": "herewestand::periwinkle-collection",
@@ -6815,18 +7061,18 @@
    "aligned": true,
    "excluded": false,
    "duration": 325.172,
-   "start": 14172333
+   "start": 14628271
   },
   {
    "ref_id": "letmetellyounow::periwinkle-collection",
    "song_id": "letmetellyounow",
    "via": "release",
    "live": false,
-   "shift": 0.0,
-   "aligned": false,
+   "shift": -0.008,
+   "aligned": true,
    "excluded": false,
    "duration": 334.89,
-   "start": 14192407
+   "start": 14648345
   },
   {
    "ref_id": "nowthatiknow::periwinkle-collection",
@@ -6834,21 +7080,21 @@
    "via": "release",
    "live": false,
    "shift": 0.0,
-   "aligned": false,
+   "aligned": true,
    "excluded": false,
    "duration": 282.671,
-   "start": 14213142
+   "start": 14669080
   },
   {
-   "ref_id": "thewinnertakesthecrown::periwinkle-collection",
-   "song_id": "thewinnertakesthecrown",
+   "ref_id": "winnertakesthecrown::periwinkle-collection",
+   "song_id": "winnertakesthecrown",
    "via": "release",
    "live": false,
    "shift": -0.008,
    "aligned": true,
-   "excluded": false,
+   "excluded": true,
    "duration": 286.354,
-   "start": 14230649
+   "start": 14686587
   },
   {
    "ref_id": "imtheoneyourelookingfor::periwinkle-collection",
@@ -6859,7 +7105,7 @@
    "aligned": true,
    "excluded": false,
    "duration": 327.784,
-   "start": 14248400
+   "start": 14704378
   },
   {
    "ref_id": "ihavefoundanewlife::periwinkle-collection",
@@ -6870,18 +7116,18 @@
    "aligned": false,
    "excluded": false,
    "duration": 289.855,
-   "start": 14268398
+   "start": 14724376
   },
   {
    "ref_id": "myfirstlove::periwinkle-collection",
    "song_id": "myfirstlove",
    "via": "release",
    "live": false,
-   "shift": 0.0,
-   "aligned": false,
+   "shift": -0.044,
+   "aligned": true,
    "excluded": false,
    "duration": 343.014,
-   "start": 14286384
+   "start": 14742362
   },
   {
    "ref_id": "ohmyshepherd::periwinkle-collection",
@@ -6889,10 +7135,10 @@
    "via": "release",
    "live": false,
    "shift": 0.0,
-   "aligned": false,
+   "aligned": true,
    "excluded": false,
    "duration": 368.118,
-   "start": 14307682
+   "start": 14763671
   },
   {
    "ref_id": "peterlover::periwinkle-collection",
@@ -6900,10 +7146,10 @@
    "via": "release",
    "live": false,
    "shift": 0.0,
-   "aligned": false,
+   "aligned": true,
    "excluded": false,
    "duration": 234.266,
-   "start": 14330659
+   "start": 14786648
   },
   {
    "ref_id": "booksareablessing::periwinkle-collection",
@@ -6914,29 +7160,29 @@
    "aligned": true,
    "excluded": false,
    "duration": 222.38,
-   "start": 14345167
+   "start": 14801156
   },
   {
    "ref_id": "sunofrighteousness::periwinkle-collection",
    "song_id": "sunofrighteousness",
    "via": "release",
    "live": false,
-   "shift": -2.536,
+   "shift": 0.0,
    "aligned": true,
    "excluded": false,
    "duration": 368.039,
-   "start": 14358826
+   "start": 14814815
   },
   {
    "ref_id": "whenifell::scarlet-collection",
    "song_id": "whenifell",
    "via": "release",
    "live": false,
-   "shift": 0.0,
-   "aligned": false,
+   "shift": -0.008,
+   "aligned": true,
    "excluded": false,
    "duration": 440.064,
-   "start": 14381523
+   "start": 14837512
   },
   {
    "ref_id": "choosing::scarlet-collection",
@@ -6947,7 +7193,7 @@
    "aligned": true,
    "excluded": false,
    "duration": 311.85,
-   "start": 14408837
+   "start": 14864826
   },
   {
    "ref_id": "benice::scarlet-collection",
@@ -6958,7 +7204,7 @@
    "aligned": true,
    "excluded": false,
    "duration": 323.5,
-   "start": 14428117
+   "start": 14884106
   },
   {
    "ref_id": "iwillmissyou::scarlet-collection",
@@ -6966,21 +7212,21 @@
    "via": "release",
    "live": false,
    "shift": 0.0,
-   "aligned": false,
+   "aligned": true,
    "excluded": false,
    "duration": 255.033,
-   "start": 14448233
+   "start": 14904225
   },
   {
    "ref_id": "iwantmylovetolast::scarlet-collection",
    "song_id": "iwantmylovetolast",
    "via": "release",
    "live": false,
-   "shift": 1.072,
+   "shift": 0.0,
    "aligned": true,
    "excluded": false,
    "duration": 201.247,
-   "start": 14463704
+   "start": 14919696
   },
   {
    "ref_id": "didyoureadmyletter::scarlet-collection",
@@ -6991,7 +7237,7 @@
    "aligned": true,
    "excluded": false,
    "duration": 433.972,
-   "start": 14476211
+   "start": 14932203
   },
   {
    "ref_id": "werenotcloseanymore::scarlet-collection",
@@ -7002,62 +7248,51 @@
    "aligned": false,
    "excluded": false,
    "duration": 332.852,
-   "start": 14503031
+   "start": 14959023
   },
   {
    "ref_id": "inoticeothergirls::scarlet-collection",
    "song_id": "inoticeothergirls",
    "via": "release",
    "live": false,
-   "shift": 0.0,
-   "aligned": false,
+   "shift": -0.864,
+   "aligned": true,
    "excluded": false,
    "duration": 460.487,
-   "start": 14523777
+   "start": 14979789
   },
   {
    "ref_id": "mybelovedismine::scarlet-collection",
    "song_id": "mybelovedismine",
    "via": "release",
    "live": false,
-   "shift": 0.0,
-   "aligned": false,
+   "shift": -0.008,
+   "aligned": true,
    "excluded": false,
    "duration": 434.913,
-   "start": 14552327
-  },
-  {
-   "ref_id": "proposalillsayiloveyou::scarlet-collection",
-   "song_id": "proposalillsayiloveyou",
-   "via": "release",
-   "live": false,
-   "shift": 0.0,
-   "aligned": null,
-   "excluded": true,
-   "duration": 310.7,
-   "start": 14578805
+   "start": 15008360
   },
   {
    "ref_id": "promiseme::scarlet-collection",
    "song_id": "promiseme",
    "via": "release",
    "live": false,
-   "shift": 0.336,
+   "shift": 0.0,
    "aligned": true,
    "excluded": false,
    "duration": 356.209,
-   "start": 14598025
+   "start": 15034838
   },
   {
    "ref_id": "pleasedontpullmeback::scarlet-collection",
    "song_id": "pleasedontpullmeback",
    "via": "release",
    "live": false,
-   "shift": -1.504,
+   "shift": -0.008,
    "aligned": true,
    "excluded": false,
    "duration": 343.197,
-   "start": 14620188
+   "start": 15057001
   },
   {
    "ref_id": "alliwantisachristiangirl::scarlet-collection",
@@ -7068,18 +7303,18 @@
    "aligned": false,
    "excluded": false,
    "duration": 296.229,
-   "start": 14641134
+   "start": 15077947
   },
   {
    "ref_id": "proposetome::scarlet-collection",
    "song_id": "proposetome",
    "via": "release",
    "live": false,
-   "shift": 0.0,
-   "aligned": false,
+   "shift": 0.004,
+   "aligned": true,
    "excluded": false,
    "duration": 295.811,
-   "start": 14659431
+   "start": 15096249
   },
   {
    "ref_id": "breakup::scarlet-collection",
@@ -7090,18 +7325,18 @@
    "aligned": true,
    "excluded": false,
    "duration": 284.97,
-   "start": 14677471
+   "start": 15114289
   },
   {
    "ref_id": "walkingwithjesus::now-brought-near",
    "song_id": "walkingwithjesus",
    "via": "release",
    "live": false,
-   "shift": -0.008,
+   "shift": 0.0,
    "aligned": true,
    "excluded": false,
    "duration": 326.452,
-   "start": 14695195
+   "start": 15132013
   },
   {
    "ref_id": "havemercyonus::now-brought-near",
@@ -7112,18 +7347,18 @@
    "aligned": true,
    "excluded": false,
    "duration": 213.656,
-   "start": 14715423
+   "start": 15152241
   },
   {
    "ref_id": "wastingmylife::now-brought-near",
    "song_id": "wastingmylife",
    "via": "release",
    "live": false,
-   "shift": -0.008,
+   "shift": 0.0,
    "aligned": true,
    "excluded": false,
    "duration": 368.849,
-   "start": 14728335
+   "start": 15165153
   },
   {
    "ref_id": "imimpressed::now-brought-near",
@@ -7134,7 +7369,7 @@
    "aligned": true,
    "excluded": false,
    "duration": 240.065,
-   "start": 14751197
+   "start": 15188035
   },
   {
    "ref_id": "goodmaster::now-brought-near",
@@ -7145,18 +7380,18 @@
    "aligned": true,
    "excluded": false,
    "duration": 275.67,
-   "start": 14765855
+   "start": 15202693
   },
   {
    "ref_id": "livejoyfully::now-brought-near",
    "song_id": "livejoyfully",
    "via": "release",
    "live": false,
-   "shift": -0.008,
+   "shift": 0.0,
    "aligned": true,
    "excluded": false,
    "duration": 422.635,
-   "start": 14782843
+   "start": 15219681
   },
   {
    "ref_id": "nowbroughtnear::now-brought-near",
@@ -7164,10 +7399,10 @@
    "via": "release",
    "live": false,
    "shift": 0.0,
-   "aligned": false,
+   "aligned": true,
    "excluded": false,
    "duration": 381.675,
-   "start": 14809003
+   "start": 15245865
   },
   {
    "ref_id": "goye::now-brought-near",
@@ -7178,7 +7413,7 @@
    "aligned": true,
    "excluded": false,
    "duration": 285.388,
-   "start": 14832640
+   "start": 15269502
   },
   {
    "ref_id": "thegracechant::now-brought-near",
@@ -7186,527 +7421,967 @@
    "via": "release",
    "live": false,
    "shift": 0.0,
-   "aligned": false,
+   "aligned": true,
    "excluded": false,
    "duration": 280.189,
-   "start": 14850027
+   "start": 15286889
   },
   {
-   "ref_id": "meteasea::unknown-album",
-   "song_id": "meteasea",
+   "ref_id": "blessedarethouohlord::audio-fetched",
+   "song_id": "blessedarethouohlord",
    "via": "release",
    "live": false,
-   "shift": 0.0,
-   "aligned": null,
+   "shift": 1.132,
+   "aligned": true,
    "excluded": true,
-   "duration": 439.464,
-   "start": 14867332
+   "duration": 324.579,
+   "start": 15304194
   },
   {
-   "ref_id": "memboa::unknown-album",
-   "song_id": "memboa",
-   "via": "release",
-   "live": false,
-   "shift": 0.0,
-   "aligned": null,
-   "excluded": true,
-   "duration": 264.934,
-   "start": 14893761
-  },
-  {
-   "ref_id": "iamthewaythetruththelife::unknown-album",
-   "song_id": "iamthewaythetruththelife",
-   "via": "release",
-   "live": false,
-   "shift": 0.0,
-   "aligned": null,
-   "excluded": true,
-   "duration": 225.0,
-   "start": 14909769
-  },
-  {
-   "ref_id": "allhavesinned::unknown-album",
-   "song_id": "allhavesinned",
-   "via": "release",
-   "live": false,
-   "shift": 0.0,
-   "aligned": false,
-   "excluded": true,
-   "duration": 490.392,
-   "start": 14923716
-  },
-  {
-   "ref_id": "byhiswounds::unknown-album",
+   "ref_id": "byhiswounds::audio-fetched",
    "song_id": "byhiswounds",
    "via": "release",
    "live": false,
    "shift": 0.0,
-   "aligned": false,
+   "aligned": true,
    "excluded": true,
-   "duration": 436.0,
-   "start": 14954355
+   "duration": 342.017,
+   "start": 15323793
   },
   {
-   "ref_id": "cometomemydear::unknown-album",
-   "song_id": "cometomemydear",
+   "ref_id": "donotstirup::audio-fetched",
+   "song_id": "donotstirup",
    "via": "release",
    "live": false,
    "shift": 0.0,
-   "aligned": false,
+   "aligned": true,
    "excluded": true,
-   "duration": 295.2,
-   "start": 14980902
+   "duration": 370.02,
+   "start": 15343738
   },
   {
-   "ref_id": "nowisthetime::unknown-album",
-   "song_id": "nowisthetime",
-   "via": "release",
-   "live": false,
-   "shift": 0.0,
-   "aligned": false,
-   "excluded": true,
-   "duration": 292.859,
-   "start": 14999333
-  },
-  {
-   "ref_id": "forthemercy::unknown-album",
-   "song_id": "forthemercy",
-   "via": "release",
-   "live": false,
-   "shift": 0.0,
-   "aligned": null,
-   "excluded": true,
-   "duration": 200.064,
-   "start": 15017317
-  },
-  {
-   "ref_id": "gotochurch::unknown-album",
-   "song_id": "gotochurch",
-   "via": "release",
-   "live": false,
-   "shift": 0.0,
-   "aligned": false,
-   "excluded": true,
-   "duration": 317.304,
-   "start": 15029559
-  },
-  {
-   "ref_id": "iknowthyworks::unknown-album",
-   "song_id": "iknowthyworks",
+   "ref_id": "fallinlovewithyouagain::audio-fetched",
+   "song_id": "fallinlovewithyouagain",
    "via": "release",
    "live": false,
    "shift": -0.008,
    "aligned": true,
    "excluded": true,
-   "duration": 357.456,
-   "start": 15049385
+   "duration": 544.634,
+   "start": 15366533
   },
   {
-   "ref_id": "ipresstowardthemark::unknown-album",
+   "ref_id": "forthemercy::audio-fetched",
+   "song_id": "forthemercy",
+   "via": "release",
+   "live": false,
+   "shift": -0.008,
+   "aligned": true,
+   "excluded": true,
+   "duration": 243.239,
+   "start": 15400096
+  },
+  {
+   "ref_id": "gointotheworld::audio-fetched",
+   "song_id": "gointotheworld",
+   "via": "release",
+   "live": false,
+   "shift": 0.0,
+   "aligned": true,
+   "excluded": true,
+   "duration": 301.372,
+   "start": 15414955
+  },
+  {
+   "ref_id": "gosomewhere::audio-fetched",
+   "song_id": "gosomewhere",
+   "via": "release",
+   "live": false,
+   "shift": 0.0,
+   "aligned": true,
+   "excluded": true,
+   "duration": 325.995,
+   "start": 15433373
+  },
+  {
+   "ref_id": "hethathathmycommandments::audio-fetched",
+   "song_id": "hethathathmycommandments",
+   "via": "release",
+   "live": false,
+   "shift": 0.0,
+   "aligned": true,
+   "excluded": true,
+   "duration": 507.379,
+   "start": 15453446
+  },
+  {
+   "ref_id": "hewillcarryme::audio-fetched",
+   "song_id": "hewillcarryme",
+   "via": "release",
+   "live": false,
+   "shift": 0.0,
+   "aligned": true,
+   "excluded": true,
+   "duration": 284.013,
+   "start": 15484434
+  },
+  {
+   "ref_id": "iamthewaythetruththelife::audio-fetched",
+   "song_id": "iamthewaythetruththelife",
+   "via": "release",
+   "live": false,
+   "shift": 0.004,
+   "aligned": true,
+   "excluded": true,
+   "duration": 225.012,
+   "start": 15501747
+  },
+  {
+   "ref_id": "ipresstowardthemark::audio-fetched",
    "song_id": "ipresstowardthemark",
    "via": "release",
    "live": false,
-   "shift": 0.0,
-   "aligned": null,
+   "shift": -0.008,
+   "aligned": true,
    "excluded": true,
-   "duration": 283.899,
-   "start": 15071709
+   "duration": 269.106,
+   "start": 15515694
   },
   {
-   "ref_id": "jesusisthebest::unknown-album",
-   "song_id": "jesusisthebest",
+   "ref_id": "iwaitedpatiently::audio-fetched",
+   "song_id": "iwaitedpatiently",
    "via": "release",
    "live": false,
    "shift": 0.0,
-   "aligned": false,
+   "aligned": true,
    "excluded": true,
-   "duration": 622.211,
-   "start": 15089439
+   "duration": 294.021,
+   "start": 15531863
   },
   {
-   "ref_id": "letthewearyrest::unknown-album",
+   "ref_id": "iwanttobemorelikejesus::audio-fetched",
+   "song_id": "iwanttobemorelikejesus",
+   "via": "release",
+   "live": false,
+   "shift": 0.0,
+   "aligned": true,
+   "excluded": true,
+   "duration": 390.082,
+   "start": 15549755
+  },
+  {
+   "ref_id": "letthewearyrest::audio-fetched",
    "song_id": "letthewearyrest",
    "via": "release",
    "live": false,
-   "shift": 0.012,
+   "shift": 0.0,
    "aligned": true,
    "excluded": true,
-   "duration": 306.048,
-   "start": 15127231
+   "duration": 270.43,
+   "start": 15572977
   },
   {
-   "ref_id": "lovingmymaker::unknown-album",
+   "ref_id": "letthymercies::audio-fetched",
+   "song_id": "letthymercies",
+   "via": "release",
+   "live": false,
+   "shift": 0.0,
+   "aligned": true,
+   "excluded": true,
+   "duration": 313.178,
+   "start": 15589481
+  },
+  {
+   "ref_id": "lovingmymaker::audio-fetched",
    "song_id": "lovingmymaker",
    "via": "release",
    "live": false,
    "shift": 0.0,
    "aligned": false,
    "excluded": true,
-   "duration": 381.333,
-   "start": 15146194
+   "duration": 409.169,
+   "start": 15608493
   },
   {
-   "ref_id": "makingupthehedge::unknown-album",
+   "ref_id": "makingupthehedge::audio-fetched",
    "song_id": "makingupthehedge",
    "via": "release",
    "live": false,
-   "shift": 0.132,
+   "shift": 0.0,
    "aligned": true,
    "excluded": true,
-   "duration": 310.833,
-   "start": 15169582
+   "duration": 310.972,
+   "start": 15633620
   },
   {
-   "ref_id": "manonamission::unknown-album",
+   "ref_id": "manonamission::audio-fetched",
    "song_id": "manonamission",
    "via": "release",
    "live": false,
    "shift": 0.0,
    "aligned": false,
    "excluded": true,
-   "duration": 307.333,
-   "start": 15188461
+   "duration": 310.972,
+   "start": 15652219
   },
   {
-   "ref_id": "occupytillicome::unknown-album",
-   "song_id": "occupytillicome",
+   "ref_id": "memboa::audio-fetched",
+   "song_id": "memboa",
+   "via": "release",
+   "live": false,
+   "shift": 0.0,
+   "aligned": null,
+   "excluded": true,
+   "duration": 267.086,
+   "start": 15671176
+  },
+  {
+   "ref_id": "meteasea::audio-fetched",
+   "song_id": "meteasea",
+   "via": "release",
+   "live": false,
+   "shift": 0.0,
+   "aligned": null,
+   "excluded": true,
+   "duration": 439.425,
+   "start": 15687205
+  },
+  {
+   "ref_id": "multiplythem::audio-fetched",
+   "song_id": "multiplythem",
+   "via": "release",
+   "live": false,
+   "shift": 0.0,
+   "aligned": true,
+   "excluded": true,
+   "duration": 213.531,
+   "start": 15713668
+  },
+  {
+   "ref_id": "nononoyoudontlovethelord::audio-fetched",
+   "song_id": "nononoyoudontlovethelord",
+   "via": "release",
+   "live": false,
+   "shift": 0.0,
+   "aligned": false,
+   "excluded": true,
+   "duration": 185.295,
+   "start": 15726918
+  },
+  {
+   "ref_id": "obligations::audio-fetched",
+   "song_id": "obligations",
+   "via": "release",
+   "live": false,
+   "shift": 0.0,
+   "aligned": true,
+   "excluded": true,
+   "duration": 615.515,
+   "start": 15738491
+  },
+  {
+   "ref_id": "peopleneedthelord::audio-fetched",
+   "song_id": "peopleneedthelord",
+   "via": "release",
+   "live": false,
+   "shift": 0.0,
+   "aligned": false,
+   "excluded": true,
+   "duration": 273.611,
+   "start": 15776439
+  },
+  {
+   "ref_id": "prayerchangesthings::audio-fetched",
+   "song_id": "prayerchangesthings",
+   "via": "release",
+   "live": false,
+   "shift": -0.024,
+   "aligned": true,
+   "excluded": true,
+   "duration": 250.507,
+   "start": 15793004
+  },
+  {
+   "ref_id": "preparationofthegospel::audio-fetched",
+   "song_id": "preparationofthegospel",
+   "via": "release",
+   "live": false,
+   "shift": 0.0,
+   "aligned": true,
+   "excluded": true,
+   "duration": 321.885,
+   "start": 15808389
+  },
+  {
+   "ref_id": "shepherdthepeople::audio-fetched",
+   "song_id": "shepherdthepeople",
+   "via": "release",
+   "live": false,
+   "shift": -0.008,
+   "aligned": true,
+   "excluded": true,
+   "duration": 308.255,
+   "start": 15828017
+  },
+  {
+   "ref_id": "singanewsong::audio-fetched",
+   "song_id": "singanewsong",
+   "via": "release",
+   "live": false,
+   "shift": 0.0,
+   "aligned": true,
+   "excluded": true,
+   "duration": 492.97,
+   "start": 15846774
+  },
+  {
+   "ref_id": "solidrock::audio-fetched",
+   "song_id": "solidrock",
+   "via": "release",
+   "live": false,
+   "shift": -0.008,
+   "aligned": true,
+   "excluded": true,
+   "duration": 211.66,
+   "start": 15877245
+  },
+  {
+   "ref_id": "teachme::audio-fetched",
+   "song_id": "teachme",
    "via": "release",
    "live": false,
    "shift": -0.028,
    "aligned": true,
    "excluded": true,
-   "duration": 556.235,
-   "start": 15207182
+   "duration": 338.534,
+   "start": 15890045
   },
   {
-   "ref_id": "prayerchangesthings::unknown-album",
-   "song_id": "prayerchangesthings",
+   "ref_id": "tithesandofferings::audio-fetched",
+   "song_id": "tithesandofferings",
    "via": "release",
    "live": false,
    "shift": 0.0,
-   "aligned": null,
-   "excluded": true,
-   "duration": 252.029,
-   "start": 15241929
-  },
-  {
-   "ref_id": "preparationofthegospel::unknown-album",
-   "song_id": "preparationofthegospel",
-   "via": "release",
-   "live": false,
-   "shift": 0.0,
-   "aligned": false,
-   "excluded": true,
-   "duration": 313.5,
-   "start": 15257558
-  },
-  {
-   "ref_id": "psalm::unknown-album",
-   "song_id": "psalm",
-   "via": "release",
-   "live": false,
-   "shift": 0.0,
-   "aligned": false,
-   "excluded": true,
-   "duration": 270.523,
-   "start": 15276751
-  },
-  {
-   "ref_id": "shepherdthepeople::unknown-album",
-   "song_id": "shepherdthepeople",
-   "via": "release",
-   "live": false,
-   "shift": 0.0,
-   "aligned": false,
-   "excluded": true,
-   "duration": 308.167,
-   "start": 15293556
-  },
-  {
-   "ref_id": "singanewsong::unknown-album",
-   "song_id": "singanewsong",
-   "via": "release",
-   "live": false,
-   "shift": -1.396,
    "aligned": true,
    "excluded": true,
-   "duration": 413.333,
-   "start": 15312807
+   "duration": 246.503,
+   "start": 15910239
   },
   {
-   "ref_id": "teachme::unknown-album",
-   "song_id": "teachme",
-   "via": "release",
-   "live": false,
-   "shift": 0.0,
-   "aligned": null,
-   "excluded": true,
-   "duration": 335.424,
-   "start": 15338396
-  },
-  {
-   "ref_id": "thankyoulord::unknown-album",
-   "song_id": "thankyoulord",
-   "via": "release",
-   "live": false,
-   "shift": -0.032,
-   "aligned": true,
-   "excluded": true,
-   "duration": 548.571,
-   "start": 15358594
-  },
-  {
-   "ref_id": "vengeanceismine::unknown-album",
+   "ref_id": "vengeanceismine::audio-fetched",
    "song_id": "vengeanceismine",
    "via": "release",
    "live": false,
-   "shift": -0.36,
+   "shift": 0.0,
    "aligned": true,
    "excluded": true,
-   "duration": 309.333,
-   "start": 15392874
+   "duration": 308.255,
+   "start": 15925188
   },
   {
-   "ref_id": "wewillstand::unknown-album",
-   "song_id": "wewillstand",
+   "ref_id": "walkwithyou::audio-fetched",
+   "song_id": "walkwithyou",
    "via": "release",
    "live": false,
    "shift": 0.0,
-   "aligned": null,
+   "aligned": true,
    "excluded": true,
-   "duration": 256.139,
-   "start": 15411824
+   "duration": 367.316,
+   "start": 15944109
   },
   {
-   "ref_id": "whenigettoheaven::unknown-album",
+   "ref_id": "wewanttobask::audio-fetched",
+   "song_id": "wewanttobask",
+   "via": "release",
+   "live": false,
+   "shift": 0.0,
+   "aligned": true,
+   "excluded": true,
+   "duration": 356.483,
+   "start": 15966794
+  },
+  {
+   "ref_id": "wewillstand::audio-fetched",
+   "song_id": "wewillstand",
+   "via": "release",
+   "live": false,
+   "shift": -0.008,
+   "aligned": true,
+   "excluded": true,
+   "duration": 270.685,
+   "start": 15988734
+  },
+  {
+   "ref_id": "whenigettoheaven::audio-fetched",
    "song_id": "whenigettoheaven",
    "via": "release",
    "live": false,
    "shift": 0.0,
-   "aligned": false,
+   "aligned": true,
    "excluded": true,
-   "duration": 355.683,
-   "start": 15427810
+   "duration": 364.228,
+   "start": 16005206
   },
   {
-   "ref_id": "worshiphim::unknown-album",
+   "ref_id": "worshiphim::audio-fetched",
    "song_id": "worshiphim",
    "via": "release",
    "live": false,
    "shift": 0.0,
-   "aligned": false,
+   "aligned": true,
    "excluded": true,
-   "duration": 226.743,
-   "start": 15449992
+   "duration": 237.248,
+   "start": 16027866
   },
   {
-   "ref_id": "yieldnottotemptation::unknown-album",
+   "ref_id": "yieldnottotemptation::audio-fetched",
    "song_id": "yieldnottotemptation",
    "via": "release",
    "live": false,
    "shift": 0.0,
-   "aligned": null,
+   "aligned": true,
    "excluded": true,
-   "duration": 351.563,
-   "start": 15464140
+   "duration": 307.86,
+   "start": 16042319
   },
   {
-   "ref_id": "psalm::heal-our-land-free-version",
-   "song_id": "psalm",
+   "ref_id": "youllneverfindajob::audio-fetched",
+   "song_id": "youllneverfindajob",
    "via": "release",
    "live": false,
    "shift": 0.0,
-   "aligned": false,
+   "aligned": true,
    "excluded": true,
-   "duration": 415.451,
-   "start": 15486098
+   "duration": 382.804,
+   "start": 16060511
   },
   {
-   "ref_id": "didyoureadmyletter::goldenrod-collection",
-   "song_id": "didyoureadmyletter",
-   "via": "release",
+   "ref_id": "awakeosleeper",
+   "song_id": "awakeosleeper",
+   "via": "instrumental",
+   "live": false,
+   "shift": 0.0,
+   "aligned": false,
+   "excluded": false,
+   "duration": 369.145,
+   "start": 16084266
+  },
+  {
+   "ref_id": "awakeosleeperjazz",
+   "song_id": "awakeosleeperjazz",
+   "via": "instrumental",
    "live": false,
    "shift": -0.008,
    "aligned": true,
-   "excluded": true,
-   "duration": 433.972,
-   "start": 15512027
+   "excluded": false,
+   "duration": 373.369,
+   "start": 16107126
   },
   {
-   "ref_id": "inoticeothergirls::goldenrod-collection",
-   "song_id": "inoticeothergirls",
-   "via": "release",
-   "live": false,
-   "shift": 0.0,
-   "aligned": false,
-   "excluded": true,
-   "duration": 460.487,
-   "start": 15538847
-  },
-  {
-   "ref_id": "iwillmissyou::goldenrod-collection",
-   "song_id": "iwillmissyou",
-   "via": "release",
-   "live": false,
-   "shift": 0.0,
-   "aligned": false,
-   "excluded": true,
-   "duration": 255.033,
-   "start": 15567397
-  },
-  {
-   "ref_id": "onlyonetalent::goldenrod-collection",
-   "song_id": "onlyonetalent",
-   "via": "release",
-   "live": false,
-   "shift": -0.032,
-   "aligned": true,
-   "excluded": true,
-   "duration": 478.302,
-   "start": 15582868
-  },
-  {
-   "ref_id": "pleasedontpullmeback::goldenrod-collection",
-   "song_id": "pleasedontpullmeback",
-   "via": "release",
-   "live": false,
-   "shift": -1.504,
-   "aligned": true,
-   "excluded": true,
-   "duration": 343.197,
-   "start": 15612262
-  },
-  {
-   "ref_id": "strongchristian::goldenrod-collection",
-   "song_id": "strongchristian",
-   "via": "release",
+   "ref_id": "beholdmyservant",
+   "song_id": "beholdmyservant",
+   "via": "instrumental",
    "live": false,
    "shift": -0.008,
    "aligned": true,
-   "excluded": true,
-   "duration": 313.313,
-   "start": 15633208
+   "excluded": false,
+   "duration": 347.305,
+   "start": 16130273
   },
   {
-   "ref_id": "theresananointingcoming::goldenrod-collection",
-   "song_id": "theresananointingcoming",
-   "via": "release",
-   "live": false,
-   "shift": -1.824,
-   "aligned": true,
-   "excluded": true,
-   "duration": 219.376,
-   "start": 15652781
-  },
-  {
-   "ref_id": "letmypeoplego::goldenrod-collection",
-   "song_id": "letmypeoplego",
-   "via": "release",
-   "live": false,
-   "shift": -10.96,
-   "aligned": true,
-   "excluded": true,
-   "duration": 372.037,
-   "start": 15666321
-  },
-  {
-   "ref_id": "whenamanhasfound::goldenrod-collection",
-   "song_id": "whenamanhasfound",
-   "via": "release",
-   "live": false,
-   "shift": 0.0,
-   "aligned": false,
-   "excluded": true,
-   "duration": 239.831,
-   "start": 15688778
-  },
-  {
-   "ref_id": "noapologies::goldenrod-collection",
-   "song_id": "noapologies",
-   "via": "release",
-   "live": false,
-   "shift": 0.0,
-   "aligned": false,
-   "excluded": true,
-   "duration": 373.734,
-   "start": 15702843
-  },
-  {
-   "ref_id": "readyourbibleprayeveryday::goldenrod-collection",
-   "song_id": "readyourbibleprayeveryday",
-   "via": "release",
-   "live": false,
-   "shift": 0.0,
-   "aligned": false,
-   "excluded": true,
-   "duration": 305.809,
-   "start": 15725339
-  },
-  {
-   "ref_id": "candleinthedark::goldenrod-collection",
-   "song_id": "candleinthedark",
-   "via": "release",
+   "ref_id": "doingbusinessingreatwaters",
+   "song_id": "doingbusinessingreatwaters",
+   "via": "instrumental",
    "live": false,
    "shift": -0.008,
    "aligned": true,
-   "excluded": true,
-   "duration": 582.217,
-   "start": 15744000
+   "excluded": false,
+   "duration": 337.897,
+   "start": 16151427
   },
   {
-   "ref_id": "ineedmyquiettime::goldenrod-collection",
-   "song_id": "ineedmyquiettime",
-   "via": "release",
+   "ref_id": "hewantedme",
+   "song_id": "hewantedme",
+   "via": "instrumental",
    "live": false,
-   "shift": 0.0,
-   "aligned": false,
-   "excluded": true,
-   "duration": 342.648,
-   "start": 15779869
-  },
-  {
-   "ref_id": "isoughtthelord::goldenrod-collection",
-   "song_id": "isoughtthelord",
-   "via": "release",
-   "live": false,
-   "shift": 0.0,
-   "aligned": false,
-   "excluded": true,
-   "duration": 520.177,
-   "start": 15800902
-  },
-  {
-   "ref_id": "maximumimpact::goldenrod-collection",
-   "song_id": "maximumimpact",
-   "via": "release",
-   "live": false,
-   "shift": 0.0,
-   "aligned": false,
-   "excluded": true,
-   "duration": 308.924,
-   "start": 15833296
-  },
-  {
-   "ref_id": "thesower::goldenrod-collection",
-   "song_id": "thesower",
-   "via": "release",
-   "live": false,
-   "shift": 0.08,
+   "shift": -0.016,
    "aligned": true,
-   "excluded": true,
-   "duration": 564.048,
-   "start": 15851708
+   "excluded": false,
+   "duration": 351.113,
+   "start": 16171682
   },
   {
-   "ref_id": "forthemercy::flm-concert-21-2",
-   "song_id": "forthemercy",
+   "ref_id": "howsweetthenameofjesussounds",
+   "song_id": "howsweetthenameofjesussounds",
+   "via": "instrumental",
+   "live": false,
+   "shift": -0.012,
+   "aligned": true,
+   "excluded": false,
+   "duration": 274.753,
+   "start": 16193533
+  },
+  {
+   "ref_id": "isayitinasong",
+   "song_id": "isayitinasong",
+   "via": "instrumental",
+   "live": false,
+   "shift": -0.012,
+   "aligned": true,
+   "excluded": false,
+   "duration": 297.865,
+   "start": 16209921
+  },
+  {
+   "ref_id": "ivefoundit",
+   "song_id": "ivefoundit",
+   "via": "instrumental",
+   "live": false,
+   "shift": -0.008,
+   "aligned": true,
+   "excluded": false,
+   "duration": 336.223,
+   "start": 16227981
+  },
+  {
+   "ref_id": "others",
+   "song_id": "others",
+   "via": "instrumental",
+   "live": false,
+   "shift": -0.008,
+   "aligned": true,
+   "excluded": false,
+   "duration": 259.441,
+   "start": 16248462
+  },
+  {
+   "ref_id": "paradisegirl",
+   "song_id": "paradisegirl",
+   "via": "instrumental",
+   "live": false,
+   "shift": -0.008,
+   "aligned": true,
+   "excluded": false,
+   "duration": 256.105,
+   "start": 16263958
+  },
+  {
+   "ref_id": "prayforrain",
+   "song_id": "prayforrain",
+   "via": "instrumental",
+   "live": false,
+   "shift": -0.012,
+   "aligned": true,
+   "excluded": false,
+   "duration": 275.567,
+   "start": 16278908
+  },
+  {
+   "ref_id": "sendthebestman",
+   "song_id": "sendthebestman",
+   "via": "instrumental",
+   "live": false,
+   "shift": -0.008,
+   "aligned": true,
+   "excluded": false,
+   "duration": 357.121,
+   "start": 16295409
+  },
+  {
+   "ref_id": "tissosweet",
+   "song_id": "tissosweet",
+   "via": "instrumental",
+   "live": false,
+   "shift": -0.008,
+   "aligned": true,
+   "excluded": false,
+   "duration": 206.377,
+   "start": 16317227
+  },
+  {
+   "ref_id": "togetherisbetter",
+   "song_id": "togetherisbetter",
+   "via": "instrumental",
+   "live": false,
+   "shift": -0.008,
+   "aligned": true,
+   "excluded": false,
+   "duration": 318.841,
+   "start": 16329861
+  },
+  {
+   "ref_id": "whywaitsolong",
+   "song_id": "whywaitsolong",
+   "via": "instrumental",
+   "live": false,
+   "shift": -0.008,
+   "aligned": true,
+   "excluded": false,
+   "duration": 374.425,
+   "start": 16349032
+  },
+  {
+   "ref_id": "thefirstthingido::aurelian-collection",
+   "song_id": "thefirstthingido",
+   "via": "release",
+   "live": false,
+   "shift": 0.0,
+   "aligned": true,
+   "excluded": false,
+   "duration": 265.275,
+   "start": 16371525
+  },
+  {
+   "ref_id": "thefirstthingido::eunuchs-in-the-palace-concert",
+   "song_id": "thefirstthingido",
    "via": "release",
    "live": true,
    "shift": 0.0,
-   "aligned": null,
-   "excluded": true,
-   "duration": 227.553,
-   "start": 15886724
+   "aligned": false,
+   "excluded": false,
+   "duration": 265.275,
+   "start": 16387609
+  },
+  {
+   "ref_id": "icantgetenough::eunuchs-in-the-palace-concert",
+   "song_id": "icantgetenough",
+   "via": "release",
+   "live": true,
+   "shift": 0.0,
+   "aligned": false,
+   "excluded": false,
+   "duration": 254.016,
+   "start": 16403693
+  },
+  {
+   "ref_id": "icantgetenough::rouge-collection",
+   "song_id": "icantgetenough",
+   "via": "release",
+   "live": false,
+   "shift": 0.0,
+   "aligned": true,
+   "excluded": false,
+   "duration": 254.016,
+   "start": 16419042
+  },
+  {
+   "ref_id": "thewinnertakesthecrown::mulberry-collection",
+   "song_id": "thewinnertakesthecrown",
+   "via": "release",
+   "live": false,
+   "shift": 0.0,
+   "aligned": true,
+   "excluded": false,
+   "duration": 286.354,
+   "start": 16434391
+  },
+  {
+   "ref_id": "thewinnertakesthecrown::periwinkle-collection",
+   "song_id": "thewinnertakesthecrown",
+   "via": "release",
+   "live": false,
+   "shift": -0.008,
+   "aligned": true,
+   "excluded": false,
+   "duration": 286.354,
+   "start": 16452182
+  },
+  {
+   "ref_id": "jesusyourebeautiful::rouge-collection",
+   "song_id": "jesusyourebeautiful",
+   "via": "release",
+   "live": false,
+   "shift": 0.0,
+   "aligned": true,
+   "excluded": false,
+   "duration": 485.93,
+   "start": 16469973
+  },
+  {
+   "ref_id": "others::doing-business-in-great-waters",
+   "song_id": "others",
+   "via": "release",
+   "live": false,
+   "shift": 0.0,
+   "aligned": true,
+   "excluded": false,
+   "duration": 259.412,
+   "start": 16500013
+  },
+  {
+   "ref_id": "prayforrain::doing-business-in-great-waters",
+   "song_id": "prayforrain",
+   "via": "release",
+   "live": false,
+   "shift": 0.0,
+   "aligned": true,
+   "excluded": false,
+   "duration": 275.538,
+   "start": 16515454
+  },
+  {
+   "ref_id": "ivefoundit::doing-business-in-great-waters",
+   "song_id": "ivefoundit",
+   "via": "release",
+   "live": false,
+   "shift": 0.0,
+   "aligned": true,
+   "excluded": false,
+   "duration": 336.223,
+   "start": 16531868
+  },
+  {
+   "ref_id": "tissosweet::doing-business-in-great-waters",
+   "song_id": "tissosweet",
+   "via": "release",
+   "live": false,
+   "shift": 0.0,
+   "aligned": true,
+   "excluded": false,
+   "duration": 206.347,
+   "start": 16552349
+  },
+  {
+   "ref_id": "howsweetthenameofjesussounds::doing-business-in-great-waters",
+   "song_id": "howsweetthenameofjesussounds",
+   "via": "release",
+   "live": false,
+   "shift": 0.0,
+   "aligned": true,
+   "excluded": false,
+   "duration": 274.724,
+   "start": 16564983
+  },
+  {
+   "ref_id": "togetherisbetter::doing-business-in-great-waters",
+   "song_id": "togetherisbetter",
+   "via": "release",
+   "live": false,
+   "shift": 0.0,
+   "aligned": true,
+   "excluded": false,
+   "duration": 318.806,
+   "start": 16581405
+  },
+  {
+   "ref_id": "paradisegirl::doing-business-in-great-waters",
+   "song_id": "paradisegirl",
+   "via": "release",
+   "live": false,
+   "shift": 0.0,
+   "aligned": true,
+   "excluded": false,
+   "duration": 256.056,
+   "start": 16600562
+  },
+  {
+   "ref_id": "awakeosleeperjazz::doing-business-in-great-waters",
+   "song_id": "awakeosleeperjazz",
+   "via": "release",
+   "live": false,
+   "shift": 0.0,
+   "aligned": true,
+   "excluded": false,
+   "duration": 373.333,
+   "start": 16615406
+  },
+  {
+   "ref_id": "sendthebestman::doing-business-in-great-waters",
+   "song_id": "sendthebestman",
+   "via": "release",
+   "live": false,
+   "shift": 0.0,
+   "aligned": true,
+   "excluded": false,
+   "duration": 357.073,
+   "start": 16638549
+  },
+  {
+   "ref_id": "whywaitsolong::doing-business-in-great-waters",
+   "song_id": "whywaitsolong",
+   "via": "release",
+   "live": false,
+   "shift": 0.0,
+   "aligned": true,
+   "excluded": false,
+   "duration": 374.4,
+   "start": 16659030
+  },
+  {
+   "ref_id": "isayitinasong::doing-business-in-great-waters",
+   "song_id": "isayitinasong",
+   "via": "release",
+   "live": false,
+   "shift": 0.0,
+   "aligned": true,
+   "excluded": false,
+   "duration": 294.839,
+   "start": 16681523
+  },
+  {
+   "ref_id": "1234jesus",
+   "song_id": "1234jesus",
+   "via": "instrumental",
+   "live": false,
+   "shift": 0.16,
+   "aligned": true,
+   "excluded": false,
+   "duration": 288.048,
+   "start": 16699655
+  },
+  {
+   "ref_id": "giveyourlifetothelord",
+   "song_id": "giveyourlifetothelord",
+   "via": "instrumental",
+   "live": false,
+   "shift": 0.012,
+   "aligned": true,
+   "excluded": false,
+   "duration": 328.056,
+   "start": 16717282
+  },
+  {
+   "ref_id": "ivefoundit-livingwaters",
+   "song_id": "ivefoundit-livingwaters",
+   "via": "instrumental",
+   "live": false,
+   "shift": -0.488,
+   "aligned": true,
+   "excluded": false,
+   "duration": 263.064,
+   "start": 16736448
+  },
+  {
+   "ref_id": "ivefoundit-livingwaters::living-waters",
+   "song_id": "ivefoundit-livingwaters",
+   "via": "release",
+   "live": false,
+   "shift": 0.0,
+   "aligned": true,
+   "excluded": false,
+   "duration": 256.67,
+   "start": 16752235
+  },
+  {
+   "ref_id": "1234jesus::living-waters",
+   "song_id": "1234jesus",
+   "via": "release",
+   "live": false,
+   "shift": 0.0,
+   "aligned": true,
+   "excluded": false,
+   "duration": 284.0,
+   "start": 16768054
+  },
+  {
+   "ref_id": "youreinvited",
+   "song_id": "youreinvited",
+   "via": "instrumental",
+   "live": false,
+   "shift": 0.004,
+   "aligned": true,
+   "excluded": false,
+   "duration": 356.941,
+   "start": 16785329
+  },
+  {
+   "ref_id": "youreinvited::you-re-invited",
+   "song_id": "youreinvited",
+   "via": "release",
+   "live": false,
+   "shift": -0.008,
+   "aligned": true,
+   "excluded": false,
+   "duration": 356.897,
+   "start": 16806959
+  },
+  {
+   "ref_id": "godsbanquet",
+   "song_id": "godsbanquet",
+   "via": "instrumental",
+   "live": false,
+   "shift": 0.004,
+   "aligned": true,
+   "excluded": false,
+   "duration": 414.037,
+   "start": 16828588
+  },
+  {
+   "ref_id": "godsbanquet::you-re-invited",
+   "song_id": "godsbanquet",
+   "via": "release",
+   "live": false,
+   "shift": -0.008,
+   "aligned": true,
+   "excluded": false,
+   "duration": 414.0,
+   "start": 16852462
+  },
+  {
+   "ref_id": "greaterlove",
+   "song_id": "greaterlove",
+   "via": "instrumental",
+   "live": false,
+   "shift": 0.008,
+   "aligned": true,
+   "excluded": false,
+   "duration": 411.565,
+   "start": 16876315
+  },
+  {
+   "ref_id": "greaterlove::you-re-invited",
+   "song_id": "greaterlove",
+   "via": "release",
+   "live": false,
+   "shift": -0.008,
+   "aligned": true,
+   "excluded": false,
+   "duration": 411.504,
+   "start": 16900524
+  },
+  {
+   "ref_id": "happynow",
+   "song_id": "happynow",
+   "via": "instrumental",
+   "live": false,
+   "shift": 0.004,
+   "aligned": true,
+   "excluded": false,
+   "duration": 255.037,
+   "start": 16924676
+  },
+  {
+   "ref_id": "happynow::you-re-invited",
+   "song_id": "happynow",
+   "via": "release",
+   "live": false,
+   "shift": -0.008,
+   "aligned": true,
+   "excluded": false,
+   "duration": 255.0,
+   "start": 16939898
+  },
+  {
+   "ref_id": "onlyjesus",
+   "song_id": "onlyjesus",
+   "via": "instrumental",
+   "live": false,
+   "shift": 0.008,
+   "aligned": true,
+   "excluded": false,
+   "duration": 254.869,
+   "start": 16955105
+  },
+  {
+   "ref_id": "onlyjesus::you-re-invited",
+   "song_id": "onlyjesus",
+   "via": "release",
+   "live": false,
+   "shift": -0.012,
+   "aligned": true,
+   "excluded": false,
+   "duration": 254.817,
+   "start": 16970422
   }
  ]
 }
