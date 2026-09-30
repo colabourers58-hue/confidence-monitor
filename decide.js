@@ -96,6 +96,8 @@ export const DEFAULTS = {
   WORDS_RECENT: 4,       // the heard line was sung within this long before the words arrived
   LINE_MAX: 8,           // a line lasts until the next cue, at most this long
   WORDS_POOL: 9,         // the words searched are the last this-many seconds of what was heard
+  WORDS_CONFIRM: 2,      // words alone must name the same song twice, at least this far apart...
+  WORDS_CONFIRM_SEC: 20, // ...within this long (a harsh room makes speech recognition invent lines)
   WORDS_AGREE: 3,        // a fingerprint candidate this close (s) to a words clock keeps the song up
 };
 
@@ -124,6 +126,7 @@ export function createDecider(songs, opts) {
   const CHALLENGE = {song_id: null, started: null, n: 0, at: 0};
   let EVIDENCE = [];     // weak looks: {song_id, start, votes, at}
   let QUIET = [];        // recent quiet levels, for the floor
+  let WORDS1 = {song_id: null, at: -1e9};   // the first hearing of a song from words alone
   const bump = () => { S.rev++; };
   const flag = (id, f) => ((song(id) || {}).flags || []).includes(f);
 
@@ -429,6 +432,18 @@ export function createDecider(songs, opts) {
     const r = ix.search(text, C.WORDS_SCORE, C.WORDS_GRAMS);
     if (!r || !song(r.song_id) || r.song_id === S.song_id || !S.auto) return false;
     const s = song(r.song_id);
+    // cross-check with the fingerprints: a pile of evidence for this song, from 2+ looks, that puts
+    // the song at this line: its clock is measured, not estimated, so take it at once
+    const P = piles(r.song_id);
+    const agrees = !!(P && P.looks >= 2 && P.votes >= 2 * C.ACC_FLOOR &&
+      copies(s, r.cue).some(j => outside(s, j, at - P.start, C.WORDS_POOL) <= C.WORDS_OUT));
+    // words alone: they must name this song twice, a moment apart
+    if (!agrees) {
+      const again = WORDS1.song_id === r.song_id && at - WORDS1.at <= C.WORDS_CONFIRM_SEC;
+      if (!again) WORDS1 = {song_id: r.song_id, at};
+      if (!again || at - WORDS1.at < C.WORDS_CONFIRM) return false;
+    }
+    WORDS1 = {song_id: null, at: -1e9};
     PENDING.song_id = null;
     S.last_match = {song_id: r.song_id, offset: null, votes: 0, margin: r.margin, at, via: null,
                     how: 'from the sung words', line: r.line, score: r.score};
@@ -442,13 +457,7 @@ export function createDecider(songs, opts) {
     const L = recent ? ix.song_lines(recent, r.song_id) : [];
     if (L.length && L[0].score >= C.WORDS_ANCHOR && s.cues[L[0].cue].t != null) cue = L[0].cue;
     let started = at - (s.cues[cue].t + half(s, cue)), driver = 'words';
-    // cross-check with the fingerprints: a pile of evidence for this song, from 2+ looks, that puts
-    // the song at this line: its clock is measured, not estimated, so take it
-    const P = piles(r.song_id);
-    if (P && P.looks >= 2 && P.votes >= 2 * C.ACC_FLOOR &&
-        copies(s, r.cue).some(j => outside(s, j, at - P.start, C.WORDS_POOL) <= C.WORDS_OUT)) {
-      started = P.start; driver = 'ear'; S.last_match.how = `sung words + ${P.looks} looks agree`;
-    }
+    if (agrees) { started = P.start; driver = 'ear'; S.last_match.how = `sung words + ${P.looks} looks agree`; }
     Object.assign(S, {song_id: r.song_id, started_at: started, paused_at: null, driver, mode: 'timed', anchor: null,
                       last_confirm: now, on_track_at: now, searching: false});
     S.last_words = {cue, at, moved: false};
