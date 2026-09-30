@@ -87,7 +87,9 @@ async function startMic(deviceId){
     }catch(e){}
   }
   mstream = stream; ring = []; ringLen = 0;
-  actx = new (window.AudioContext || window.webkitAudioContext)({sampleRate:SR});
+  // the device's own rate. Asking for 16 kHz here works in Chrome but gives SILENCE in Safari,
+  // so the audio is converted to 16 kHz by us (to16k) or by the Mac server (X-Rate), never by the browser
+  actx = new (window.AudioContext || window.webkitAudioContext)();
   if(actx.state === 'suspended') await actx.resume();
   const src = actx.createMediaStreamSource(stream);
   const node = actx.createScriptProcessor(4096, 1, 1);
@@ -216,11 +218,25 @@ async function pollServer(){
     if(st.song) st.lastConfirm = performance.now()/1000;   // the Mac decides when to let go
   }catch(e){}
 }
+/* any rate -> 16 kHz: a triangle-weighted average around each output point (low-passes as it
+   thins, so what's above 8 kHz doesn't fold back into the band the matcher listens to) */
+function to16k(f, rate){
+  if(Math.abs(rate - SR) < 1) return f;
+  const r = rate / SR, n = Math.floor(f.length / r), out = new Float32Array(n), h = Math.max(1, r);
+  for(let i = 0; i < n; i++){
+    const c = i * r, a = Math.max(0, Math.ceil(c - h)), b = Math.min(f.length - 1, Math.floor(c + h));
+    let s = 0, w = 0;
+    for(let j = a; j <= b; j++){ const k = 1 - Math.abs(j - c) / h; s += f[j] * k; w += k; }
+    out[i] = w ? s / w : 0;
+  }
+  return out;
+}
 function sendWindow(){
   if(serverMode) return sendToServer();
-  if(!worker || !dec || !engineReady || busy || ringLen < SR*2) return;
-  const f = new Float32Array(ringLen); let o = 0;
-  for(const c of ring){ f.set(c, o); o += c.length; }
+  if(!worker || !dec || !engineReady || busy || !actx || ringLen < actx.sampleRate*2) return;
+  const raw = new Float32Array(ringLen); let o = 0;
+  for(const c of ring){ raw.set(c, o); o += c.length; }
+  const f = to16k(raw, actx.sampleRate);
   const at = performance.now()/1000, win = f.length/SR;
   dec.heard(level, at);
   busy = true;
@@ -494,11 +510,17 @@ async function keepAwake(){
 async function reviveMic(){
   if(document.visibilityState !== 'visible' || !$('#gate').classList.contains('gone')) return;
   const tr = mstream && mstream.getAudioTracks()[0];
-  const dead = !tr || tr.readyState === 'ended' || tr.muted;
+  // only a track that has ENDED is gone. Safari mutes a track for a moment while the page is
+  // hidden and unmutes it by itself; restarting then would fight it.
+  const dead = !tr || tr.readyState === 'ended';
   try{
-    if(dead){ await startMic(inputId); logEvent('start', 'Microphone back on'); }
-    else if(actx && actx.state !== 'running'){ await actx.resume(); }
-  }catch(e){ logEvent('miss', 'Microphone could not restart: tap the screen'); $('#gate').classList.remove('gone'); }
+    if(dead){ await startMic(inputId); logEvent('start', 'Microphone back on'); return; }
+    if(actx && actx.state !== 'running') await actx.resume();
+  }catch(e){}
+  // still not running: Safari only restarts sound after a tap, so ask for one
+  if(dead || (actx && actx.state !== 'running')){
+    $('#gate b').textContent = 'Tap to keep listening'; $('#gate').classList.remove('gone');
+  }
 }
 document.addEventListener('visibilitychange', () => { keepAwake(); reviveMic(); });
 addEventListener('pageshow', () => { keepAwake(); reviveMic(); });
