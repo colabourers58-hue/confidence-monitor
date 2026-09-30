@@ -1,7 +1,7 @@
 /* Everything runs on this device. No server, no network after the first load. */
-import {Orb} from './orb.js?v=202609301920';
+import {Orb} from './orb.js?v=202609302028';
 // Stamped by publish_site.sh on every publish ('dev' when served straight from this Mac).
-const APP_VERSION = '202609301920';
+const APP_VERSION = '202609302028';
 
 const $ = s => document.querySelector(s);
 // the orb is decoration: if this device can't draw it (old GPU, WebGL off, a shader error), the
@@ -50,8 +50,8 @@ let privateCount = 0;
 /* ---------------- engine (runs in a worker, on device) ---------------- */
 let worker = null, engineReady = false, loadMsgT = 0;
 function startEngine(){
-  try{ worker = new Worker('engine/fp-worker.js?v=202609301920', {type:'module'}); }
-  catch(e){ try{ worker = new Worker('engine/fp-worker.js?v=202609301920'); }catch(e2){ worker = null; } }
+  try{ worker = new Worker('engine/fp-worker.js?v=202609302028', {type:'module'}); }
+  catch(e){ try{ worker = new Worker('engine/fp-worker.js?v=202609302028'); }catch(e2){ worker = null; } }
   if(!worker){ $('#load').classList.add('done'); return; }
   worker.onmessage = ev => {
     const m = ev.data || {};
@@ -285,6 +285,75 @@ async function renderDevices(){
     list.appendChild(b);
   });
 }
+/* ---------------- say what's wrong, in words ----------------
+   Joel: "it should really tell us what the problem is." When music has played for a few seconds and
+   nothing is up (or the song up has stopped matching), one plain line says why. */
+let whyAt = 0;
+function showWhy(now, loud, up){
+  if(now - whyAt < 0.5) return; whyAt = now;
+  const el = $('#why'); if(!el) return;
+  let t = '';
+  const music = attemptStart != null && now - attemptStart > 4;
+  if(!mstream) t = '';
+  else if(up && !serverMode && dec && dec.state.doubt) t = 'Checking: the music doesn’t match this song right now';
+  else if(up && serverMode && lastDoubt) t = 'Checking: the music doesn’t match this song right now';
+  else if(!up && !st.song && music){
+    if(!serverMode && !engineReady) t = 'Still downloading the songs, so nothing to compare with yet';
+    else if(level*3.2 < 0.13) t = 'Very little sound is coming in: turn the input up, or check Settings › Microphone';
+    else if(closest && now - closest.at < 8) t = `Hearing music, not sure yet (closest: ${(SONGS[closest.id] || {}).title || closest.id}). Settings › type the song to help`;
+    else t = 'Hearing music but no song matches yet. Settings › type the song to help';
+  }
+  if(el.textContent !== t) el.textContent = t;
+  el.classList.toggle('show', !!t);
+}
+
+/* ---------------- tell it the song (Control Panel) ----------------
+   Type the song that's on, spelled any old way; pick it; the listener then only has to confirm WHERE in
+   the song we are (the held song's fingerprints need far less), and puts it up there. */
+const fnorm = t => (t || '').toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '').replace(/[^a-z0-9 ]+/g, ' ').replace(/\s+/g, ' ').trim();
+function grams(t){ const g = new Map(), x = ' ' + t + ' '; for(let i = 0; i < x.length - 1; i++){ const k = x.slice(i, i + 2); g.set(k, (g.get(k) || 0) + 1); } return g; }
+function dice(a, b){ const A = grams(a), B = grams(b); let n = 0, ta = 0, tb = 0; for(const v of A.values()) ta += v; for(const v of B.values()) tb += v;
+  for(const [k, v] of A) n += Math.min(v, B.get(k) || 0); return ta + tb ? 2 * n / (ta + tb) : 0; }
+function fuzzySongs(q){
+  const n = fnorm(q); if(n.length < 2) return [];
+  const aliases = (TITLES && TITLES.aliases) || {}, out = [];
+  for(const s of Object.values(SONGS)){
+    let best = 0;
+    for(const name of [s.title, ...(aliases[s.id] || [])]){
+      const t = fnorm(name); if(!t) continue;
+      let sc = dice(n, t);
+      if(t.startsWith(n)) sc = Math.max(sc, 0.9); else if(t.includes(n)) sc = Math.max(sc, 0.8);
+      else { const qw = n.split(' ').filter(w => w.length > 1), tw = t.split(' ');   // word by word, misspellings allowed
+        if(qw.length){ const per = qw.map(w => Math.max(...tw.map(x => dice(w, x)))); sc = Math.max(sc, per.reduce((a, b) => a + b, 0) / qw.length * 0.95); } }
+      best = Math.max(best, sc);
+    }
+    if(best < 0.55 && n.length >= 8){                       // a line of the song, roughly
+      for(const c of s.cues || []){ if(c.s) continue; const sc = dice(n, fnorm(c.text)); if(sc > best) best = sc * 0.92; }
+    }
+    if(best >= 0.45) out.push({s, sc: best});
+  }
+  return out.sort((a, b) => b.sc - a.sc).slice(0, 8);
+}
+function renderTell(){
+  const q = $('#tellQ').value, list = $('#tellList'); list.innerHTML = '';
+  for(const r of fuzzySongs(q)){
+    const b = document.createElement('button'); b.className = 'dev'; b.textContent = r.s.title;
+    b.onclick = () => tellSong(r.s); list.appendChild(b);
+  }
+}
+function tellSong(song){
+  $('#tellQ').value = ''; $('#tellList').innerHTML = '';
+  logEvent('input', `Told: ${song.title} is on`);
+  if(serverMode){ fetch('cue', {method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({action:'arm', song_id: song.id})}).catch(()=>{}); return; }
+  const now = performance.now()/1000;
+  if(dec && dec.state.song_id && dec.state.song_id !== song.id) dec.stop();     // a wrong song was up: drop it
+  const c = {song_id: song.id, kind: 'title', cue: null, pos: 0, at: now, last: now + 300, name: song.title, how: 'you told it'};
+  if(dec) dec.state.cue = c;
+  holdSong(song, c);
+  $('#cp').hidden = true;
+}
+$('#tellQ') && ($('#tellQ').oninput = renderTell);
+$('#tellQ') && ($('#tellQ').onkeydown = e => { if(e.key === 'Enter'){ const r = fuzzySongs($('#tellQ').value)[0]; if(r) tellSong(r.s); } e.stopPropagation(); });
 function openPanel(){ $('#cp').hidden = false; renderPanel(); renderNow(); renderDevices(); renderRoom(); }
 // a microphone or audio interface plugged in or out: the list follows while the panel is open
 try{ navigator.mediaDevices.addEventListener('devicechange', () => { if(!$('#cp').hidden) renderDevices(); }); }catch(e){}
@@ -652,13 +721,21 @@ function frame(){
   // (not while word search is starting, running or handing the mic back: it watches the mic itself)
   if(words && words.guarding(now)) deadSince = null;
   else if(mstream && $('#gate').classList.contains('gone') && document.visibilityState === 'visible'){
-    if(level === 0){ if(deadSince == null) deadSince = now;
+    // ...but a MIXER LINE through a sound card is exactly silent whenever nothing is playing (a fader down,
+    // a gate shut): zeros alone are not proof. Only zeros with the audio engine stopped or the track muted.
+    const tr0 = mstream.getAudioTracks()[0], cut = (actx && actx.state !== 'running') || (tr0 && (tr0.muted || tr0.readyState === 'ended'));
+    if(level === 0 && cut){ if(deadSince == null) deadSince = now;
       else if(now - deadSince > 4){ deadSince = null; logEvent('miss', 'The microphone went silent (cut off by the browser)');
-        $('#gate b').textContent = 'The microphone stopped. Tap to turn it back on'; $('#gate').classList.remove('gone'); } }
+        $('#gate b').textContent = 'The microphone stopped. Tap to turn it back on'; $('#gate').classList.remove('gone'); frame.silentGate = true; } }
     else deadSince = null;
+  }
+  // sound is coming in again: a 'microphone stopped' notice was wrong (or the browser recovered): clear it
+  if(frame.silentGate && level > 0 && mstream && !(actx && actx.state !== 'running')){
+    frame.silentGate = false; $('#gate').classList.add('gone'); logEvent('start', 'Sound is coming in again');
   }
   const loud = level*3.2 > 0.10, up = st.song && st.paused == null;   // a held (mentioned) song isn't found yet
   if(loud && !up && attemptStart == null){ attemptStart = now; logEvent('sound', 'Music started'); }
+  showWhy(now, loud, up);
   if(attemptStart != null && !up && now - attemptStart > 30 && !frame.missLogged){
     frame.missLogged = true;
     const why = serverMode ? '' : !engineReady ? ' (the songs were still downloading, so it had nothing to compare with)'
