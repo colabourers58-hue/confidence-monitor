@@ -400,9 +400,19 @@ function setZoom(z){
 }
 
 let soundSince = null, quietSince = null, lastLoud = 0, confNow = 0;
+let deadSince = null;
 function frame(){
   const now = performance.now()/1000;
   orb.setLevel(Math.min(1, level*3.2));
+  // A real microphone is never EXACTLY silent: even a quiet room has some hiss. Pure zeros for
+  // a few seconds means the browser has cut the microphone off (Safari does this when its window
+  // isn't in front, or after an interruption). Say so, and let one tap bring it back.
+  if(mstream && $('#gate').classList.contains('gone') && document.visibilityState === 'visible'){
+    if(level === 0){ if(deadSince == null) deadSince = now;
+      else if(now - deadSince > 4){ deadSince = null; logEvent('miss', 'The microphone went silent (cut off by the browser)');
+        $('#gate b').textContent = 'The microphone stopped. Tap to turn it back on'; $('#gate').classList.remove('gone'); } }
+    else deadSince = null;
+  }
   const loud = level*3.2 > 0.10;
   if(loud && !st.song && attemptStart == null){ attemptStart = now; logEvent('sound', 'Music started'); }
   if(attemptStart != null && !st.song && now - attemptStart > 30 && !frame.missLogged){
