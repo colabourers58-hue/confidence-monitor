@@ -363,7 +363,7 @@
     var p = idx.params, minVotes = opts.minVotes || p.min_votes || 12, maxHits = p.max_hits || 8000000;
     var q = fingerprint(pcm, p.density, p.fan);
     var res = { song_id: null, ref_id: null, via: null, offset_sec: null, rec_offset_sec: null, votes: 0,
-                runner_up: 0, margin: 0, hits: 0, hashes: q.h.length, live: false, duration: null,
+                runner_up: 0, margin: 0, hits: 0, hashes: q.h.length, live: false, duration: null, cands: [],
                 track_votes: opts.track ? 0 : null, track_offset: null,
                 top_votes: opts.top ? 0 : null, top_offset: null };
     if (q.h.length === 0) return res;
@@ -391,12 +391,21 @@
     if (opts.track) { var tk = trackCount(idx, hr, ho, n, opts.track); res.track_votes = tk.votes; res.track_offset = tk.offset; }
     keys = keys.subarray(0, n);
     keys.sort();
-    var best = 0, bestKey = 0, run = 1;
+    var best = 0, bestKey = 0, run = 1, pc = [], pk = [];
     for (j = 1; j <= n; j++) {                        // first highest count in key order = np.argmax
       if (j < n && keys[j] === keys[j - 1]) { run++; continue; }
       if (run > best) { best = run; bestKey = keys[j - 1]; }
+      if (run >= 3) { pc.push(run); pk.push(keys[j - 1]); }       // every place with some support
       run = 1;
     }
+    // the dozen best-supported (recording, place) pairs, for adding up evidence across looks:
+    // in a hard room the right song is often 2nd-5th in any one look, but in the SAME place each time
+    var order = pc.map(function (_, i) { return i; }).sort(function (a, b) { return pc[b] - pc[a]; }).slice(0, 12);
+    res.cands = order.map(function (i) {
+      var rr = Math.floor(pk[i] / 100000), f = idx.refs[rr], oq = pk[i] % 100000 - 40000;
+      return { song_id: f.song_id, ref_id: f.ref_id, votes: pc[i], live: !!f.live || f.aligned === false || !!f.excluded,
+               offset_sec: round3(oq * 2 * SEC_PER_FRAME - (f.shift || 0)) };
+    });
     var ref = Math.floor(bestKey / 100000), bg = idx.refGroup[ref], second = 0;
     for (j = 1, run = 1; j <= n; j++) {               // runner-up: best count for another song
       if (j < n && keys[j] === keys[j - 1]) { run++; continue; }

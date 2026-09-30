@@ -1,7 +1,7 @@
 /* Everything runs on this device. No server, no network after the first load. */
-import {Orb} from './orb.js?v=202609301028';
+import {Orb} from './orb.js?v=202609301033';
 // Stamped by publish_site.sh on every publish ('dev' when served straight from this Mac).
-const APP_VERSION = '202609301028';
+const APP_VERSION = '202609301033';
 
 const $ = s => document.querySelector(s);
 const orb = new Orb($('#orb'));
@@ -24,8 +24,8 @@ async function loadSongs(){
 /* ---------------- engine (runs in a worker, on device) ---------------- */
 let worker = null, engineReady = false, loadMsgT = 0;
 function startEngine(){
-  try{ worker = new Worker('engine/fp-worker.js?v=202609301028', {type:'module'}); }
-  catch(e){ try{ worker = new Worker('engine/fp-worker.js?v=202609301028'); }catch(e2){ worker = null; } }
+  try{ worker = new Worker('engine/fp-worker.js?v=202609301033', {type:'module'}); }
+  catch(e){ try{ worker = new Worker('engine/fp-worker.js?v=202609301033'); }catch(e2){ worker = null; } }
   if(!worker){ $('#load').classList.add('done'); return; }
   worker.onmessage = ev => {
     const m = ev.data || {};
@@ -158,6 +158,10 @@ function renderNow(){
   else if(confNow > 0.05) t = `Thinking… ${Math.round(confNow*100)}% sure`;
   else if(level*3.2 > 0.10) t = 'Hearing music, listening for a song';
   else t = 'Resting, listening for music';
+  if(!serverMode && dec && dec.state.searching && dec.state.acc){
+    const a = dec.state.acc;
+    t = `Searching hard<small>Adding up the evidence. Best so far: ${esc((SONGS[a.song_id] || {}).title || a.song_id)}, ${a.looks} look${a.looks === 1 ? '' : 's'} agree</small>`;
+  }
   if(!serverMode && !engineReady)
     t += `<small>Songs still downloading (${($('#load i').style.width || '0%')}). It can’t recognise anything until this finishes.</small>`;
   else if(!serverMode && !st.song && closest && performance.now()/1000 - closest.at < 20)

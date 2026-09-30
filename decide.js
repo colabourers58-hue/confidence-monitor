@@ -51,6 +51,17 @@ export const DEFAULTS = {
   TOP_MIN: 6,            // hashes needed at the top of the song
   TOP_SHARE: 0.35,       // ...and at least this share of the best place's hashes
   MID_AGREE_N: 3,        // looks that must agree before starting mid-song after a fresh start
+  // ADDING UP THE EVIDENCE. One look that is only partly sure is thrown away by the rules above.
+  // But in a car or a big echoey hall every look is partly sure, and ten of them quietly
+  // agreeing on the same song AT THE SAME PLACE is proof: chance hits scatter across songs and
+  // places, the real song keeps landing in one spot. So weak looks are kept and added up.
+  ACC_FLOOR: 4,          // a look this weak still counts as evidence
+  ACC_SEC: 15,           // evidence older than this is forgotten
+  ACC_TOL: 0.6,          // looks agree when they put the song's start within this of each other
+  ACC_VOTES: 30,         // this much agreeing evidence...
+  ACC_LOOKS: 3,          // ...from at least this many looks...
+  ACC_MARGIN: 2.0,       // ...and this many times more than any other song's best pile = it's this song
+  SEARCH_AFTER: 10,      // music this long with no song up: search mode (and ask the words too)
 };
 
 export function createDecider(songs, opts) {
@@ -72,6 +83,7 @@ export function createDecider(songs, opts) {
   };
   const PENDING = {song_id: null, started: null, at: 0, n: 0};
   const CHALLENGE = {song_id: null, started: null, n: 0, at: 0};
+  let EVIDENCE = [];     // weak looks: {song_id, start, votes, at}
   const bump = () => { S.rev++; };
   const flag = (id, f) => ((song(id) || {}).flags || []).includes(f);
 
@@ -100,6 +112,49 @@ export function createDecider(songs, opts) {
       if (at - S.last_loud > C.QUIET_GAP) S.music_since = at - 0.75;   // began since the last look
       S.last_loud = at;
     }
+    // music has been going for a while and nothing is up: search mode
+    S.searching = S.song_id == null && S.music_since > 0 && at - S.last_loud < 3 && at - S.music_since > C.SEARCH_AFTER;
+  }
+
+  /** Keep a weak look and see whether the pile for its song and place now proves it. */
+  function accumulate(r, heardAt, win, now) {
+    EVIDENCE = EVIDENCE.filter(e => now - e.at <= C.ACC_SEC);
+    if (!r) return false;
+    // every candidate of this look (the engine's dozen best places), not just its winner
+    const cands = (r.cands && r.cands.length) ? r.cands : (r.song_id ? [r] : []);
+    const seen = new Set();
+    for (const c of cands) {
+      if (!c.song_id || c.votes < C.ACC_FLOOR || c.live || flag(c.song_id, 'untimed')) continue;
+      const start = heardAt - win - c.offset_sec, key = c.song_id + '@' + Math.round(start / C.ACC_TOL);
+      if (seen.has(key)) continue;                  // the same place via two copies of one master counts once
+      seen.add(key);
+      EVIDENCE.push({song_id: c.song_id, start, votes: c.votes, at: now, look: heardAt});
+    }
+    if (!EVIDENCE.length) return false;
+    // piles: one song, one start time, several looks. Find the biggest, and the biggest of any other song.
+    const pile = (id, st) => EVIDENCE.filter(e => e.song_id === id && Math.abs(e.start - st) <= C.ACC_TOL);
+    let bestSum = 0, bestPile = null;
+    for (const e of EVIDENCE) {
+      const p = pile(e.song_id, e.start), sum = p.reduce((a, x) => a + x.votes, 0);
+      if (sum > bestSum) { bestSum = sum; bestPile = p; }
+    }
+    const winner = bestPile[0].song_id;
+    let rival = 0;
+    for (const e of EVIDENCE) if (e.song_id !== winner)
+      rival = Math.max(rival, pile(e.song_id, e.start).reduce((a, x) => a + x.votes, 0));
+    const mine = bestPile, sum = bestSum;
+    const looks = new Set(mine.map(e => e.look)).size;
+    S.acc = {song_id: winner, votes: sum, looks, rival};
+    if (sum < C.ACC_VOTES || looks < C.ACC_LOOKS || sum < C.ACC_MARGIN * Math.max(rival, 1) || !S.auto) return false;
+    r = Object.assign({}, r, {song_id: winner, ref_id: (cands.find(c => c.song_id === winner) || {}).ref_id || r.ref_id});
+    if (sum < C.ACC_VOTES || mine.length < C.ACC_LOOKS || sum < C.ACC_MARGIN * Math.max(rival, 1) || !S.auto) return false;
+    const st = mine.reduce((a, e) => a + e.start * e.votes, 0) / sum;       // vote-weighted start
+    Object.assign(S, {song_id: r.song_id, started_at: st, paused_at: null, last_confirm: now, on_track_at: now,
+                      driver: 'ear', mode: 'timed', anchor: null, searching: false});
+    S.last_match = {song_id: r.song_id, offset: heardAt - win - st, votes: sum, margin: sum / Math.max(rival, 1),
+                    at: heardAt, via: r.ref_id && r.ref_id.includes('::') ? r.ref_id : null, how: `added up ${looks} looks`};
+    EVIDENCE = []; PENDING.song_id = null;
+    return true;
   }
 
   /** What to ask the engine along with this window: {song_id, at, tol} or null. */
@@ -222,6 +277,8 @@ export function createDecider(songs, opts) {
       S.last_confirm = S.on_track_at = now;
       CHALLENGE.song_id = null; CHALLENGE.n = 0; PENDING.song_id = null;
     } else if (!liveHit) changed = consider(m, heardAt, win, now);
+    if (!changed && S.song_id == null) changed = accumulate(r, heardAt, win, now);
+    else if (S.song_id != null) EVIDENCE = [];
     bump();
     return changed;
   }
