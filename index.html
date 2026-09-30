@@ -227,10 +227,19 @@ if(/iPad|iPhone|iPod/.test(navigator.userAgent)||(/Macintosh/.test(navigator.use
   #why.show{opacity:1}
   #why.bad{background:rgba(160,20,20,.94);font-size:clamp(26px,4.6vh,54px);top:50%;bottom:auto;transform:translate(-50%,-50%);padding:28px 40px;border-radius:22px;max-width:min(1100px,90vw)}
   #stat{position:fixed;left:calc(14px + env(safe-area-inset-left));bottom:calc(14px + env(safe-area-inset-bottom));z-index:9;max-width:60vw;
-        padding:10px 18px 10px 44px;border-radius:24px;background:rgba(28,28,30,.8);color:#fff;font-size:clamp(17px,2.6vh,28px);font-weight:700;
+        padding:7px 14px 7px 32px;border-radius:18px;background:rgba(28,28,30,.8);color:#fff;font-size:clamp(14px,2vh,20px);font-weight:700;
         white-space:nowrap;overflow:hidden;text-overflow:ellipsis;pointer-events:none}
-  #stat::before{content:"";position:absolute;left:16px;top:50%;width:16px;height:16px;margin-top:-8px;border-radius:50%;background:#30d158}
+  #stat::before{content:"";position:absolute;left:12px;top:50%;width:11px;height:11px;margin-top:-5.5px;border-radius:50%;background:#30d158}
   #stat.warn::before{background:#ff9f0a} #stat.bad::before{background:#ff453a} #stat.bad{color:#fff;background:rgba(160,20,20,.85)}
+  #stat.compact{font-size:clamp(11px,1.7vh,17px);padding:4px 10px 4px 24px;background:rgba(28,28,30,.55);font-weight:600}
+  #stat.compact::before{left:9px;width:8px;height:8px;margin-top:-4px}
+  #meter.compact{padding:4px 10px;gap:8px;background:rgba(28,28,30,.55)} #meter.compact .track{height:8px} #meter.compact span{font-size:clamp(11px,1.6vh,15px)}
+  #meter{position:fixed;z-index:9;display:flex;align-items:center;gap:12px;pointer-events:none;padding:8px 14px;border-radius:14px;background:rgba(28,28,30,.8)}
+  #meter .track{position:relative;flex:1;height:10px;border-radius:7px;overflow:hidden;
+    background:linear-gradient(90deg,rgba(48,209,88,.22) 0 80%,rgba(255,214,10,.22) 80% 95%,rgba(255,69,58,.25) 95%)}
+  #meter i{position:absolute;left:0;top:0;bottom:0;width:0;border-radius:7px;transition:width .06s linear}
+  #meter b{position:absolute;top:-2px;bottom:-2px;width:3px;margin-left:-1px;background:#fff}
+  #meter span{color:#fff;font-size:clamp(13px,1.9vh,18px);font-weight:700;font-variant-numeric:tabular-nums;white-space:nowrap}
   #tellQ{width:100%;font:inherit;font-size:18px;padding:12px 14px;border-radius:12px;border:0;background:rgba(120,120,128,.24);color:#fff;outline:none;margin-top:6px}
   #loadMsg{position:fixed;left:50%;bottom:calc(5vh + 20px);transform:translateX(-50%);z-index:7;width:min(420px,86vw);
            text-align:center;font-size:clamp(14px,1.9vh,18px);line-height:1.35;color:var(--label-2);transition:opacity .5s}
@@ -249,6 +258,7 @@ if(/iPad|iPhone|iPod/.test(navigator.userAgent)||(/Macintosh/.test(navigator.use
 <div id="toast" hidden></div>
 <div id="why"></div>
 <div id="stat" hidden></div>
+<div id="meter" hidden><div class="track"><i></i><b></b></div><span></span></div>
 <div id="load"><i></i></div>
 <div id="loadMsg" hidden>Getting the songs ready. This happens once, and Wi-Fi makes it quicker.</div>
 <button id="cpBtn" aria-label="Control panel"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round"><path d="M4 7h10M18 7h2M4 17h4M12 17h8"/><circle cx="16" cy="7" r="2.4"/><circle cx="10" cy="17" r="2.4"/></svg></button>
@@ -292,6 +302,6 @@ if(/iPad|iPhone|iPod/.test(navigator.userAgent)||(/Macintosh/.test(navigator.use
   <li>Tap the Share button <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2l4.2 4.2-1.4 1.4L13 5.8V15h-2V5.8L9.2 7.6 7.8 6.2zM5 10h3v2H6v8h12v-8h-2v-2h3a1 1 0 0 1 1 1v10a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V11a1 1 0 0 1 1-1z"/></svg> <span id="shareWhere">at the bottom of the screen</span>.</li>
   <li>Choose <b style="display:inline;font-size:inherit">Add to Home Screen</b>, then Add.</li></ol></div><div class="arrow"></div></div>
 <div id="gate"><b>Tap to begin</b><small>One tap allows the microphone. After that it runs on its own.</small></div>
-<script type="module" src="app.js?v=202609302202"></script>
+<script type="module" src="app.js?v=202609302248"></script>
 </body>
 </html>

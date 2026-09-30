@@ -1,7 +1,7 @@
 /* Everything runs on this device. No server, no network after the first load. */
-import {Orb} from './orb.js?v=202609302202';
+import {Orb} from './orb.js?v=202609302248';
 // Stamped by publish_site.sh on every publish ('dev' when served straight from this Mac).
-const APP_VERSION = '202609302202';
+const APP_VERSION = '202609302248';
 
 const $ = s => document.querySelector(s);
 // the orb is decoration: if this device can't draw it (old GPU, WebGL off, a shader error), the
@@ -50,8 +50,8 @@ let privateCount = 0;
 /* ---------------- engine (runs in a worker, on device) ---------------- */
 let worker = null, engineReady = false, loadMsgT = 0, engineRetry = 0;
 function startEngine(){
-  try{ worker = new Worker('engine/fp-worker.js?v=202609302202', {type:'module'}); }
-  catch(e){ try{ worker = new Worker('engine/fp-worker.js?v=202609302202'); }catch(e2){ worker = null; } }
+  try{ worker = new Worker('engine/fp-worker.js?v=202609302248', {type:'module'}); }
+  catch(e){ try{ worker = new Worker('engine/fp-worker.js?v=202609302248'); }catch(e2){ worker = null; } }
   if(!worker){ $('#load').classList.add('done'); return; }
   worker.onmessage = ev => {
     const m = ev.data || {};
@@ -130,6 +130,10 @@ function applyLocal(now){
 /* ---------------- microphone ---------------- */
 const SR = 16000, WIN = 5*SR, EVERY = 500;     // a fresh look every 0.5 s (measured: faster locks; a look costs ~60 ms on a Mac)
 let actx, ring = [], ringLen = 0, level = 0, busy = false;
+// automatic gain: a quiet feed (a mixer line set low, a mic far from the speakers) is brought up to a working level
+// in software, so nobody has to touch the desk. rawLevel = what actually arrives (for 'no sound' checks).
+let rawLevel = 0, agcPeak = 0.02, agcGain = 1, clipFrac = 0;
+const AGC_TARGET = 0.12, AGC_MAX = 40;
 let mstream = null, analyser = null, fbuf = null, inputId = null;
 let srcNode = null, procNode = null, lastFrameAt = 0;   // lastFrameAt: when sound last arrived (word search watches it)
 try{ inputId = localStorage.getItem('cm.input'); }catch(e){}
@@ -196,8 +200,14 @@ async function startMic0(deviceId, opts){
     lastFrameAt = performance.now()/1000;
     const d = e.inputBuffer.getChannelData(0);
     let s = 0; for(let i=0;i<d.length;i++) s += d[i]*d[i];
-    level = Math.sqrt(s/d.length);
-    ring.push(new Float32Array(d)); ringLen += d.length;
+    rawLevel = Math.sqrt(s/d.length);
+    agcPeak = Math.max(rawLevel, agcPeak * 0.9927, 1e-5);                  // the music's recent loudness (8 s half-life)
+    agcGain = 0.92 * agcGain + 0.08 * Math.min(AGC_MAX, Math.max(0.25, AGC_TARGET / agcPeak));   // up for a quiet feed, down for a loud one
+    let clip = 0; for(let i=0;i<d.length;i++) if(Math.abs(d[i]) > 0.985) clip++;          // distorted before it reached us: only the desk can fix it
+    clipFrac = 0.96 * clipFrac + 0.04 * (clip / d.length);
+    level = rawLevel * agcGain;
+    const g = new Float32Array(d.length); for(let i=0;i<d.length;i++) g[i] = Math.max(-1, Math.min(1, d[i] * agcGain));
+    ring.push(g); ringLen += g.length;
     const cap = Math.round(5 * actx.sampleRate);
     while(ringLen > cap){ ringLen -= ring[0].length; ring.shift(); }
   };
@@ -226,7 +236,7 @@ try{ LOG = JSON.parse(localStorage.getItem('cm.log') || '[]'); }catch(e){ LOG = 
 const SESSION_START = Date.now();
 function logEvent(kind, text, extra){
   LOG.push(Object.assign({t: Date.now(), kind, text}, extra || {}));
-  if(LOG.length > 400) LOG = LOG.slice(-400);
+  if(LOG.length > 3000){ const keep = LOG.slice(-2500), old = LOG.slice(0, -2500).filter(e => e.kind === 'miss').slice(-300); LOG = old.concat(keep); }
   try{ localStorage.setItem('cm.log', JSON.stringify(LOG)); }catch(e){}
   if(!$('#cp').hidden) renderPanel();
 }
@@ -243,7 +253,8 @@ function renderPanel(){
     [ids.length ? ids[0].toFixed(1)+' s' : '–', 'fastest'], [ids.length ? ids[ids.length-1].toFixed(1)+' s' : '–', 'slowest'],
     [late, 'took over 8 s'], [miss, 'music never identified']]
     .map(([b,s]) => `<div><b>${b}</b><span>${s}</span></div>`).join('');
-  $('#log').innerHTML = LOG.slice(-150).reverse().map(e =>
+  const recent = LOG.slice(-150), probs = LOG.slice(0, -150).filter(e => e.kind === 'miss').slice(-30);   // problems are never scrolled away
+  $('#log').innerHTML = probs.concat(recent).reverse().map(e =>
     `<div><time>${hhmmss(e.t)}</time><span class="${e.kind==='identified'?'id':e.kind==='miss'?'miss':e.kind==='heard'?'heard':''}">${esc(e.text)}</span></div>`).join('')
     || '<div><time></time><span>Nothing yet. Play or sing something.</span></div>';
 }
@@ -294,6 +305,7 @@ async function renderDevices(){
    Joel: "it should really tell us what the problem is." When music has played for a few seconds and
    nothing is up (or the song up has stopped matching), one plain line says why. */
 let whyAt = 0, quietSinceAt = null, loadPct = 0, lastLookAt = 0;
+let updateWaiting = null;
 // Joel: "why do we have to guess... if it's gone offline or the mic is off it should clearly say it."
 // A status light that is always on screen, and one plain instruction when something needs doing.
 const CLICK = (() => { try{ return matchMedia('(pointer:fine)').matches ? 'Click' : 'Tap'; }catch(e){ return 'Tap'; } })();
@@ -308,7 +320,7 @@ function showWhy(now, loud, up){
   }
   const online = navigator.onLine !== false;
   const tr = mstream && mstream.getAudioTracks()[0], mic = tr ? (tr.label || 'the input').replace(/\s*\(.*?\)\s*$/, '') : '';
-  if(mstream && level < 0.0015){ if(quietSinceAt == null) quietSinceAt = now; } else quietSinceAt = null;
+  if(mstream && rawLevel < 0.0004){ if(quietSinceAt == null) quietSinceAt = now; } else quietSinceAt = null;
   const silent = quietSinceAt == null ? 0 : now - quietSinceAt;
   const music = attemptStart != null && now - attemptStart > 4;
   let t = '', p = '', cls = 'ok';
@@ -325,10 +337,12 @@ function showWhy(now, loud, up){
   else {
     const ago = lastLookAt ? Math.max(0, Math.round(now - lastLookAt)) : null;
     p = `Listening \u00b7 ${mic}` + (ago == null ? '' : ` \u00b7 checked ${ago} s ago`) + (online ? '' : ' \u00b7 offline, using saved songs');
+    if(updateWaiting) p += ' \u00b7 update ready (applies next time Prompter is opened)';
     if(ago != null && ago > 10){ cls = 'bad'; t = 'Prompter has stopped checking the music. Reload the page'; }
-    if(up && dec && dec.state.doubt) { t = 'Checking: the music doesn’t match this song right now'; cls = 'warn'; }
+    if(clipFrac > 0.004){ t = 'The sound is distorting (too loud before it reaches Prompter). Turn the feed down at the desk'; cls = 'bad'; }
+    else if(up && dec && dec.state.doubt) { t = 'Checking: the music doesn’t match this song right now'; cls = 'warn'; }
     else if(!up && !st.song && music){
-      if(level * 3.2 < 0.13){ t = 'The sound is very quiet. Turn the feed up at the desk'; cls = 'warn'; }
+      if(agcGain >= AGC_MAX * 0.95 && level * 3.2 < 0.13){ t = 'The sound is extremely faint even boosted. Turn the feed up at the desk'; cls = 'warn'; }
       else if(now - attemptStart > 15){ t = (closest && now - closest.at < 8)
           ? `Hearing music but haven’t recognised it yet (closest: ${(SONGS[closest.id] || {}).title || closest.id}). Type the song in Settings`
           : 'Hearing music but haven’t recognised it yet. Type the song in Settings'; cls = 'warn'; }
@@ -340,10 +354,30 @@ function showWhy(now, loud, up){
   pill.className = cls; pill.hidden = !p;
   placeStat(pill);
 }
+// a plain input meter under the status light: what actually ARRIVES (before the automatic boost), in dBFS
+let mPeak = -90, mPeakAt = 0, mPeakRaw = 0;
+function drawMeter(now){
+  const box = $('#meter'), pill = $('#stat'); if(!box || !pill) return;
+  box.hidden = !mstream || pill.hidden;
+  if(box.hidden) return;
+  const db = rawLevel > 0 ? Math.max(-60, 20 * Math.log10(rawLevel * Math.SQRT2)) : -60;   // RMS -> about peak-equivalent dBFS
+  if(db >= mPeak || now - mPeakAt > 1.5){ mPeak = db; mPeakAt = now; }
+  const pc = v => ((v + 60) / 60 * 100).toFixed(1) + '%';
+  box.querySelector('i').style.width = pc(db);
+  box.querySelector('b').style.left = pc(mPeak);
+  box.querySelector('i').style.background = clipFrac > 0.004 || db > -3 ? '#ff453a' : db > -12 ? '#ffd60a' : '#30d158';
+  box.querySelector('span').textContent = rawLevel > 0 ? `${Math.round(db)} dB` + (agcGain > 1.5 ? ` · boosted ×${agcGain.toFixed(0)}` : '') : 'no signal';
+  const r = pill.getBoundingClientRect();
+  if(box.classList.contains('compact')){ box.style.left = (r.right + 10) + 'px'; box.style.top = (r.top + r.height/2 - box.offsetHeight/2) + 'px'; box.style.width = '300px'; }
+  else { box.style.left = r.left + 'px'; box.style.top = (r.bottom + 6) + 'px'; box.style.width = Math.max(220, r.width) + 'px'; }
+}
 function placeStat(pill){
-  const d = $('#dot'), corner = st.song && orbCorner && d;
-  if(corner){ const r = d.getBoundingClientRect();
-    pill.style.left = Math.max(8, r.left - 8) + 'px'; pill.style.top = (r.bottom + 10) + 'px'; pill.style.bottom = 'auto'; pill.style.transform = 'none'; }
+  // a song is up: one small line right after its title. Nothing up: above the orb.
+  const t = $('#title'), compact = true;                            // always in the top line, song or no song (Joel)
+  pill.classList.toggle('compact', compact); $('#meter') && $('#meter').classList.toggle('compact', compact);
+  if(compact){ const r = t.getBoundingClientRect(), tw = Math.min(r.width, t.scrollWidth), se = $('#sect');
+    const after = st.song && se && se.classList.contains('show') && se.textContent ? se.getBoundingClientRect().right : st.song && t.textContent ? r.left + tw : r.left - 18;
+    pill.style.left = (after + 18) + 'px'; pill.style.top = (r.top + r.height/2 - pill.offsetHeight/2) + 'px'; pill.style.bottom = 'auto'; pill.style.transform = 'none'; }
   else { const m = Math.min(innerWidth, innerHeight);
     pill.style.left = '50%'; pill.style.top = Math.max(8, innerHeight/2 - m*0.27 - pill.offsetHeight - 14) + 'px'; pill.style.bottom = 'auto'; pill.style.transform = 'translateX(-50%)'; }
 }
@@ -778,6 +812,7 @@ function frame(){
   const loud = level*3.2 > 0.10, up = st.song && st.paused == null;   // a held (mentioned) song isn't found yet
   if(loud && !up && attemptStart == null){ attemptStart = now; logEvent('sound', 'Music started'); }
   showWhy(now, loud, up);
+  drawMeter(now);
   if(attemptStart != null && !up && now - attemptStart > 30 && !frame.missLogged){
     frame.missLogged = true;
     const why = serverMode ? '' : !engineReady ? ' (the songs were still downloading, so it had nothing to compare with)'
@@ -791,7 +826,7 @@ function frame(){
     const db = 20*Math.log10(level || 1e-6);
     $('#cpMeter').style.width = Math.min(100, Math.max(0, (db + 70) / 60 * 100)) + '%';
     $('#cpLevel').textContent = db.toFixed(0) + ' dB';
-    $('#cpHearing').innerHTML = level < 0.0015 ? '<span class="warn">Nothing coming in. Check the input below</span>' : level*3.2 > 0.10 ? 'Hearing music' : 'Quiet room';
+    $('#cpHearing').innerHTML = rawLevel < 0.0004 ? '<span class="warn">Nothing coming in. Check the input below</span>' : level*3.2 > 0.10 ? 'Hearing music' : 'Quiet room';
     renderNow();
   }
   if(loud){ quietSince = null; if(soundSince == null) soundSince = now; }
@@ -1203,6 +1238,9 @@ async function checkUpdate(){
   try{
     const v = (await (await fetch('version.json?t=' + Date.now(), {cache:'no-store'})).json()).version;
     if(!v || v === APP_VERSION) return;
+    // NEVER reload while listening: a reload stops the microphone, and a browser may not restart it without a
+    // click (30 Sep: a machine sat deaf for 13 minutes in a service). The update waits for the next opening.
+    if(mstream){ updateWaiting = v; return; }
     const k = 'cm.upd.' + v;
     if(sessionStorage.getItem(k)) return;          // already tried this one: don't loop
     sessionStorage.setItem(k, '1');
@@ -1234,7 +1272,8 @@ if(serverMode){
   $('#load').classList.add('done');
   setInterval(pollServer, 150);            // the Mac says what it heard: check often, it is on this network
 }else{
-  try{ dec = (await import('./decide.js?v=' + APP_VERSION)).createDecider(id => SONGS[id], {KEYS: []}); }catch(e){ console.warn('decide.js:', e); }   // KEYS: [] = key-change search OFF (30 Sep): six extra keys named wrong songs on an unknown song (Destiny)
+  let LOOPS = []; try{ LOOPS = await (await fetch('data/loops.json?v=' + APP_VERSION)).json(); }catch(e){}
+  try{ dec = (await import('./decide.js?v=' + APP_VERSION)).createDecider(id => SONGS[id], {KEYS: [], LOOPS}); }catch(e){ console.warn('decide.js:', e); }   // KEYS: [] = key-change search OFF (30 Sep): six extra keys named wrong songs on an unknown song (Destiny)
   startEngine();
   await startWords();
   startASR();                              // the words, heard on this device

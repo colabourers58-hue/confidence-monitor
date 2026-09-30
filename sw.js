@@ -1,6 +1,6 @@
 /* Keeps the whole app on the device. First visit stores everything; after that it
    never needs a network. Bump VERSION to push an update the next time it is online. */
-const VERSION = 'cm-202609302202';   // stamped by publish_site.sh
+const VERSION = 'cm-202609302248';   // stamped by publish_site.sh
 // ONNX Runtime Web (runs the learned fingerprint in engine/fp-worker.js), from its CDN, kept offline
 const ORT_BASE = 'https://cdn.jsdelivr.net/npm/onnxruntime-web@1.20.1/dist/';
 const ORT_FILES = ['ort.wasm.min.js', 'ort.wasm.min.mjs', 'ort-wasm-simd-threaded.mjs', 'ort-wasm-simd-threaded.wasm'];
@@ -19,7 +19,7 @@ self.addEventListener('install', e => {
     await c.addAll(SHELL.map(u => new Request(u, {cache:'reload'})));
     // the offline-only files one by one, so a host without them (the Mac serves none of
     // them) can't fail the install
-    for(const f of ['decide.js', 'lyricsearch.js', 'words.js', 'mention.js', 'data/titles.json', 'data/preached.json', 'asrtext.js']){ try{ await c.add(f); }catch(err){} }
+    for(const f of ['decide.js', 'lyricsearch.js', 'words.js', 'mention.js', 'data/titles.json', 'data/preached.json', 'data/loops.json', 'asrtext.js']){ try{ await c.add(f); }catch(err){} }
     // the engine's code (small) straight from the server: a copy minutes old would pair an old engine
     // with a new app. The BIG files (index shards, the learned fingerprint, the speech model, the
     // runtimes: ~180 MB) are NOT fetched here: a browser gives an install about 5 minutes, and on a

@@ -154,6 +154,10 @@ export const DEFAULTS = {
 
 export function createDecider(songs, opts) {
   const C = Object.assign({}, DEFAULTS, opts || {});
+  // songs whose backing track is one loop, the same chords start to finish (app/loopness.py, data/loops.json):
+  // the music can say WHICH song but never WHERE. They start at the top when the beat comes in after quiet,
+  // the music never moves the place, and only the singing moves the line (Joel, 30 Sep: Loyalty and Disloyalty)
+  const LOOP = new Set(C.LOOPS || []);
   const song = typeof songs === 'function' ? songs : id => songs[id];
   const S = {
     song_id: null,      // what is up
@@ -199,12 +203,14 @@ export function createDecider(songs, opts) {
   const isLive = m => !!(m && (m.live || flag(m.song_id, 'untimed')));
 
   function take(id, started, now, key) {
-    Object.assign(S, {song_id: id, started_at: started, last_confirm: now, on_track_at: now,
-                      driver: 'ear', mode: 'timed', anchor: null, ear_at: now, on_looks: 0, key: key || 0, cue: null});
+    const loop = LOOP.has(id);
+    if (loop && S.music_since != null && S.music_real && now - S.music_since <= C.TOP_SEC) started = S.music_since;
+    Object.assign(S, {song_id: id, started_at: started, last_confirm: now, on_track_at: now, taken_at: now,
+                      driver: loop ? 'live' : 'ear', mode: 'timed', anchor: null, ear_at: now, on_looks: 0, key: key || 0, cue: null});
     PENDING.song_id = null; bump();
   }
   function clear() {
-    Object.assign(S, {song_id: null, started_at: null, driver: null, mode: 'timed', anchor: null, ear_at: null, on_looks: 0, key: 0});
+    Object.assign(S, {song_id: null, started_at: null, taken_at: null, driver: null, mode: 'timed', anchor: null, ear_at: null, on_looks: 0, key: 0});
     PENDING.song_id = null; bump();
   }
 
@@ -213,9 +219,12 @@ export function createDecider(songs, opts) {
     S.active = true;
     const thr = Math.max(C.START_MIN, C.START_RATIO * (S.floor || 0));
     if (level > thr) {
-      if (at - S.last_sound > C.QUIET_GAP) S.music_since = at - 0.75;   // began since the last look
+      if (at - S.last_sound > C.QUIET_GAP){ S.music_since = at - 0.75;   // began since the last look
+        S.music_real = !!S.quiet_heard; }                              // a real start: we heard the quiet before it
+
       S.last_sound = at;
     } else if (level < C.MUSIC_LEVEL) {        // a quiet look: it teaches the floor
+      S.quiet_heard = true;
       QUIET.push(level); if (QUIET.length > C.FLOOR_LOOKS) QUIET.shift();
       const q = QUIET.slice().sort((a, b) => a - b);
       S.floor = q[Math.floor(0.1 * (q.length - 1))];
@@ -317,11 +326,16 @@ export function createDecider(songs, opts) {
         if (top) { st = top.start; how += ', from the top'; }
       }
     }
+    // a looping song: added-up evidence only confirms it once it's up (never re-places it); fresh, it takes the top
+    if (LOOP.has(winner)) {
+      if (S.song_id === winner) { S.last_confirm = now; EVIDENCE = []; return false; }
+      if (S.music_since != null && S.music_real && heardAt - S.music_since <= C.TOP_SEC) { st = S.music_since; how += ', from the top (a looping song)'; }
+    }
     r = Object.assign({}, r, {song_id: winner, ref_id: (cands.find(c => c.song_id === winner && c.key === pkey) || {}).ref_id || r.ref_id});
     if (pkey) how += `, played ${pkey > 0 ? '+' : ''}${pkey} semitone${Math.abs(pkey) === 1 ? '' : 's'}`;
     if (prior) how += ', called by name first';
-    Object.assign(S, {song_id: r.song_id, started_at: st, paused_at: null, last_confirm: now, on_track_at: now,
-                      driver: 'ear', mode: 'timed', anchor: null, searching: false, ear_at: now, on_looks: 0, key: pkey, cue: null});
+    Object.assign(S, {song_id: r.song_id, started_at: st, paused_at: null, last_confirm: now, on_track_at: now, taken_at: now,
+                      driver: LOOP.has(r.song_id) ? 'live' : 'ear', mode: 'timed', anchor: null, searching: false, ear_at: now, on_looks: 0, key: pkey, cue: null});
     S.last_match = {song_id: r.song_id, offset: heardAt - win - st, votes: sum, margin: sum / Math.max(rival, 1),
                     at: heardAt, via: r.ref_id && r.ref_id.includes('::') ? r.ref_id : null, how};
     EVIDENCE = []; PENDING.song_id = null;
@@ -378,6 +392,8 @@ export function createDecider(songs, opts) {
     if (!believable(m)) return false;
     // offset_sec is where the WINDOW STARTS inside the recording, and the window ended at heardAt
     const started = heardAt - (m.offset_sec + win);
+    // a looping song that's up: the music confirms it's still on, and never moves the place
+    if (S.song_id === m.song_id && LOOP.has(m.song_id)) { S.last_confirm = now; PENDING.song_id = null; return false; }
     // already locked on this song and still in step: note that we can still hear it
     const mk = m.key || 0;
     if (S.song_id === m.song_id && S.started_at != null && Math.abs(S.started_at - started) < C.RESYNC_SEC) {
@@ -390,7 +406,9 @@ export function createDecider(songs, opts) {
     }
     // something is up and was on track recently: a different song, or a different place in
     // this song (the other chorus), has to keep saying so, window after window
-    if (S.song_id != null && S.driver === 'ear' && now - S.on_track_at < C.CHALLENGE_WITHIN) {
+    // (a backing track followed on an estimated clock is protected the same way: 30 Sep, Loyalty was thrown
+    // off to a wrong song two minutes in)
+    if (S.song_id != null && (S.driver === 'ear' || S.driver === 'live') && now - S.on_track_at < C.CHALLENGE_WITHIN) {
       const fresh = now - CHALLENGE.at < C.CHALLENGE_GAP;
       if (fresh && CHALLENGE.song_id === m.song_id && CHALLENGE.key === mk && Math.abs(CHALLENGE.started - started) < C.AGREE_SEC)
         Object.assign(CHALLENGE, {n: CHALLENGE.n + 1, at: now, started: (CHALLENGE.started + started) / 2});
@@ -477,8 +495,11 @@ export function createDecider(songs, opts) {
       cues.forEach((c, j) => { if (!isSec(c) && c.t != null && c.t <= tEst) anchor = j; });
       Object.assign(S, {song_id: sid, started_at: null, driver: 'live', mode: 'words', anchor, last_confirm: now, ear_at: null, on_looks: 0, cue: null});
     } else {
-      Object.assign(S, {song_id: sid, started_at: heardAt - (m.offset_sec + win) * k, paused_at: null, driver: 'live',
-                        mode: 'timed', anchor: null, last_confirm: now, on_track_at: now, ear_at: null, on_looks: 0, key: m.key || 0, cue: null});
+      // heard in the intro (the music began moments ago, after quiet): it's the top. A looping backing track
+      // matches equally well everywhere, so its best-matching place means nothing; where the music began does (Joel)
+      const fromTop = S.music_since != null && S.music_real && heardAt - S.music_since <= C.TOP_SEC;
+      Object.assign(S, {song_id: sid, started_at: fromTop ? S.music_since : heardAt - (m.offset_sec + win) * k, paused_at: null, driver: 'live',
+                        mode: 'timed', anchor: null, last_confirm: now, on_track_at: now, taken_at: now, ear_at: null, on_looks: 0, key: m.key || 0, cue: null});
     }
     bump();
     return true;
@@ -655,6 +676,9 @@ export function createDecider(songs, opts) {
     if (!['ear', 'live', 'words'].includes(S.driver) || S.song_id == null) return false;
     const dur = (song(S.song_id) || {}).duration || 0;
     if (S.started_at != null && dur && now - S.started_at > dur + C.END_GRACE) { clear(); return true; }
+    // however it has been kept up (a looping track re-confirming it), a song is never held past twice its
+    // own length: 30 Sep, a 6-minute song sat on screen for 65 minutes and nothing after it could come up
+    if (S.taken_at != null && dur && now - S.taken_at > 2 * dur + 60) { clear(); return true; }
     // a words-only song with no further line and no recorded music for LINE_ALONE: it was a quote.
     // Hold the line last heard rather than scroll on through a song nobody is singing
     if (S.driver === 'words' && S.started_at != null && S.last_words && now - S.last_confirm > C.LINE_ALONE && !recorded(now)) {
