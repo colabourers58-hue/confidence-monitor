@@ -1,11 +1,14 @@
 /* Everything runs on this device. No server, no network after the first load. */
-import {Orb} from './orb.js?v=202609301033';
+import {Orb} from './orb.js?v=202609301035';
 // Stamped by publish_site.sh on every publish ('dev' when served straight from this Mac).
-const APP_VERSION = '202609301033';
+const APP_VERSION = '202609301035';
 
 const $ = s => document.querySelector(s);
-const orb = new Orb($('#orb'));
-orb.attach(document);          // poke it: it dents, springs back and jiggles
+// the orb is decoration: if this device can't draw it (old GPU, WebGL off, a shader error), the
+// lyrics must still work, so anything the app asks of the orb quietly does nothing
+let orb;
+try{ orb = new Orb($('#orb')); orb.attach(document); }     // poke it: it dents, springs back and jiggles
+catch(e){ console.warn('orb:', e); orb = new Proxy({}, {get: () => () => {}}); }
 const LEAD = 1.2;                 // seconds the screen runs ahead of the audio
 const RELEASE_SEC = 10;           // drop a song we have not heard for this long
 
@@ -24,8 +27,8 @@ async function loadSongs(){
 /* ---------------- engine (runs in a worker, on device) ---------------- */
 let worker = null, engineReady = false, loadMsgT = 0;
 function startEngine(){
-  try{ worker = new Worker('engine/fp-worker.js?v=202609301033', {type:'module'}); }
-  catch(e){ try{ worker = new Worker('engine/fp-worker.js?v=202609301033'); }catch(e2){ worker = null; } }
+  try{ worker = new Worker('engine/fp-worker.js?v=202609301035', {type:'module'}); }
+  catch(e){ try{ worker = new Worker('engine/fp-worker.js?v=202609301035'); }catch(e2){ worker = null; } }
   if(!worker){ $('#load').classList.add('done'); return; }
   worker.onmessage = ev => {
     const m = ev.data || {};

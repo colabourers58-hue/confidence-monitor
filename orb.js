@@ -116,8 +116,11 @@ void main(){
   // into a caustic on its lower inside, and a thin-film shimmer at the rim
   vec3 N  = normalize(vec3(p/edge, z));
   vec3 Rf = reflect(vec3(0.0, 0.0, -1.0), N);
-  float box1 = smoothstep(0.52, 0.60, Rf.y) * smoothstep(-0.60, -0.18, Rf.x) * smoothstep(0.30, -0.02, Rf.x);
-  float box2 = smoothstep(0.38, 0.46, -Rf.x) * smoothstep(-0.25, 0.05, Rf.y) * smoothstep(0.50, 0.22, Rf.y);
+  // soft rounded reflections: a curved ball never shows a straight edge or a corner
+  vec2  sb1 = (Rf.xy - vec2(-0.16, 0.74)) / vec2(0.30, 0.16);
+  float box1 = exp(-pow(dot(sb1, sb1), 1.4) * 1.6);
+  vec2  sb2 = (Rf.xy - vec2(-0.58, 0.10)) / vec2(0.12, 0.30);
+  float box2 = exp(-pow(dot(sb2, sb2), 1.4) * 1.6);
   vec2  cq = (p/edge - vec2(0.10, -0.56)) * vec2(1.0, 2.3);
   float caustic = exp(-dot(cq, cq) * 8.0);
   vec3  irid = 0.5 + 0.5*cos(6.2831*(vec3(0.0, 0.33, 0.67) + fres*1.5 + T*0.04));
