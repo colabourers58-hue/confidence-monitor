@@ -21,13 +21,13 @@
  },
  "source": {
   "file": "app/library/fingerprints.npz",
-  "postings": 26861657,
-  "bytes": 268650710,
-  "sha256": "ee27109472fcb4db408fdb8ac6ce8c32bb7fe56e2aff297b9615566b5487672f",
+  "postings": 27054774,
+  "bytes": 270582201,
+  "sha256": "c62b9c61fec970b3f9df8d05e6883c6f6d744e07da049e676464cf79c5db8755",
   "refs_json": true
  },
  "nbuckets": 262657,
- "universe": 18030966,
+ "universe": 18175155,
  "sections": [
   {
    "name": "bucket_bits",
@@ -39,46 +39,46 @@
    "name": "stream",
    "type": "bits",
    "offset": 1050632,
-   "bytes": 70434282,
-   "bits": 563474250
+   "bytes": 70933974,
+   "bits": 567471786
   }
  ],
  "stats": {
-  "distinct_hashes": 2259500,
-  "postings": 26861657,
-  "stream_bits": 563474250,
-  "unary_ones": 26046841,
+  "distinct_hashes": 2267348,
+  "postings": 27054774,
+  "stream_bits": 567471786,
+  "unary_ones": 26333404,
   "max_rice_k": 24
  },
  "checksum": [
-  512416965,
-  1306218203
+  2740699015,
+  2773166199
  ],
- "total_bytes": 71484914,
+ "total_bytes": 71984606,
  "shards": [
   {
-   "file": "index/fp-00-f4b084c773.bin",
+   "file": "index/fp-00-61a6fb1043.bin",
    "bytes": 14000000
   },
   {
-   "file": "index/fp-01-a53540f006.bin",
+   "file": "index/fp-01-2f6bf4360f.bin",
    "bytes": 14000000
   },
   {
-   "file": "index/fp-02-be2d60c05d.bin",
+   "file": "index/fp-02-34ba3c7a06.bin",
    "bytes": 14000000
   },
   {
-   "file": "index/fp-03-c04f337da0.bin",
+   "file": "index/fp-03-3ec135b89e.bin",
    "bytes": 14000000
   },
   {
-   "file": "index/fp-04-284b55a582.bin",
+   "file": "index/fp-04-9de4989d3c.bin",
    "bytes": 14000000
   },
   {
-   "file": "index/fp-05-36840f91fc.bin",
-   "bytes": 1484914
+   "file": "index/fp-05-a606943460.bin",
+   "bytes": 1984606
   }
  ],
  "refs": [
@@ -8925,6 +8925,83 @@
    "excluded": false,
    "duration": 369.107,
    "start": 18008106
+  },
+  {
+   "ref_id": "nobodyelselikeyou::love-concert",
+   "song_id": "nobodyelselikeyou",
+   "via": "release",
+   "live": true,
+   "shift": 0.0,
+   "aligned": true,
+   "excluded": true,
+   "duration": 352.56,
+   "start": 18030966
+  },
+  {
+   "ref_id": "nobodyelselikeyou::aida-live-in-soweto-south-africa",
+   "song_id": "nobodyelselikeyou",
+   "via": "release",
+   "live": true,
+   "shift": 0.0,
+   "aligned": false,
+   "excluded": true,
+   "duration": 359.857,
+   "start": 18052918
+  },
+  {
+   "ref_id": "nobodyelselikeyou",
+   "song_id": "nobodyelselikeyou",
+   "via": "instrumental",
+   "live": false,
+   "shift": 0.0,
+   "aligned": false,
+   "excluded": false,
+   "duration": 545.332,
+   "start": 18075135
+  },
+  {
+   "ref_id": "lifeissoshort::aida-live-at-adelaide-chapel",
+   "song_id": "lifeissoshort",
+   "via": "release",
+   "live": true,
+   "shift": 0.0,
+   "aligned": true,
+   "excluded": true,
+   "duration": 238.447,
+   "start": 18109208
+  },
+  {
+   "ref_id": "morethanafriend::aida-live-at-adelaide-chapel",
+   "song_id": "morethanafriend",
+   "via": "release",
+   "live": true,
+   "shift": 0.0,
+   "aligned": true,
+   "excluded": true,
+   "duration": 268.07,
+   "start": 18123750
+  },
+  {
+   "ref_id": "morethanafriend",
+   "song_id": "morethanafriend",
+   "via": "instrumental",
+   "live": false,
+   "shift": 0.0,
+   "aligned": false,
+   "excluded": false,
+   "duration": 277.29,
+   "start": 18140203
+  },
+  {
+   "ref_id": "neverletmego::aida-live-at-adelaide-chapel",
+   "song_id": "neverletmego",
+   "via": "release",
+   "live": true,
+   "shift": 0.0,
+   "aligned": true,
+   "excluded": true,
+   "duration": 290.065,
+   "start": 18157152
   }
  ]
 }
