@@ -1,7 +1,7 @@
 /* Everything runs on this device. No server, no network after the first load. */
-import {Orb} from './orb.js?v=202609301816';
+import {Orb} from './orb.js?v=202609301828';
 // Stamped by publish_site.sh on every publish ('dev' when served straight from this Mac).
-const APP_VERSION = '202609301816';
+const APP_VERSION = '202609301828';
 
 const $ = s => document.querySelector(s);
 // the orb is decoration: if this device can't draw it (old GPU, WebGL off, a shader error), the
@@ -50,8 +50,8 @@ let privateCount = 0;
 /* ---------------- engine (runs in a worker, on device) ---------------- */
 let worker = null, engineReady = false, loadMsgT = 0;
 function startEngine(){
-  try{ worker = new Worker('engine/fp-worker.js?v=202609301816', {type:'module'}); }
-  catch(e){ try{ worker = new Worker('engine/fp-worker.js?v=202609301816'); }catch(e2){ worker = null; } }
+  try{ worker = new Worker('engine/fp-worker.js?v=202609301828', {type:'module'}); }
+  catch(e){ try{ worker = new Worker('engine/fp-worker.js?v=202609301828'); }catch(e2){ worker = null; } }
   if(!worker){ $('#load').classList.add('done'); return; }
   worker.onmessage = ev => {
     const m = ev.data || {};
@@ -1048,6 +1048,32 @@ $('#cpCopy').addEventListener('click', async () => {
 document.body.classList.toggle('big', zoom >= 1.35);
 document.body.classList.toggle('huge', zoom >= 1.85);
 
+/* ---------------- everything kept on the device ----------------
+   The big files (the song index, the learned fingerprint, the speech model and their runtimes,
+   ~180 MB) are fetched here, through sw.js once it has taken control, which stores each one. Not in
+   sw.js's install: a browser allows an install only about 5 minutes, and on a slow connection
+   (0.6 MB/s measured on 30 Sep) that failed, and then nothing worked offline. One file at a time;
+   what is already stored comes straight back. */
+async function keepOffline(){
+  if(APP_VERSION === 'dev' || !navigator.onLine) return;
+  await navigator.serviceWorker.ready;
+  if(!navigator.serviceWorker.controller)
+    await new Promise(r => { navigator.serviceWorker.addEventListener('controllerchange', r, {once: true}); setTimeout(r, 20000); });
+  if(!navigator.serviceWorker.controller) return;
+  const list = [];
+  try{ const m = await (await fetch('engine/manifest.json')).json(); for(const x of m.shards || []) list.push('engine/' + (x.file || x)); }catch(e){}
+  try{ const m2 = await (await fetch('engine/fp2/manifest.json')).json();
+       list.push('engine/fp2/' + m2.model.file, ...(m2.shards || []).map(x => 'engine/fp2/' + x.file));
+       const ORT = 'https://cdn.jsdelivr.net/npm/onnxruntime-web@1.20.1/dist/';
+       for(const f of ['ort.wasm.min.js', 'ort.wasm.min.mjs', 'ort-wasm-simd-threaded.mjs', 'ort-wasm-simd-threaded.wasm']) list.push(ORT + f); }catch(e){}
+  try{ const a = await (await fetch('asr/manifest.json')).json();
+       for(const f of a.files) list.push('asr/' + f.file);
+       for(const f of a.runtime.files) list.push(a.runtime.base + f); }catch(e){}
+  let n = 0;
+  for(const u of list){ try{ const r = await fetch(u); if(r.ok){ await r.arrayBuffer(); n++; } }catch(e){} }
+  logEvent('info', `Kept on this device for use with no internet: ${n} of ${list.length} files`);
+}
+
 /* ---------------- always the newest version when online ----------------
    GitHub keeps serving an old copy for up to 10 minutes after a publish, and the offline store
    keeps the version it has. So on every open (and whenever it comes back to the front) the app
@@ -1093,7 +1119,7 @@ if(serverMode){
   startEngine();
   await startWords();
   startASR();                              // the words, heard on this device
-  if('serviceWorker' in navigator) navigator.serviceWorker.register('sw.js').catch(()=>{});
+  if('serviceWorker' in navigator) navigator.serviceWorker.register('sw.js').then(() => keepOffline()).catch(()=>{});
   checkUpdate();
 }
 

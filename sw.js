@@ -1,6 +1,6 @@
 /* Keeps the whole app on the device. First visit stores everything; after that it
    never needs a network. Bump VERSION to push an update the next time it is online. */
-const VERSION = 'cm-202609301816';   // stamped by publish_site.sh
+const VERSION = 'cm-202609301828';   // stamped by publish_site.sh
 // ONNX Runtime Web (runs the learned fingerprint in engine/fp-worker.js), from its CDN, kept offline
 const ORT_BASE = 'https://cdn.jsdelivr.net/npm/onnxruntime-web@1.20.1/dist/';
 const ORT_FILES = ['ort.wasm.min.js', 'ort.wasm.min.mjs', 'ort-wasm-simd-threaded.mjs', 'ort-wasm-simd-threaded.wasm'];
@@ -20,35 +20,22 @@ self.addEventListener('install', e => {
     // the offline-only files one by one, so a host without them (the Mac serves none of
     // them) can't fail the install
     for(const f of ['decide.js', 'lyricsearch.js', 'words.js', 'mention.js', 'data/titles.json', 'data/preached.json', 'asrtext.js']){ try{ await c.add(f); }catch(err){} }
-    try{
-      const m = await (await fetch('engine/manifest.json', {cache:'no-store'})).json();
-      const files = ['engine/manifest.json', 'engine/fp-worker.js', 'engine/engine.js',
-                     ...(m.shards || []).map(s => 'engine/' + (s.file || s))];
-      // the engine's code straight from the server (a copy minutes old would pair an old engine with a new app)
-      for(const f of files){ try{ await c.add(f.endsWith('.js') ? new Request(f, {cache:'reload'}) : f); }catch(err){} }
-    }catch(err){}
-    // the learned fingerprint (engine/fp2) and its runtime: optional, each file on its own
-    try{
-      const m2 = await (await fetch('engine/fp2/manifest.json', {cache:'no-store'})).json();
-      const f2 = ['engine/fp2/manifest.json', 'engine/fp2.js', 'engine/fp2/' + m2.model.file, ...(m2.shards || []).map(s => 'engine/fp2/' + s.file)];
-      for(const f of f2){ try{ await c.add(f.endsWith('.js') ? new Request(f, {cache:'reload'}) : f); }catch(err){} }
-      for(const f of ORT_FILES){ try{ await c.add(new Request(ORT_BASE + f, {mode:'cors'})); }catch(err){} }
-    }catch(err){}
-    // the on-device speech model: kept once, across versions (only what isn't there yet is fetched)
-    try{
-      const a = await caches.open(ASR_CACHE);
-      const man = await (await fetch('asr/manifest.json', {cache:'no-store'})).json();
-      await c.add(new Request('asr/asr-worker.js', {cache:'reload'})).catch(() => {});
-      await c.put('asr/manifest.json', new Response(JSON.stringify(man), {headers: {'Content-Type': 'application/json'}}));
-      for(const f of man.files){ if(!(await a.match('asr/' + f.file))) try{ await a.add('asr/' + f.file); }catch(err){} }
-      for(const f of TF_FILES){ if(!(await a.match(TF_BASE + f))) try{ await a.add(new Request(TF_BASE + f, {mode:'cors'})); }catch(err){} }
-    }catch(err){}
+    // the engine's code (small) straight from the server: a copy minutes old would pair an old engine
+    // with a new app. The BIG files (index shards, the learned fingerprint, the speech model, the
+    // runtimes: ~180 MB) are NOT fetched here: a browser gives an install about 5 minutes, and on a
+    // slow connection that isn't enough, so the install failed and nothing worked offline. The page
+    // fetches them through this worker after it takes control (app.js keepOffline()), with no limit.
+    for(const f of ['engine/manifest.json', 'engine/fp-worker.js', 'engine/engine.js', 'engine/fp2.js', 'asr/asr-worker.js', 'asr/manifest.json'])
+      try{ await c.add(new Request(f, {cache:'reload'})); }catch(err){}
     self.skipWaiting();
   })());
 });
 self.addEventListener('activate', e => {
   e.waitUntil((async () => {
-    for(const k of await caches.keys()) if(k !== VERSION && k !== ASR_CACHE) await caches.delete(k);
+    // keep the previous version's cache too until this one has its big files (app.js keepOffline()
+    // fetches them after this takes control): offline in between, they are still there
+    const old = (await caches.keys()).filter(k => k !== VERSION && k !== ASR_CACHE && /^cm-\d/.test(k)).sort();
+    for(const k of await caches.keys()) if(k !== VERSION && k !== ASR_CACHE && k !== old[old.length - 1]) await caches.delete(k);
     self.clients.claim();
   })());
 });
@@ -76,7 +63,9 @@ self.addEventListener('fetch', e => {
   e.respondWith((async () => {
     const c = await caches.open(VERSION);
     if(immutable){
-      const hit = await c.match(e.request, {ignoreSearch:true});
+      let hit = await c.match(e.request, {ignoreSearch:true});
+      // a content-named file (an index shard, a pinned runtime) kept by the previous version: reuse it
+      if(!hit && !url.searchParams.has('v') && (hit = await caches.match(e.request, {ignoreSearch:true}))) c.put(e.request, hit.clone());
       if(hit) return hit;
     }
     try{
