@@ -1,7 +1,7 @@
 /* Everything runs on this device. No server, no network after the first load. */
-import {Orb} from './orb.js?v=202609301355';
+import {Orb} from './orb.js?v=202609301358';
 // Stamped by publish_site.sh on every publish ('dev' when served straight from this Mac).
-const APP_VERSION = '202609301355';
+const APP_VERSION = '202609301358';
 
 const $ = s => document.querySelector(s);
 // the orb is decoration: if this device can't draw it (old GPU, WebGL off, a shader error), the
@@ -27,8 +27,8 @@ async function loadSongs(){
 /* ---------------- engine (runs in a worker, on device) ---------------- */
 let worker = null, engineReady = false, loadMsgT = 0;
 function startEngine(){
-  try{ worker = new Worker('engine/fp-worker.js?v=202609301355', {type:'module'}); }
-  catch(e){ try{ worker = new Worker('engine/fp-worker.js?v=202609301355'); }catch(e2){ worker = null; } }
+  try{ worker = new Worker('engine/fp-worker.js?v=202609301358', {type:'module'}); }
+  catch(e){ try{ worker = new Worker('engine/fp-worker.js?v=202609301358'); }catch(e2){ worker = null; } }
   if(!worker){ $('#load').classList.add('done'); return; }
   worker.onmessage = ev => {
     const m = ev.data || {};
@@ -679,6 +679,7 @@ async function begin(){
   $('#gate').classList.add('gone');
   try{ await startMic(inputId, {reuse:true}); orb.toListening();
        const tr = mstream && mstream.getAudioTracks()[0]; logEvent('start', 'Started, listening from ' + ((tr && tr.label) || 'the default input'));
+       try{ localStorage.setItem('cm.micok', '1'); }catch(e){}             // next time: start without a tap
        probeWords();
   }catch(e){
     // say WHY, in words a singer can act on, and keep the real error in the log
@@ -796,3 +797,15 @@ if(demo){
   }
 }
 frame();
+
+/* stress-free start: once the microphone has been allowed and the welcome has been seen, opening
+   Prompter starts listening straight away, no tap (a TV or a phone on a stand shouldn't need
+   touching). If the browser still wants one tap before it will process sound, begin() shows
+   "Tap once more" and nothing else. */
+(async () => {
+  if(demo) return;
+  let granted = false, seen = false;
+  try{ granted = (await navigator.permissions.query({name:'microphone'})).state === 'granted'; }catch(e){}
+  try{ seen = localStorage.getItem('cm.welcome') === WELCOME; granted = granted || localStorage.getItem('cm.micok') === '1'; }catch(e){}
+  if(granted && seen && !$('#gate').classList.contains('gone')) begin();
+})();
