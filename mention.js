@@ -35,7 +35,7 @@ const LINK = new Set(['is', 'it', 'called', 'titled', 'entitled', 'named', 'us',
 const CUE_GAP = 3;
 const SMALL = new Set(['i', 'to', 'of', 'in', 'on', 'at', 'my', 'me', 'is', 'it', 'so', 'and', 'or', 'for', 'you',
   'your', 'we', 'us', 'be', 'oh', 'he', 'his', 'our', 'by', 'as', 'am', 'are', 'with', 'not', 'do']);
-const LOOSE_MIN = 4;
+const LOOSE_MIN = 5;          // (4 let "It's (Our) Time" fire on every "it's time to...")
 
 export function rawToks(s) {
   s = String(s).toLowerCase().replace(/[‘’ʼ]/g, "'");
