@@ -21,13 +21,13 @@
  },
  "source": {
   "file": "app/library/fingerprints.npz",
-  "postings": 25263573,
-  "bytes": 252667937,
-  "sha256": "f9b225617f7cedb210ec336a07a7428f045f86f1b9581df2a1249cbca992ab54",
+  "postings": 25727485,
+  "bytes": 257307622,
+  "sha256": "46661f3e2f50910e2e754f9dad1fd1fbbc36145c11edd577b2f49bcb2837b8b2",
   "refs_json": true
  },
  "nbuckets": 262657,
- "universe": 16985721,
+ "universe": 17300224,
  "sections": [
   {
    "name": "bucket_bits",
@@ -39,42 +39,42 @@
    "name": "stream",
    "type": "bits",
    "offset": 1050632,
-   "bytes": 66357262,
-   "bits": 530858094
+   "bytes": 67544453,
+   "bits": 540355618
   }
  ],
  "stats": {
-  "distinct_hashes": 2215632,
-  "postings": 25263573,
-  "stream_bits": 530858094,
-  "unary_ones": 24052673,
+  "distinct_hashes": 2232621,
+  "postings": 25727485,
+  "stream_bits": 540355618,
+  "unary_ones": 24821944,
   "max_rice_k": 24
  },
  "checksum": [
-  1010062906,
-  191257959
+  615661037,
+  4161207721
  ],
- "total_bytes": 67407894,
+ "total_bytes": 68595085,
  "shards": [
   {
-   "file": "index/fp-00-cac4278847.bin",
+   "file": "index/fp-00-30ac7341cb.bin",
    "bytes": 14000000
   },
   {
-   "file": "index/fp-01-2a44783849.bin",
+   "file": "index/fp-01-c8fed7b621.bin",
    "bytes": 14000000
   },
   {
-   "file": "index/fp-02-7196548eff.bin",
+   "file": "index/fp-02-eead9b9d40.bin",
    "bytes": 14000000
   },
   {
-   "file": "index/fp-03-6f643b14df.bin",
+   "file": "index/fp-03-b4235eca67.bin",
    "bytes": 14000000
   },
   {
-   "file": "index/fp-04-fbc1737841.bin",
-   "bytes": 11407894
+   "file": "index/fp-04-4528a5b9bd.bin",
+   "bytes": 12595085
   }
  ],
  "refs": [
@@ -8382,6 +8382,182 @@
    "excluded": false,
    "duration": 254.817,
    "start": 16970422
+  },
+  {
+   "ref_id": "iftherewereneveranyheaven",
+   "song_id": "iftherewereneveranyheaven",
+   "via": "instrumental",
+   "live": false,
+   "shift": 0.004,
+   "aligned": true,
+   "excluded": false,
+   "duration": 351.925,
+   "start": 16985721
+  },
+  {
+   "ref_id": "iftherewereneveranyheaven::you-re-invited",
+   "song_id": "iftherewereneveranyheaven",
+   "via": "release",
+   "live": false,
+   "shift": -0.008,
+   "aligned": true,
+   "excluded": false,
+   "duration": 351.864,
+   "start": 17006800
+  },
+  {
+   "ref_id": "isoughthim",
+   "song_id": "isoughthim",
+   "via": "instrumental",
+   "live": false,
+   "shift": 0.008,
+   "aligned": true,
+   "excluded": false,
+   "duration": 222.336,
+   "start": 17027872
+  },
+  {
+   "ref_id": "isoughthim::you-re-invited",
+   "song_id": "isoughthim",
+   "via": "release",
+   "live": false,
+   "shift": -0.004,
+   "aligned": true,
+   "excluded": false,
+   "duration": 222.273,
+   "start": 17041707
+  },
+  {
+   "ref_id": "jesusjesus",
+   "song_id": "jesusjesus",
+   "via": "instrumental",
+   "live": false,
+   "shift": 0.004,
+   "aligned": true,
+   "excluded": false,
+   "duration": 319.597,
+   "start": 17055520
+  },
+  {
+   "ref_id": "jesusjesus::you-re-invited",
+   "song_id": "jesusjesus",
+   "via": "release",
+   "live": false,
+   "shift": -0.008,
+   "aligned": true,
+   "excluded": false,
+   "duration": 319.559,
+   "start": 17074428
+  },
+  {
+   "ref_id": "withoutfaith",
+   "song_id": "withoutfaith",
+   "via": "instrumental",
+   "live": false,
+   "shift": 0.004,
+   "aligned": true,
+   "excluded": false,
+   "duration": 302.557,
+   "start": 17093335
+  },
+  {
+   "ref_id": "withoutfaith::you-re-invited",
+   "song_id": "withoutfaith",
+   "via": "release",
+   "live": false,
+   "shift": -0.008,
+   "aligned": true,
+   "excluded": false,
+   "duration": 302.5,
+   "start": 17111673
+  },
+  {
+   "ref_id": "virginmary",
+   "song_id": "virginmary",
+   "via": "instrumental",
+   "live": false,
+   "shift": 0.008,
+   "aligned": true,
+   "excluded": false,
+   "duration": 305.509,
+   "start": 17129976
+  },
+  {
+   "ref_id": "virginmary::you-re-invited",
+   "song_id": "virginmary",
+   "via": "release",
+   "live": false,
+   "shift": -0.008,
+   "aligned": true,
+   "excluded": false,
+   "duration": 305.45,
+   "start": 17148712
+  },
+  {
+   "ref_id": "jesusthesaviour",
+   "song_id": "jesusthesaviour",
+   "via": "instrumental",
+   "live": false,
+   "shift": 0.004,
+   "aligned": true,
+   "excluded": false,
+   "duration": 312.037,
+   "start": 17167447
+  },
+  {
+   "ref_id": "jesusthesaviour::you-re-invited",
+   "song_id": "jesusthesaviour",
+   "via": "release",
+   "live": false,
+   "shift": -0.008,
+   "aligned": true,
+   "excluded": false,
+   "duration": 312.0,
+   "start": 17186371
+  },
+  {
+   "ref_id": "paradisewithjesus",
+   "song_id": "paradisewithjesus",
+   "via": "instrumental",
+   "live": false,
+   "shift": 0.008,
+   "aligned": true,
+   "excluded": false,
+   "duration": 369.637,
+   "start": 17205294
+  },
+  {
+   "ref_id": "paradisewithjesus::you-re-invited",
+   "song_id": "paradisewithjesus",
+   "via": "release",
+   "live": false,
+   "shift": -0.008,
+   "aligned": true,
+   "excluded": false,
+   "duration": 369.583,
+   "start": 17227719
+  },
+  {
+   "ref_id": "goddidnotcondemntheworld",
+   "song_id": "goddidnotcondemntheworld",
+   "via": "instrumental",
+   "live": false,
+   "shift": -0.008,
+   "aligned": true,
+   "excluded": false,
+   "duration": 416.302,
+   "start": 17250032
+  },
+  {
+   "ref_id": "goddidnotcondemntheworld::god-did-not-condemn-the-world",
+   "song_id": "goddidnotcondemntheworld",
+   "via": "release",
+   "live": false,
+   "shift": -0.008,
+   "aligned": true,
+   "excluded": true,
+   "duration": 416.302,
+   "start": 17275128
   }
  ]
 }
