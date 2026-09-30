@@ -1,7 +1,7 @@
 /* Everything runs on this device. No server, no network after the first load. */
-import {Orb} from './orb.js?v=202609301035';
+import {Orb} from './orb.js?v=202609301109';
 // Stamped by publish_site.sh on every publish ('dev' when served straight from this Mac).
-const APP_VERSION = '202609301035';
+const APP_VERSION = '202609301109';
 
 const $ = s => document.querySelector(s);
 // the orb is decoration: if this device can't draw it (old GPU, WebGL off, a shader error), the
@@ -27,8 +27,8 @@ async function loadSongs(){
 /* ---------------- engine (runs in a worker, on device) ---------------- */
 let worker = null, engineReady = false, loadMsgT = 0;
 function startEngine(){
-  try{ worker = new Worker('engine/fp-worker.js?v=202609301035', {type:'module'}); }
-  catch(e){ try{ worker = new Worker('engine/fp-worker.js?v=202609301035'); }catch(e2){ worker = null; } }
+  try{ worker = new Worker('engine/fp-worker.js?v=202609301109', {type:'module'}); }
+  catch(e){ try{ worker = new Worker('engine/fp-worker.js?v=202609301109'); }catch(e2){ worker = null; } }
   if(!worker){ $('#load').classList.add('done'); return; }
   worker.onmessage = ev => {
     const m = ev.data || {};
@@ -57,9 +57,12 @@ function onResult(m){
 // the decider's state onto the screen, the way pollServer puts the Mac's there
 function applyLocal(now){
   const s = dec.state, song = s.song_id && SONGS[s.song_id];
-  if(song && s.mode === 'words' && s.anchor != null) showWords(song, s.anchor);
+  if(song && s.mode === 'words' && s.anchor != null) showWords(song, s.anchor);     // only a song with no timings
   else if(song && s.started_at != null){
-    if(!st.song || st.song.id !== song.id || st.words || Math.abs(st.started - s.started_at) > 0.25) catchSong(song, s.started_at);
+    if(!st.song || st.song.id !== song.id || st.words || Math.abs(st.started - s.started_at) > 0.25)
+      catchSong(song, s.started_at, s.driver === 'words' ? (s.last_match && s.last_match.how) || 'from the sung words'
+                                  : s.driver === 'live' ? 'a live recording: clock estimated, the singing corrects it'
+                                  : (s.last_match && s.last_match.how) || 'following the track');
     else st.started = s.started_at;      // same clock, no jitter: follow it exactly
   }
   else if(st.song) release();
@@ -70,10 +73,14 @@ function applyLocal(now){
 const SR = 16000, WIN = 5*SR, EVERY = 750;     // a fresh look every 0.75 s
 let actx, ring = [], ringLen = 0, level = 0, busy = false;
 let mstream = null, analyser = null, fbuf = null, inputId = null;
+let srcNode = null, procNode = null, lastFrameAt = 0;   // lastFrameAt: when sound last arrived (word search watches it)
 try{ inputId = localStorage.getItem('cm.input'); }catch(e){}
-async function startMic(deviceId){
+async function startMic(deviceId, opts){
+  // keep: a fresh microphone stream into the SAME running audio graph. Used to bring the mic back
+  // without a tap (a new audio graph on iPhone/iPad needs one)
+  const keep = !!(opts && opts.keepContext && actx && actx.state === 'running' && procNode);
   if(mstream){ mstream.getTracks().forEach(t => t.stop()); mstream = null; }
-  if(actx){ try{ await actx.close(); }catch(e){} actx = null; }
+  if(actx && !keep){ try{ await actx.close(); }catch(e){} actx = null; }
   const audio = {echoCancellation:false, noiseSuppression:false, autoGainControl:false};
   if(deviceId) audio.deviceId = {exact: deviceId};
   let stream;
@@ -89,19 +96,26 @@ async function startMic(deviceId){
         const own = devs.find(d => /macbook|built-?in|internal|ipad microphone/i.test(d.label));
         if(own && own.deviceId !== stream.getAudioTracks()[0].getSettings().deviceId){
           stream.getTracks().forEach(t => t.stop());
-          return startMic(own.deviceId);
+          return startMic(own.deviceId, opts);
         }
       }
     }catch(e){}
   }
   mstream = stream; ring = []; ringLen = 0;
+  if(keep){
+    try{ srcNode && srcNode.disconnect(); }catch(e){}
+    srcNode = actx.createMediaStreamSource(stream);
+    srcNode.connect(procNode); if(analyser) srcNode.connect(analyser);
+    return;
+  }
   // the device's own rate. Asking for 16 kHz here works in Chrome but gives SILENCE in Safari,
   // so the audio is converted to 16 kHz by us (to16k) or by the Mac server (X-Rate), never by the browser
   actx = new (window.AudioContext || window.webkitAudioContext)();
   if(actx.state === 'suspended') await actx.resume();
-  const src = actx.createMediaStreamSource(stream);
-  const node = actx.createScriptProcessor(4096, 1, 1);
+  const src = srcNode = actx.createMediaStreamSource(stream);
+  const node = procNode = actx.createScriptProcessor(4096, 1, 1);
   node.onaudioprocess = e => {
+    lastFrameAt = performance.now()/1000;
     const d = e.inputBuffer.getChannelData(0);
     let s = 0; for(let i=0;i<d.length;i++) s += d[i]*d[i];
     level = Math.sqrt(s/d.length);
@@ -157,14 +171,21 @@ function renderPanel(){
 }
 function renderNow(){
   let t;
-  if(st.song) t = `Showing <b>${esc(st.song.title)}</b><small>${st.words ? 'Following the singing (no clock for this recording)' : 'Following the track'}</small>`;
+  if(st.song) t = `Showing <b>${esc(st.song.title)}</b><small>${st.words ? 'A block of words (this song has no timings yet)' : 'Following the track'}</small>`;
   else if(confNow > 0.05) t = `Thinking… ${Math.round(confNow*100)}% sure`;
   else if(level*3.2 > 0.10) t = 'Hearing music, listening for a song';
   else t = 'Resting, listening for music';
-  if(!serverMode && dec && dec.state.searching && dec.state.acc){
+  if(st.song && !serverMode && dec && (dec.state.driver === 'words' || dec.state.driver === 'live'))
+    t = `Showing <b>${esc(st.song.title)}</b><small>Place estimated from ${dec.state.driver === 'words' ? 'the sung words' : 'a live recording'}; ` +
+        `${words && words.running ? 'listening to the singing to correct it' : 'the music keeps checking it'}</small>`;
+  if(!serverMode && dec && dec.state.searching && !st.song){
     const a = dec.state.acc;
-    t = `Searching hard<small>Adding up the evidence. Best so far: ${esc((SONGS[a.song_id] || {}).title || a.song_id)}, ${a.looks} look${a.looks === 1 ? '' : 's'} agree</small>`;
+    t = `Searching hard<small>${a ? `Adding up the evidence. Best so far: ${esc((SONGS[a.song_id] || {}).title || a.song_id)}, ${a.looks} look${a.looks === 1 ? '' : 's'} agree` : 'Adding up the evidence'}` +
+        `${words && words.running ? '. Listening to the words too' : ''}</small>`;
   }
+  const ws = $('#cpWords');
+  if(ws) ws.textContent = serverMode ? 'Done by the Mac (Whisper).' : words ? words.describe()
+    : !WORD_SEARCH ? 'Not switched on in this version yet.' : 'Not available in this browser. Songs are found from the music alone.';
   if(!serverMode && !engineReady)
     t += `<small>Songs still downloading (${($('#load i').style.width || '0%')}). It can’t recognise anything until this finishes.</small>`;
   else if(!serverMode && !st.song && closest && performance.now()/1000 - closest.at < 20)
@@ -227,7 +248,10 @@ async function pollServer(){
     if(song && s.mode === 'words' && s.anchor != null) showWords(song, s.anchor);
     else if(song && s.started_at != null){
       const startedPerf = performance.now()/1000 - ((Date.now()/1000 + skew) - s.started_at);
-      if(!st.song || st.song.id !== song.id || st.words || Math.abs(st.started - startedPerf) > 0.25) catchSong(song, startedPerf);
+      if(!st.song || st.song.id !== song.id || st.words || Math.abs(st.started - startedPerf) > 0.25)
+        catchSong(song, startedPerf, s.driver === 'words' ? (l.last_match && l.last_match.how) || 'from the sung words'
+                                   : s.driver === 'live' ? 'a live recording: clock estimated, the singing corrects it'
+                                   : (l.last_match && l.last_match.how) || 'following the track');
       st.lastConfirm = performance.now()/1000;
     }
     else if(st.song) release();
@@ -275,9 +299,9 @@ function logIdentified(song, how){
            {secs, song: song.id});
   attemptStart = null;
 }
-function catchSong(song, started){
+function catchSong(song, started, how){
   const fresh = !st.song || st.song.id !== song.id || st.words;
-  if(fresh) logIdentified(song, 'following the track');
+  if(fresh) logIdentified(song, how || 'following the track');
   st.words = null; document.body.classList.remove('words');
   st.song = song; st.started = started; st.lastConfirm = performance.now()/1000;
   if(fresh){
@@ -423,7 +447,9 @@ function frame(){
   // A real microphone is never EXACTLY silent: even a quiet room has some hiss. Pure zeros for
   // a few seconds means the browser has cut the microphone off (Safari does this when its window
   // isn't in front, or after an interruption). Say so, and let one tap bring it back.
-  if(mstream && $('#gate').classList.contains('gone') && document.visibilityState === 'visible'){
+  // (not while word search is starting, running or handing the mic back: it watches the mic itself)
+  if(words && words.guarding(now)) deadSince = null;
+  else if(mstream && $('#gate').classList.contains('gone') && document.visibilityState === 'visible'){
     if(level === 0){ if(deadSince == null) deadSince = now;
       else if(now - deadSince > 4){ deadSince = null; logEvent('miss', 'The microphone went silent (cut off by the browser)');
         $('#gate b').textContent = 'The microphone stopped. Tap to turn it back on'; $('#gate').classList.remove('gone'); } }
@@ -464,6 +490,7 @@ function frame(){
     if(dsong && ds.started_at != null && now - ds.started_at > (dsong.duration || 1e9) + 2.5) dec.stop();
     applyLocal(now);
     const s = dec.state; confNow = (s.song_id == null && now - s.conf_at < 4) ? s.conf : 0;
+    if(words) words.set(!!mstream && engineReady && dec.wantWords());
   }
   // the song has run out: let it go now rather than holding the last line
   if(st.song && st.started != null && (now - st.started) > (st.song.duration || 1e9) + 2.5) release();
@@ -556,12 +583,69 @@ document.addEventListener('visibilitychange', () => { keepAwake(); reviveMic(); 
 addEventListener('pageshow', () => { keepAwake(); reviveMic(); });
 setInterval(reviveMic, 5000);              // a track can end quietly (headphones pulled, input unplugged)
 
+/* ---------------- the sung words (no Mac) ----------------
+   The last resort when the music alone can't find the song: the browser's own speech
+   recognition (words.js), searched against every song's lyrics (lyricsearch.js, the Mac's
+   search ported). decide.js wantWords() says when; decide.js words() decides what it means. */
+let words = null, LSIX = null, LS = null;
+const WORD_SEARCH = false;           // switched on once tested on real devices
+async function startWords(){
+  if(!WORD_SEARCH) return;
+  try{
+    LS = await import('./lyricsearch.js?v=' + APP_VERSION);
+    words = (await import('./words.js?v=' + APP_VERSION)).createWordListener({
+      now: () => performance.now()/1000,
+      health: () => ({frameAt: lastFrameAt, level, track: mstream && mstream.getAudioTracks()[0], actx}),
+      log: (kind, text) => logEvent(kind, text),
+      onMicTrouble: restoreMic,
+      onWords: (pool, recent, at) => {
+        if(!dec) return;
+        if(!LSIX) LSIX = LS.createIndex(Object.values(SONGS));
+        const before = {id: dec.state.song_id, started: dec.state.started_at};
+        if(!dec.words(pool, recent, at, performance.now()/1000, LSIX)) return;
+        const s = dec.state, song = SONGS[s.song_id];
+        if(song && before.id === s.song_id && before.started != null && s.started_at != null)
+          logEvent('info', `Moved ${song.title} to the line being sung (${(before.started - s.started_at >= 0 ? '+' : '')}${(before.started - s.started_at).toFixed(1)} s)`);
+        else if(song && s.last_match && s.last_match.line)
+          logEvent('info', `The words “${s.last_match.line.slice(0, 60)}” are in ${song.title}`);
+        applyLocal(performance.now()/1000);
+      },
+    });
+    if(!words.supported) logEvent('info', 'Word search isn’t available in this browser; songs are found from the music alone');
+    probeWords();                      // the microphone may already be on
+  }catch(e){ words = null; console.warn('words:', e); }
+}
+// try word search once, 3 s after the microphone starts, so any permission question comes up at
+// setup rather than mid-song, and a device where it upsets the microphone is found out now
+function probeWords(){
+  if(probeWords.done || !words || !words.supported || serverMode || !mstream) return;
+  probeWords.done = true;
+  setTimeout(async () => { await words.probe(); logEvent('info', 'Word search: ' + words.describe()); }, 3000);
+}
+// Word search interrupted the microphone: bring it back, without a tap if at all possible
+async function restoreMic(){
+  const t0 = performance.now()/1000, ok = () => {
+    const tr = mstream && mstream.getAudioTracks()[0];
+    return tr && tr.readyState === 'live' && !tr.muted && actx && actx.state === 'running' &&
+           performance.now()/1000 - lastFrameAt < 0.5 && level > 0;
+  };
+  const wait = ms => new Promise(r => setTimeout(r, ms));
+  for(let i = 0; i < 8 && !ok(); i++){ await wait(200); if(actx && actx.state !== 'running') try{ await actx.resume(); }catch(e){} }
+  if(ok()){ logEvent('start', 'Microphone fine again'); return; }
+  try{ await startMic(inputId, {keepContext: true}); }catch(e){}
+  for(let i = 0; i < 8 && !ok(); i++) await wait(200);
+  if(ok()) logEvent('start', `Microphone back on (${(performance.now()/1000 - t0).toFixed(1)} s)`);
+  else reviveMic();          // the usual path: a restart, or one tap if the browser insists
+}
+
 /* ---------------- boot ---------------- */
 async function begin(){
   keepAwake();
   $('#gate').classList.add('gone');
   try{ await startMic(inputId); orb.toListening();
-       const tr = mstream && mstream.getAudioTracks()[0]; logEvent('start', 'Started, listening from ' + ((tr && tr.label) || 'the default input')); }catch(e){ $('#gate b').textContent = 'Microphone not available'; $('#gate').classList.remove('gone'); }
+       const tr = mstream && mstream.getAudioTracks()[0]; logEvent('start', 'Started, listening from ' + ((tr && tr.label) || 'the default input'));
+       probeWords();
+  }catch(e){ $('#gate b').textContent = 'Microphone not available'; $('#gate').classList.remove('gone'); }
   document.documentElement.requestFullscreen?.().catch(()=>{});
 }
 $('#gate').addEventListener('click', begin);
@@ -641,6 +725,7 @@ if(serverMode){
 }else{
   try{ dec = (await import('./decide.js?v=' + APP_VERSION)).createDecider(id => SONGS[id]); }catch(e){ console.warn('decide.js:', e); }
   startEngine();
+  await startWords();
   if('serviceWorker' in navigator) navigator.serviceWorker.register('sw.js').catch(()=>{});
   checkUpdate();
 }

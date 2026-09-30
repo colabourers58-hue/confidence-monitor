@@ -154,6 +154,7 @@
   .meter{height:14px;border-radius:7px;background:rgba(120,120,128,.24);overflow:hidden}
   .meter i{display:block;height:100%;width:0;border-radius:7px;background:linear-gradient(90deg,#30d158,#ffd60a 70%,#ff453a);transition:width .08s linear}
   .mrow{display:flex;justify-content:space-between;font-size:14px;color:var(--label-2);margin-top:8px;font-variant-numeric:tabular-nums}
+  .mrow.words{gap:16px}.mrow.words span:last-child{text-align:right}
   .warn{color:#ff9f0a;font-weight:600}
   #devlist{display:flex;flex-direction:column;gap:8px;margin-top:12px}
   #devlist .dev{font-size:16px;text-align:left;padding:13px 15px;background:rgba(120,120,128,.18);color:var(--label)}
@@ -207,6 +208,7 @@
   <section class="card"><h3>Listening</h3>
     <div class="meter"><i id="cpMeter"></i></div>
     <div class="mrow"><span id="cpLevel">–</span><span id="cpHearing">–</span></div>
+    <div class="mrow words"><span>Word search</span><span id="cpWords">–</span></div>
     <div id="devlist"></div></section>
   <section class="card"><h3>Right now</h3><div class="now" id="cpNow">–</div></section>
   <section class="card"><h3>This session</h3><div class="stats" id="cpStats"></div></section>
@@ -231,6 +233,6 @@
   </div>
 </div></div>
 <div id="gate"><b>Tap to begin</b><small>One tap allows the microphone. After that it runs on its own.</small></div>
-<script type="module" src="app.js?v=202609301035"></script>
+<script type="module" src="app.js?v=202609301109"></script>
 </body>
 </html>
