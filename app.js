@@ -20,17 +20,19 @@ async function loadSongs(){
 }
 
 /* ---------------- engine (runs in a worker, on device) ---------------- */
-let worker = null, engineReady = false;
+let worker = null, engineReady = false, loadMsgT = 0;
 function startEngine(){
   try{ worker = new Worker('engine/fp-worker.js', {type:'module'}); }
   catch(e){ try{ worker = new Worker('engine/fp-worker.js'); }catch(e2){ worker = null; } }
   if(!worker){ $('#load').classList.add('done'); return; }
   worker.onmessage = ev => {
     const m = ev.data || {};
-    if(m.type === 'progress'){ $('#load i').style.width = (100*m.loaded/Math.max(1,m.total)).toFixed(1)+'%'; }
-    if(m.type === 'ready'){ engineReady = true; $('#load').classList.add('done'); if(m.decide && dec) Object.assign(dec.config, m.decide); }
+    if(m.type === 'progress'){ $('#load i').style.width = (100*m.loaded/Math.max(1,m.total)).toFixed(1)+'%';
+      // a first download takes a while on phone data: say what's happening, once it's clearly not instant
+      if(!loadMsgT) loadMsgT = setTimeout(() => { if(!engineReady) $('#loadMsg').hidden = false; }, 2500); }
+    if(m.type === 'ready'){ engineReady = true; $('#load').classList.add('done'); $('#loadMsg').hidden = true; if(m.decide && dec) Object.assign(dec.config, m.decide); }
     if(m.type === 'result') onResult(m);
-    if(m.type === 'error'){ $('#load').classList.add('done'); console.warn('engine:', m.message); }
+    if(m.type === 'error'){ $('#load').classList.add('done'); $('#loadMsg').hidden = true; console.warn('engine:', m.message); }
   };
   worker.onerror = () => { worker = null; $('#load').classList.add('done'); };
   worker.postMessage({type:'load', base: new URL('engine/', location.href).href});

@@ -178,6 +178,9 @@
         border-radius:3px;background:var(--fill);overflow:hidden;transition:opacity .5s}
   #load i{display:block;height:100%;width:0;background:var(--label-3);transition:width .2s}
   #load.done{opacity:0}
+  #loadMsg{position:fixed;left:50%;bottom:calc(5vh + 20px);transform:translateX(-50%);z-index:7;width:min(420px,86vw);
+           text-align:center;font-size:clamp(14px,1.9vh,18px);line-height:1.35;color:var(--label-2);transition:opacity .5s}
+  #loadMsg[hidden]{display:block;opacity:0;pointer-events:none}
 </style>
 </head>
 <body>
@@ -190,6 +193,7 @@
 </div>
 <div id="zoomTag"></div>
 <div id="load"><i></i></div>
+<div id="loadMsg" hidden>Getting the songs ready. This happens once, and Wi-Fi makes it quicker.</div>
 <button id="cpBtn" aria-label="Control panel"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round"><path d="M4 7h10M18 7h2M4 17h4M12 17h8"/><circle cx="16" cy="7" r="2.4"/><circle cx="10" cy="17" r="2.4"/></svg></button>
 <div id="cp" hidden><div class="wrap">
   <header><h2>Control Panel</h2><button id="cpDone">Done</button></header>
