@@ -403,6 +403,20 @@
       if (run > second && idx.refGroup[Math.floor(keys[j - 1] / 100000)] !== bg) second = run;
       run = 1;
     }
+    // A live recording and a studio one can share the same audio (a concert album reusing the
+    // track). When a studio version fits nearly as well, take it: its words follow the clock,
+    // and a live match could only show a still block of words.
+    var timed = function (r) { var f = idx.refs[r]; return !f.live && f.aligned !== false && !f.excluded; };
+    if (!timed(ref)) {
+      var tb = 0, tkey = 0;
+      for (j = 1, run = 1; j <= n; j++) {
+        if (j < n && keys[j] === keys[j - 1]) { run++; continue; }
+        var rr = Math.floor(keys[j - 1] / 100000);
+        if (run > tb && idx.refGroup[rr] === bg && timed(rr)) { tb = run; tkey = keys[j - 1]; }
+        run = 1;
+      }
+      if (tb >= Math.max(minVotes, 0.8 * best)) { best = tb; bestKey = tkey; ref = Math.floor(tkey / 100000); }
+    }
     res.votes = best; res.runner_up = second;
     res.margin = Math.round(best / Math.max(second, 1) * 100) / 100;
     if (best < minVotes) return res;

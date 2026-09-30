@@ -1,7 +1,7 @@
 /* Everything runs on this device. No server, no network after the first load. */
-import {Orb} from './orb.js?v=202609301019';
+import {Orb} from './orb.js?v=202609301028';
 // Stamped by publish_site.sh on every publish ('dev' when served straight from this Mac).
-const APP_VERSION = '202609301019';
+const APP_VERSION = '202609301028';
 
 const $ = s => document.querySelector(s);
 const orb = new Orb($('#orb'));
@@ -24,8 +24,8 @@ async function loadSongs(){
 /* ---------------- engine (runs in a worker, on device) ---------------- */
 let worker = null, engineReady = false, loadMsgT = 0;
 function startEngine(){
-  try{ worker = new Worker('engine/fp-worker.js?v=202609301019', {type:'module'}); }
-  catch(e){ try{ worker = new Worker('engine/fp-worker.js?v=202609301019'); }catch(e2){ worker = null; } }
+  try{ worker = new Worker('engine/fp-worker.js?v=202609301028', {type:'module'}); }
+  catch(e){ try{ worker = new Worker('engine/fp-worker.js?v=202609301028'); }catch(e2){ worker = null; } }
   if(!worker){ $('#load').classList.add('done'); return; }
   worker.onmessage = ev => {
     const m = ev.data || {};
@@ -40,9 +40,12 @@ function startEngine(){
   worker.postMessage({type:'load', base: new URL('engine/', location.href).href});
 }
 
+let closest = null;                  // the best guess of the last 30 s, for the log when nothing locks
 function onResult(m){
   if(!dec) return;
   const now = performance.now()/1000;
+  if(m.song_id && (!closest || now - closest.at > 30 || m.votes > closest.votes))
+    closest = {id: m.song_id, votes: m.votes, margin: m.margin, at: now};
   // m.at = when the window ENDED (sendWindow's clock); offset is where it STARTS in the recording
   dec.result(m, m.at != null ? m.at : now - (m.ms||0)/1000, m.win || 5, now);
   if(dec.state.last_match) lastMatchInfo = dec.state.last_match;
@@ -155,6 +158,10 @@ function renderNow(){
   else if(confNow > 0.05) t = `Thinking… ${Math.round(confNow*100)}% sure`;
   else if(level*3.2 > 0.10) t = 'Hearing music, listening for a song';
   else t = 'Resting, listening for music';
+  if(!serverMode && !engineReady)
+    t += `<small>Songs still downloading (${($('#load i').style.width || '0%')}). It can’t recognise anything until this finishes.</small>`;
+  else if(!serverMode && !st.song && closest && performance.now()/1000 - closest.at < 20)
+    t += `<small>Closest guess: ${esc((SONGS[closest.id] || {}).title || closest.id)} (${closest.votes} matches)</small>`;
   $('#cpNow').innerHTML = t;
 }
 async function renderDevices(){
@@ -418,7 +425,11 @@ function frame(){
   const loud = level*3.2 > 0.10;
   if(loud && !st.song && attemptStart == null){ attemptStart = now; logEvent('sound', 'Music started'); }
   if(attemptStart != null && !st.song && now - attemptStart > 30 && !frame.missLogged){
-    frame.missLogged = true; logEvent('miss', 'Heard 30 s of music but could not identify it');
+    frame.missLogged = true;
+    const why = serverMode ? '' : !engineReady ? ' (the songs were still downloading, so it had nothing to compare with)'
+      : closest ? ` (closest guess: ${(SONGS[closest.id] || {}).title || closest.id}, ${closest.votes} matches, not sure enough)`
+      : ' (nothing in the music matched any song)';
+    logEvent('miss', 'Heard 30 s of music but could not identify it' + why);
   }
   if(st.song || attemptStart == null) frame.missLogged = false;
   if(!loud && !st.song && attemptStart != null && now - lastLoud > 12) attemptStart = null;
