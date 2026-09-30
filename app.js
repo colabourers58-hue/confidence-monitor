@@ -1,7 +1,7 @@
 /* Everything runs on this device. No server, no network after the first load. */
-import {Orb} from './orb.js?v=202609302028';
+import {Orb} from './orb.js?v=202609302156';
 // Stamped by publish_site.sh on every publish ('dev' when served straight from this Mac).
-const APP_VERSION = '202609302028';
+const APP_VERSION = '202609302156';
 
 const $ = s => document.querySelector(s);
 // the orb is decoration: if this device can't draw it (old GPU, WebGL off, a shader error), the
@@ -50,16 +50,16 @@ let privateCount = 0;
 /* ---------------- engine (runs in a worker, on device) ---------------- */
 let worker = null, engineReady = false, loadMsgT = 0;
 function startEngine(){
-  try{ worker = new Worker('engine/fp-worker.js?v=202609302028', {type:'module'}); }
-  catch(e){ try{ worker = new Worker('engine/fp-worker.js?v=202609302028'); }catch(e2){ worker = null; } }
+  try{ worker = new Worker('engine/fp-worker.js?v=202609302156', {type:'module'}); }
+  catch(e){ try{ worker = new Worker('engine/fp-worker.js?v=202609302156'); }catch(e2){ worker = null; } }
   if(!worker){ $('#load').classList.add('done'); return; }
   worker.onmessage = ev => {
     const m = ev.data || {};
-    if(m.type === 'progress'){ $('#load i').style.width = (100*m.loaded/Math.max(1,m.total)).toFixed(1)+'%';
+    if(m.type === 'progress'){ loadPct = m.loaded/Math.max(1,m.total); $('#load i').style.width = (100*m.loaded/Math.max(1,m.total)).toFixed(1)+'%';
       // a first download takes a while on phone data: say what's happening, once it's clearly not instant
       if(!loadMsgT) loadMsgT = setTimeout(() => { if(!engineReady) $('#loadMsg').hidden = false; }, 2500); }
     if(m.type === 'ready'){ engineReady = true; $('#load').classList.add('done'); $('#loadMsg').hidden = true; if(m.decide && dec) Object.assign(dec.config, m.decide); }
-    if(m.type === 'result') onResult(m);
+    if(m.type === 'result'){ lastLookAt = performance.now()/1000; onResult(m); }
     if(m.type === 'room'){ roomInfo = m; if(!$('#cp').hidden) renderRoom();
       if(m.error && !m.ready) console.warn('room memory:', m.error); }
     if(m.type === 'error'){ $('#load').classList.add('done'); $('#loadMsg').hidden = true; console.warn('engine:', m.message); }
@@ -288,24 +288,53 @@ async function renderDevices(){
 /* ---------------- say what's wrong, in words ----------------
    Joel: "it should really tell us what the problem is." When music has played for a few seconds and
    nothing is up (or the song up has stopped matching), one plain line says why. */
-let whyAt = 0;
+let whyAt = 0, quietSinceAt = null, loadPct = 0, lastLookAt = 0;
+// Joel: "why do we have to guess... if it's gone offline or the mic is off it should clearly say it."
+// A status light that is always on screen, and one plain instruction when something needs doing.
+const CLICK = (() => { try{ return matchMedia('(pointer:fine)').matches ? 'Click' : 'Tap'; }catch(e){ return 'Tap'; } })();
+const click = CLICK.toLowerCase();
 function showWhy(now, loud, up){
   if(now - whyAt < 0.5) return; whyAt = now;
-  const el = $('#why'); if(!el) return;
-  let t = '';
+  const el = $('#why'), pill = $('#stat'); if(!el || !pill) return;
+  const gate = $('#gate'), gateUp = gate && !gate.classList.contains('gone');
+  if(gateUp && CLICK === 'Click'){                                     // a computer: say click, not tap
+    for(const x of gate.querySelectorAll('b,small')) if(/\btap\b|\bTap\b/.test(x.textContent))
+      x.textContent = x.textContent.replace(/\bTap\b/g, 'Click').replace(/\btap\b/g, 'click').replace(/\bOne click\b/, 'One click');
+  }
+  const online = navigator.onLine !== false;
+  const tr = mstream && mstream.getAudioTracks()[0], mic = tr ? (tr.label || 'the input').replace(/\s*\(.*?\)\s*$/, '') : '';
+  if(mstream && level < 0.0015){ if(quietSinceAt == null) quietSinceAt = now; } else quietSinceAt = null;
+  const silent = quietSinceAt == null ? 0 : now - quietSinceAt;
   const music = attemptStart != null && now - attemptStart > 4;
-  if(!mstream) t = '';
-  else if(up && !serverMode && dec && dec.state.doubt) t = 'Checking: the music doesn’t match this song right now';
-  else if(up && serverMode && lastDoubt) t = 'Checking: the music doesn’t match this song right now';
-  else if(!up && !st.song && music){
-    if(!serverMode && !engineReady) t = 'Still downloading the songs, so nothing to compare with yet';
-    else if(level*3.2 < 0.13) t = 'Very little sound is coming in: turn the input up, or check Settings › Microphone';
-    else if(closest && now - closest.at < 8) t = `Hearing music, not sure yet (closest: ${(SONGS[closest.id] || {}).title || closest.id}). Settings › type the song to help`;
-    else t = 'Hearing music but no song matches yet. Settings › type the song to help';
+  let t = '', p = '', cls = 'ok';
+  if(serverMode){ p = 'Connected to the Mac'; }
+  else if(!mstream){ p = 'Not listening'; cls = 'bad'; t = gateUp ? '' : `${CLICK} anywhere to start listening`; }
+  else if(tr && (tr.readyState === 'ended' || tr.muted) || (actx && actx.state !== 'running')){
+    p = 'Microphone off'; cls = 'bad'; t = gateUp ? '' : `The microphone is off. ${CLICK} anywhere to turn it back on`; }
+  else if(!engineReady){
+    if(!online){ p = 'Offline, songs not saved'; cls = 'bad'; t = 'No internet, and this computer hasn’t finished saving the songs. Connect to Wi-Fi'; }
+    else { const pc = Math.round(100 * loadPct); p = `Getting the songs ready${pc ? ' ' + pc + '%' : ''}`; cls = 'warn';
+      if(music) t = `Getting the songs ready${pc ? '… ' + pc + '%' : '…'} It can’t recognise anything until this finishes`; } }
+  else if(silent > 8){ p = `No sound from ${mic}`; cls = silent > 30 ? 'bad' : 'warn';
+    if(silent > 30) t = `No sound is reaching Prompter from “${mic}”. Check the cable or the feed, or pick the input in Settings`; }
+  else {
+    const ago = lastLookAt ? Math.max(0, Math.round(now - lastLookAt)) : null;
+    p = `Listening \u00b7 ${mic}` + (ago == null ? '' : ` \u00b7 checked ${ago} s ago`) + (online ? '' : ' \u00b7 offline, using saved songs');
+    if(ago != null && ago > 10){ cls = 'bad'; t = 'Prompter has stopped checking the music. Reload the page'; }
+    if(up && dec && dec.state.doubt) { t = 'Checking: the music doesn’t match this song right now'; cls = 'warn'; }
+    else if(!up && !st.song && music){
+      if(level * 3.2 < 0.13){ t = 'The sound is very quiet. Turn the feed up at the desk'; cls = 'warn'; }
+      else if(now - attemptStart > 15){ t = (closest && now - closest.at < 8)
+          ? `Hearing music but haven’t recognised it yet (closest: ${(SONGS[closest.id] || {}).title || closest.id}). Type the song in Settings`
+          : 'Hearing music but haven’t recognised it yet. Type the song in Settings'; cls = 'warn'; }
+    }
   }
   if(el.textContent !== t) el.textContent = t;
-  el.classList.toggle('show', !!t);
+  el.classList.toggle('show', !!t); el.classList.toggle('bad', cls === 'bad');
+  if(pill.textContent !== p) pill.textContent = p;
+  pill.className = cls; pill.hidden = !p;
 }
+addEventListener('online', () => { whyAt = 0; }); addEventListener('offline', () => { whyAt = 0; });
 
 /* ---------------- tell it the song (Control Panel) ----------------
    Type the song that's on, spelled any old way; pick it; the listener then only has to confirm WHERE in
