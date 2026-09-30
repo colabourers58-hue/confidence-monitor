@@ -21,13 +21,13 @@
  },
  "source": {
   "file": "app/library/fingerprints.npz",
-  "postings": 29786428,
-  "bytes": 297902708,
-  "sha256": "bdc3605d66d3b290448fb57cd561abf20fab5fb8c01b7ead836f71332ae0b2d8",
+  "postings": 30170320,
+  "bytes": 301741946,
+  "sha256": "1d7b0359e7be6c6521b99025c89ad727f3b39d6abb646f0cf294f8a1378d2855",
   "refs_json": true
  },
  "nbuckets": 262657,
- "universe": 19964920,
+ "universe": 20233771,
  "sections": [
   {
    "name": "bucket_bits",
@@ -39,46 +39,46 @@
    "name": "stream",
    "type": "bits",
    "offset": 1050632,
-   "bytes": 78121458,
-   "bits": 624971662
+   "bytes": 79095728,
+   "bits": 632765818
   }
  ],
  "stats": {
-  "distinct_hashes": 2372664,
-  "postings": 29786428,
-  "stream_bits": 624971662,
-  "unary_ones": 29273427,
+  "distinct_hashes": 2383164,
+  "postings": 30170320,
+  "stream_bits": 632765818,
+  "unary_ones": 29904839,
   "max_rice_k": 24
  },
  "checksum": [
-  502999174,
-  1646280021
+  3853225116,
+  1334350265
  ],
- "total_bytes": 79172090,
+ "total_bytes": 80146360,
  "shards": [
   {
-   "file": "index/fp-00-af00ea3f15.bin",
+   "file": "index/fp-00-e12ea5ea0c.bin",
    "bytes": 14000000
   },
   {
-   "file": "index/fp-01-3298c7b5c7.bin",
+   "file": "index/fp-01-3a8d7839e5.bin",
    "bytes": 14000000
   },
   {
-   "file": "index/fp-02-19101acb53.bin",
+   "file": "index/fp-02-087e617ad9.bin",
    "bytes": 14000000
   },
   {
-   "file": "index/fp-03-c01bdc189d.bin",
+   "file": "index/fp-03-009a38ca99.bin",
    "bytes": 14000000
   },
   {
-   "file": "index/fp-04-0fbfb12fcc.bin",
+   "file": "index/fp-04-70186ef3a1.bin",
    "bytes": 14000000
   },
   {
-   "file": "index/fp-05-b1e1a0bac3.bin",
-   "bytes": 9172090
+   "file": "index/fp-05-d0ed81a6aa.bin",
+   "bytes": 10146360
   }
  ],
  "refs": [
@@ -9904,6 +9904,138 @@
    "excluded": false,
    "duration": 309.812,
    "start": 19946531
+  },
+  {
+   "ref_id": "firstlovelovefirst",
+   "song_id": "firstlovelovefirst",
+   "via": "instrumental",
+   "live": false,
+   "shift": 0.64,
+   "aligned": true,
+   "excluded": false,
+   "duration": 257.184,
+   "start": 19964920
+  },
+  {
+   "ref_id": "gochurch",
+   "song_id": "gochurch",
+   "via": "instrumental",
+   "live": false,
+   "shift": 0.008,
+   "aligned": true,
+   "excluded": false,
+   "duration": 371.28,
+   "start": 19980399
+  },
+  {
+   "ref_id": "jesusisthedoor",
+   "song_id": "jesusisthedoor",
+   "via": "instrumental",
+   "live": false,
+   "shift": 0.016,
+   "aligned": true,
+   "excluded": false,
+   "duration": 300.816,
+   "start": 20003234
+  },
+  {
+   "ref_id": "jesusyouresocool",
+   "song_id": "jesusyouresocool",
+   "via": "instrumental",
+   "live": false,
+   "shift": 0.012,
+   "aligned": true,
+   "excluded": false,
+   "duration": 328.056,
+   "start": 20021769
+  },
+  {
+   "ref_id": "livingwaters",
+   "song_id": "livingwaters",
+   "via": "instrumental",
+   "live": false,
+   "shift": 0.264,
+   "aligned": true,
+   "excluded": false,
+   "duration": 299.304,
+   "start": 20041639
+  },
+  {
+   "ref_id": "noordinarywater",
+   "song_id": "noordinarywater",
+   "via": "instrumental",
+   "live": false,
+   "shift": 0.0,
+   "aligned": true,
+   "excluded": false,
+   "duration": 434.808,
+   "start": 20059647
+  },
+  {
+   "ref_id": "roseofsharon",
+   "song_id": "roseofsharon",
+   "via": "instrumental",
+   "live": false,
+   "shift": 0.0,
+   "aligned": true,
+   "excluded": false,
+   "duration": 351.048,
+   "start": 20086090
+  },
+  {
+   "ref_id": "icantloveyoumorethanilovegod",
+   "song_id": "icantloveyoumorethanilovegod",
+   "via": "instrumental",
+   "live": false,
+   "shift": 0.0,
+   "aligned": false,
+   "excluded": false,
+   "duration": 462.707,
+   "start": 20107656
+  },
+  {
+   "ref_id": "loyaltyanddisloyalty",
+   "song_id": "loyaltyanddisloyalty",
+   "via": "instrumental",
+   "live": false,
+   "shift": 0.0,
+   "aligned": false,
+   "excluded": false,
+   "duration": 634.944,
+   "start": 20136530
+  },
+  {
+   "ref_id": "seaofforgetfulness",
+   "song_id": "seaofforgetfulness",
+   "via": "instrumental",
+   "live": false,
+   "shift": 0.0,
+   "aligned": false,
+   "excluded": false,
+   "duration": 251.794,
+   "start": 20176084
+  },
+  {
+   "ref_id": "neverletmego",
+   "song_id": "neverletmego",
+   "via": "instrumental",
+   "live": false,
+   "shift": 0.0,
+   "aligned": false,
+   "excluded": false,
+   "duration": 306.782,
+   "start": 20191686
+  },
+  {
+   "ref_id": "lifeissoshort",
+   "song_id": "lifeissoshort",
+   "via": "instrumental",
+   "live": false,
+   "shift": 0.0,
+   "aligned": false,
+   "excluded": false,
+   "duration": 377.574,
+   "start": 20210429
   }
  ]
 }
