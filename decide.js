@@ -128,6 +128,21 @@ export const DEFAULTS = {
   PRIOR_ACC_VOTES: 16,   // added-up evidence for the held song: this much (others need 30)...
   PRIOR_ACC_LOOKS: 2,    // ...from this many looks (others 3)...
   PRIOR_ACC_MARGIN: 1.3, // ...and this far ahead of any other song's pile (others 2)
+  // ROOM MEMORY (learn()). A look heard confidently on track is "how this song sounds in this room";
+  // the engine stores its hashes so the song is found faster next time. Only from fingerprint locks
+  // that have been proven for a while, never from a guess: a wrong lesson would make it worse.
+  LEARN_VOTES: null,     // track hashes a look needs to be learnt from (null = 2 x TRACK_MIN)
+  LEARN_LOOKS: 3,        // ...after this many looks in a row on track
+  LEARN_AFTER: 6,        // ...and this long (s) after the fingerprints took the song
+  // KEY CHANGES. Worship teams often play the backing track 1-3 semitones up or down. Every look is
+  // asked at the song's key (0 until a song is up); when music has played KEY_AFTER s with nothing
+  // up, other keys are tried too (from the same look's peaks). A song found at key k is locked AT k:
+  // its tracking, doubt checks and room memory all use k. In doubt, 0 and k's neighbours are tried
+  // (a song that modulates up for its last chorus).
+  KEYS: [1, -1, 2, -2, 3, -3],
+  KEY_AFTER: 2,
+  KEY_STRICT: 1.5,       // a transposed answer needs this many times the votes an untransposed one does
+  KEY_MARGIN: 1.6,       // ...and one look's transposed answer this margin over the next song
 };
 
 export function createDecider(songs, opts) {
@@ -149,6 +164,10 @@ export function createDecider(songs, opts) {
     floor: null,        // the room's own noise floor (mic RMS), learnt from quiet looks
     music_since: null,  // when the current stretch of music began (after a quiet gap)
     up_at: -1e9,        // when a song was last on screen
+    ear_at: null,       // when the fingerprints took (or confirmed) the song up; null = not theirs
+    key: 0,             // semitones the room is from the recording, for the song up
+    key_turn: 0,        // where the rotation through other keys is
+    on_looks: 0,        // looks in a row that found us exactly on track
     last_match: null, conf: 0, conf_at: 0, rev: 0,
     cue: null,          // a MENTIONED song, held with its clock stopped while nothing is up:
                         // {song_id, kind: 'title'|'line', cue (line index or null), pos (song time shown), at, last, name, how}
@@ -172,13 +191,13 @@ export function createDecider(songs, opts) {
   // a live recording, or a song whose words have no timings yet, can't follow a clock
   const isLive = m => !!(m && (m.live || flag(m.song_id, 'untimed')));
 
-  function take(id, started, now) {
+  function take(id, started, now, key) {
     Object.assign(S, {song_id: id, started_at: started, last_confirm: now, on_track_at: now,
-                      driver: 'ear', mode: 'timed', anchor: null, cue: null});
+                      driver: 'ear', mode: 'timed', anchor: null, ear_at: now, on_looks: 0, key: key || 0, cue: null});
     PENDING.song_id = null; bump();
   }
   function clear() {
-    Object.assign(S, {song_id: null, started_at: null, driver: null, mode: 'timed', anchor: null});
+    Object.assign(S, {song_id: null, started_at: null, driver: null, mode: 'timed', anchor: null, ear_at: null, on_looks: 0, key: 0});
     PENDING.song_id = null; bump();
   }
 
@@ -202,20 +221,25 @@ export function createDecider(songs, opts) {
 
   /** The evidence piles: one song, one start time, several looks. The biggest, and the biggest
    *  of any other song. only = look at this song's piles alone. */
-  function piles(only) {
-    const pile = (id, st) => EVIDENCE.filter(e => e.song_id === id && Math.abs(e.start - st) <= C.ACC_TOL);
+  function piles(only, keys) {
+    // a pile = one song, at one key, at one start time. keys: undefined = any key; 0 = the recording's
+    // own key only (its rival too: other keys' chance piles never compete with it, so trying other
+    // keys costs a normal song nothing); 'other' = transposed piles only (their rival: any key)
+    const pile = (id, st, k) => EVIDENCE.filter(e => e.song_id === id && (e.key || 0) === (k || 0) && Math.abs(e.start - st) <= C.ACC_TOL);
+    const inK = e => keys === undefined || (keys === 0 ? !(e.key || 0) : !!(e.key || 0));
     let bestSum = 0, bestPile = null;
     for (const e of EVIDENCE) {
       if (only && e.song_id !== only) continue;
-      const p = pile(e.song_id, e.start), sum = p.reduce((a, x) => a + x.votes, 0);
+      if (!inK(e)) continue;
+      const p = pile(e.song_id, e.start, e.key), sum = p.reduce((a, x) => a + x.votes, 0);
       if (sum > bestSum) { bestSum = sum; bestPile = p; }
     }
     if (!bestPile) return null;
     const winner = bestPile[0].song_id;
     let rival = 0;
-    for (const e of EVIDENCE) if (e.song_id !== winner)
-      rival = Math.max(rival, pile(e.song_id, e.start).reduce((a, x) => a + x.votes, 0));
-    return {song_id: winner, pile: bestPile, votes: bestSum, rival, looks: new Set(bestPile.map(e => e.look)).size,
+    for (const e of EVIDENCE) if (e.song_id !== winner && (keys !== 0 || !(e.key || 0)))
+      rival = Math.max(rival, pile(e.song_id, e.start, e.key).reduce((a, x) => a + x.votes, 0));
+    return {song_id: winner, key: bestPile[0].key || 0, pile: bestPile, votes: bestSum, rival, looks: new Set(bestPile.map(e => e.look)).size,
             start: bestPile.reduce((a, e) => a + e.start * e.votes, 0) / bestSum};      // vote-weighted start
   }
 
@@ -223,30 +247,40 @@ export function createDecider(songs, opts) {
   function accumulate(r, heardAt, win, now) {
     EVIDENCE = EVIDENCE.filter(e => now - e.at <= C.ACC_SEC);
     if (!r) return false;
-    // every candidate of this look (the engine's dozen best places), not just its winner
-    const cands = (r.cands && r.cands.length) ? r.cands : (r.song_id ? [r] : []);
+    // every candidate of this look (the engine's dozen best places), not just its winner, at every
+    // key the look was asked at
+    const candsOf = x => ((x.cands && x.cands.length) ? x.cands : (x.song_id ? [x] : [])).map(c => Object.assign({}, c, {key: x.key || 0}));
+    const cands = [r, ...(r.alts || [])].flatMap(candsOf);
     const seen = new Set();
     for (const c of cands) {
       if (!c.song_id || c.votes < C.ACC_FLOOR || c.live || flag(c.song_id, 'untimed')) continue;
-      const start = heardAt - win - c.offset_sec, key = c.song_id + '@' + Math.round(start / C.ACC_TOL);
+      const start = heardAt - win - c.offset_sec, key = c.song_id + '@' + Math.round(start / C.ACC_TOL) + '#' + c.key;
       if (seen.has(key)) continue;                  // the same place via two copies of one master counts once
       seen.add(key);
       // full: the whole window was music (a window straddling the music start sees too little of
       // the song to tell a phrase at the top from the same phrase repeated later)
       const full = S.music_since == null || heardAt - win >= S.music_since;
-      EVIDENCE.push({song_id: c.song_id, start, votes: c.votes, at: now, look: heardAt, full});
+      EVIDENCE.push({song_id: c.song_id, key: c.key, start, votes: c.votes, at: now, look: heardAt, full});
     }
-    const P = piles();
-    S.acc = P && {song_id: P.song_id, votes: P.votes, looks: P.looks, rival: P.rival, start: P.start, at: now};
-    if (!P) return false;
-    const winner = P.song_id, mine = P.pile, sum = P.votes, looks = P.looks, rival = P.rival;
-    // the song held because it was mentioned is the likely one: its own pile needs less
-    const prior = S.song_id == null && S.cue && S.cue.song_id === winner;
-    const NV = prior ? C.PRIOR_ACC_VOTES : C.ACC_VOTES, NL = prior ? C.PRIOR_ACC_LOOKS : C.ACC_LOOKS, NM = prior ? C.PRIOR_ACC_MARGIN : C.ACC_MARGIN;
-    if (sum < NV || looks < NL || mine.length < NL || sum < NM * Math.max(rival, 1) || !S.auto) return false;
+    // the recording's own key first, judged exactly as before; transposed piles only if that fails,
+    // and more strictly (KEY_STRICT): six more keys are six more chances for a chance pile
+    const passes = (P, x) => {
+      if (!P) return false;
+      const prior = S.song_id == null && S.cue && S.cue.song_id === P.song_id;
+      const NV = prior ? C.PRIOR_ACC_VOTES : C.ACC_VOTES, NL = prior ? C.PRIOR_ACC_LOOKS : C.ACC_LOOKS, NM = prior ? C.PRIOR_ACC_MARGIN : C.ACC_MARGIN;
+      return P.votes >= NV * x && P.looks >= NL && P.pile.length >= NL && P.votes >= NM * Math.max(P.rival, 1);
+    };
+    const P0 = piles(undefined, 0), PK = EVIDENCE.some(e => e.key) ? piles(undefined, 'other') : null;
+    // ...but a transposed pile of ANOTHER song that is bigger still says the room may be in another key: wait
+    const P = passes(P0, 1) && !(PK && PK.song_id !== P0.song_id && PK.votes >= P0.votes) ? P0 : passes(PK, C.KEY_STRICT) ? PK : null;
+    const shown = P || (PK && (!P0 || PK.votes > P0.votes) ? PK : P0);
+    S.acc = shown && {song_id: shown.song_id, key: shown.key, votes: shown.votes, looks: shown.looks, rival: shown.rival, start: shown.start, at: now};
+    if (!P || !S.auto) return false;
+    const winner = P.song_id, mine = P.pile, sum = P.votes, looks = P.looks, rival = P.rival, pkey = P.key || 0;
+    const prior = S.song_id == null && S.cue && S.cue.song_id === winner, NL = prior ? C.PRIOR_ACC_LOOKS : C.ACC_LOOKS;
     // already up at this very place (a words estimate the fingerprints now confirm): hand it to the ear
     if (S.song_id === winner && S.started_at != null && Math.abs(S.started_at - P.start) < C.RESYNC_SEC) {
-      Object.assign(S, {driver: 'ear', last_confirm: now, on_track_at: now}); EVIDENCE = []; bump();
+      Object.assign(S, {driver: 'ear', last_confirm: now, on_track_at: now, ear_at: now, on_looks: 0, key: pkey}); EVIDENCE = []; bump();
       return false;
     }
     // START FROM THE TOP applies to added-up evidence too (it once locked 6.4 s ahead on a repeated
@@ -255,13 +289,13 @@ export function createDecider(songs, opts) {
     let st = P.start, how = `added up ${looks} looks`;
     if (S.song_id == null) {
       const ms = S.music_since, near = st0 => {
-        const p = EVIDENCE.filter(e => e.song_id === winner && Math.abs(e.start - st0) <= C.ACC_TOL);
+        const p = EVIDENCE.filter(e => e.song_id === winner && (e.key || 0) === pkey && Math.abs(e.start - st0) <= C.ACC_TOL);
         return {votes: p.reduce((a, e) => a + e.votes, 0), start: p.length ? p.reduce((a, e) => a + e.start * e.votes, 0) / p.reduce((a, e) => a + e.votes, 0) : st0};
       };
       if (ms != null && heardAt - ms <= C.TOP_SEC && Math.abs(P.start - ms) > C.TOP_TOL) {
         // the song's top = it began with the music: the best pile within TOP_TOL of that
         let top = null;
-        for (const e of EVIDENCE) if (e.song_id === winner && Math.abs(e.start - ms) <= C.TOP_TOL) {
+        for (const e of EVIDENCE) if (e.song_id === winner && (e.key || 0) === pkey && Math.abs(e.start - ms) <= C.TOP_TOL) {
           const n = near(e.start); if (!top || n.votes > top.votes) top = n;
         }
         if (top && top.votes >= C.TOP_SHARE * sum) { st = top.start; how += ', from the top'; }
@@ -269,16 +303,17 @@ export function createDecider(songs, opts) {
       } else if ((ms == null || heardAt - ms > C.TOP_SEC) && now - S.up_at > C.FRESH_SEC) {
         // no music start to go by: the latest-starting pile of this song that could be its top
         let top = null;
-        for (const e of EVIDENCE) if (e.song_id === winner && e.start > P.start + C.TOP_TOL && e.start >= heardAt - C.TOPC_SEC && e.start <= heardAt) {
+        for (const e of EVIDENCE) if (e.song_id === winner && (e.key || 0) === pkey && e.start > P.start + C.TOP_TOL && e.start >= heardAt - C.TOPC_SEC && e.start <= heardAt) {
           const n = near(e.start); if (n.votes >= C.TOP_SHARE * sum && (!top || n.start > top.start)) top = n;
         }
         if (top) { st = top.start; how += ', from the top'; }
       }
     }
-    r = Object.assign({}, r, {song_id: winner, ref_id: (cands.find(c => c.song_id === winner) || {}).ref_id || r.ref_id});
+    r = Object.assign({}, r, {song_id: winner, ref_id: (cands.find(c => c.song_id === winner && c.key === pkey) || {}).ref_id || r.ref_id});
+    if (pkey) how += `, played ${pkey > 0 ? '+' : ''}${pkey} semitone${Math.abs(pkey) === 1 ? '' : 's'}`;
     if (prior) how += ', called by name first';
     Object.assign(S, {song_id: r.song_id, started_at: st, paused_at: null, last_confirm: now, on_track_at: now,
-                      driver: 'ear', mode: 'timed', anchor: null, searching: false, cue: null});
+                      driver: 'ear', mode: 'timed', anchor: null, searching: false, ear_at: now, on_looks: 0, key: pkey, cue: null});
     S.last_match = {song_id: r.song_id, offset: heardAt - win - st, votes: sum, margin: sum / Math.max(rival, 1),
                     at: heardAt, via: r.ref_id && r.ref_id.includes('::') ? r.ref_id : null, how};
     EVIDENCE = []; PENDING.song_id = null;
@@ -336,22 +371,25 @@ export function createDecider(songs, opts) {
     // offset_sec is where the WINDOW STARTS inside the recording, and the window ended at heardAt
     const started = heardAt - (m.offset_sec + win);
     // already locked on this song and still in step: note that we can still hear it
+    const mk = m.key || 0;
     if (S.song_id === m.song_id && S.started_at != null && Math.abs(S.started_at - started) < C.RESYNC_SEC) {
       S.last_confirm = now; PENDING.song_id = null;
+      // the same song and place at another key: the band changed key (a last-chorus lift). Follow it.
+      if (mk !== S.key && S.driver === 'ear') { S.key = mk; S.on_looks = 0; S.ear_at = now; bump(); }
       // an estimated clock (words, a live recording) that a studio recording now confirms: the ear has it
-      if (S.driver === 'words' || S.driver === 'live') { Object.assign(S, {driver: 'ear', on_track_at: now}); bump(); }
+      if (S.driver === 'words' || S.driver === 'live') { Object.assign(S, {driver: 'ear', on_track_at: now, ear_at: now, on_looks: 0}); bump(); }
       return false;
     }
     // something is up and was on track recently: a different song, or a different place in
     // this song (the other chorus), has to keep saying so, window after window
     if (S.song_id != null && S.driver === 'ear' && now - S.on_track_at < C.CHALLENGE_WITHIN) {
       const fresh = now - CHALLENGE.at < C.CHALLENGE_GAP;
-      if (fresh && CHALLENGE.song_id === m.song_id && Math.abs(CHALLENGE.started - started) < C.AGREE_SEC)
+      if (fresh && CHALLENGE.song_id === m.song_id && CHALLENGE.key === mk && Math.abs(CHALLENGE.started - started) < C.AGREE_SEC)
         Object.assign(CHALLENGE, {n: CHALLENGE.n + 1, at: now, started: (CHALLENGE.started + started) / 2});
-      else Object.assign(CHALLENGE, {song_id: m.song_id, started, n: 1, at: now});
+      else Object.assign(CHALLENGE, {song_id: m.song_id, key: mk, started, n: 1, at: now});
       const other = m.song_id !== S.song_id;
       if (CHALLENGE.n >= (other ? C.CHALLENGE_SONG_N : C.CHALLENGE_N) && now - S.on_track_at >= (other ? C.OFF_TRACK_SONG_SEC : C.OFF_TRACK_SEC) && S.auto) {
-        take(m.song_id, CHALLENGE.started, now);
+        take(m.song_id, CHALLENGE.started, now, mk);
         CHALLENGE.song_id = null; CHALLENGE.n = 0;
         return true;
       }
@@ -363,35 +401,35 @@ export function createDecider(songs, opts) {
       // a look whose window reaches back before the music started heard too little of the song to
       // tell its top from the same phrase repeated later (Build Your House on a Rock): it can't vote
       if (S.music_since != null && heardAt - win < S.music_since) return false;
-      if (now - PENDING.at < C.CANDIDATE_TTL && PENDING.song_id === m.song_id &&
+      if (now - PENDING.at < C.CANDIDATE_TTL && PENDING.song_id === m.song_id && PENDING.key === mk &&
           Math.abs(PENDING.started - started) < C.AGREE_SEC) {
         PENDING.n++; PENDING.at = now;
         if (PENDING.n >= C.MID_AGREE_N && S.auto) {
           const st = (started + PENDING.started) / 2;
           PENDING.n = 0;
-          take(m.song_id, st, now);
+          take(m.song_id, st, now, mk);
           return true;
         }
         return false;
       }
-      Object.assign(PENDING, {song_id: m.song_id, started, at: now, n: 1});
+      Object.assign(PENDING, {song_id: m.song_id, key: mk, started, at: now, n: 1});
       return false;
     }
     // a very strong match needs no second opinion
-    if (m.votes >= C.LOCK_VOTES && m.margin >= C.LOCK_MARGIN && S.auto) { take(m.song_id, started, now); return true; }
+    if (m.votes >= C.LOCK_VOTES && m.margin >= C.LOCK_MARGIN && S.auto) { take(m.song_id, started, now, mk); return true; }
     // the music has just started and this look puts us at the TOP of a song: songs start at the
     // top, so that already is the second opinion. One clear look is enough (saves 0.75-1.5 s,
     // which is the first line)
-    if (m.top === true && m.votes >= C.TOP_LOCK_VOTES && m.margin >= C.TOP_LOCK_MARGIN && S.auto) { take(m.song_id, started, now); return true; }
+    if (m.top === true && m.votes >= C.TOP_LOCK_VOTES && m.margin >= C.TOP_LOCK_MARGIN && S.auto) { take(m.song_id, started, now, mk); return true; }
     // does this confirm what we saw last time?
-    if (now - PENDING.at < C.CANDIDATE_TTL && PENDING.song_id === m.song_id &&
+    if (now - PENDING.at < C.CANDIDATE_TTL && PENDING.song_id === m.song_id && PENDING.key === mk &&
         Math.abs(PENDING.started - started) < C.AGREE_SEC) {
       PENDING.song_id = null;
       if (!S.auto) return false;
-      take(m.song_id, (started + PENDING.started) / 2, now);
+      take(m.song_id, (started + PENDING.started) / 2, now, mk);
       return true;
     }
-    Object.assign(PENDING, {song_id: m.song_id, started, at: now, n: 1});
+    Object.assign(PENDING, {song_id: m.song_id, key: mk, started, at: now, n: 1});
     return false;
   }
 
@@ -429,10 +467,10 @@ export function createDecider(songs, opts) {
       let anchor = 0;
       for (let j = 0; j < cues.length; j++) if (!isSec(cues[j])) { anchor = j; break; }
       cues.forEach((c, j) => { if (!isSec(c) && c.t != null && c.t <= tEst) anchor = j; });
-      Object.assign(S, {song_id: sid, started_at: null, driver: 'live', mode: 'words', anchor, last_confirm: now, cue: null});
+      Object.assign(S, {song_id: sid, started_at: null, driver: 'live', mode: 'words', anchor, last_confirm: now, ear_at: null, on_looks: 0, cue: null});
     } else {
       Object.assign(S, {song_id: sid, started_at: heardAt - (m.offset_sec + win) * k, paused_at: null, driver: 'live',
-                        mode: 'timed', anchor: null, last_confirm: now, on_track_at: now, cue: null});
+                        mode: 'timed', anchor: null, last_confirm: now, on_track_at: now, ear_at: null, on_looks: 0, key: m.key || 0, cue: null});
     }
     bump();
     return true;
@@ -468,7 +506,7 @@ export function createDecider(songs, opts) {
         }
         if (best) S.last_words = {cue: best.cue, at, moved: false};     // the line last heard (a quote is held there)
         if (!best || best.d <= C.WORDS_OUT) return false;
-        S.started_at = at - (s.cues[best.cue].t + half(s, best.cue));
+        S.started_at = at - (s.cues[best.cue].t + half(s, best.cue)); S.ear_at = null; S.on_looks = 0;
         S.last_words = {cue: best.cue, at, moved: true};
         bump();
         return true;
@@ -496,7 +534,7 @@ export function createDecider(songs, opts) {
                     how: 'from the sung words', line: r.line, score: r.score};
     if (!hasTimes(s) || s.cues[r.cue].t == null) {   // no timings: the one case left for a block of words
       Object.assign(S, {song_id: r.song_id, started_at: null, paused_at: null, driver: 'words', mode: 'words',
-                        anchor: r.cue, last_confirm: now, searching: false, cue: null});
+                        anchor: r.cue, last_confirm: now, searching: false, ear_at: null, on_looks: 0, cue: null});
       bump(); return true;
     }
     // which line is being sung right now: the newest words, if they name a line of this song
@@ -512,9 +550,10 @@ export function createDecider(songs, opts) {
       return true;
     }
     let started = at - (s.cues[cue].t + half(s, cue)), driver = 'words';
-    if (agrees) { started = P.start; driver = 'ear'; S.last_match.how = `sung words + ${P.looks} looks agree`; }
+    if (agrees) { started = P.start; driver = 'ear'; S.key = P.key || 0; S.last_match.how = `sung words + ${P.looks} looks agree`; }
+    else S.key = 0;
     Object.assign(S, {song_id: r.song_id, started_at: started, paused_at: null, driver, mode: 'timed', anchor: null,
-                      last_confirm: now, on_track_at: now, searching: false, cue: null});
+                      last_confirm: now, on_track_at: now, searching: false, ear_at: driver === 'ear' ? now : null, on_looks: 0, cue: null});
     S.last_words = {cue, at, moved: false};
     if (driver === 'ear') EVIDENCE = [];
     bump();
@@ -529,6 +568,17 @@ export function createDecider(songs, opts) {
       if (mv >= C.MUSIC_VOTES) S.music_at = now;
     }
     let m = r && r.song_id && r.votes >= C.MIN_VOTES ? r : null;
+    // other keys asked in this look (nothing up, an estimated clock, or doubt): the best believable
+    // answer among them all speaks for the look; ties go to the key asked first
+    // (only when the look's own key found nothing believable, and more strictly: six more keys are
+    // six more chances for a chance match)
+    if (r && r.alts && r.alts.length && !(m && believable(m))) {
+      const strong = a => a.song_id && (a.votes >= C.KEY_STRICT * C.STRONG_VOTES ||
+        (a.votes >= C.KEY_STRICT * C.MIN_VOTES && a.margin >= C.KEY_MARGIN)) && a.votes >= C.KEY_STRICT * ((r.song_id !== a.song_id && r.votes) || 0);
+      let best = null;
+      for (const a of r.alts) if (strong(a) && song(a.song_id) && (!best || a.votes > best.votes)) best = a;
+      if (best) m = Object.assign({}, best, {track_votes: r.track_votes, track_recent: r.track_recent, track_offset: r.track_offset});
+    }
     if (m && !isLive(m)) m = placeFromTop(m, heardAt, win, now);
     const liveHit = !!(m && isLive(m) && believable(m));
     let conf = 0;
@@ -544,7 +594,7 @@ export function createDecider(songs, opts) {
     if (liveHit && !onTrack) changed = considerLive(m, heardAt, win, now);
     if (m) S.last_match = {song_id: m.song_id, offset: m.offset_sec, votes: m.votes, margin: m.margin, at: heardAt,
                            via: m.ref_id && m.ref_id.includes('::') ? m.ref_id : null,
-                           top: m.top, moved_from: m.moved_from};
+                           top: m.top, moved_from: m.moved_from, key: m.key || 0};
     if (onTrack) {
       // still exactly where we think we are: that is all we need to know
       S.last_confirm = S.on_track_at = now;
@@ -559,6 +609,7 @@ export function createDecider(songs, opts) {
     // always verifying: count looks off track while music plays; three in a row is doubt
     if (S.song_id != null && S.driver === 'ear' && r && r.track_votes != null) {
       const loud = now - S.last_loud < 1.5;
+      S.on_looks = onTrack ? (S.on_looks || 0) + 1 : 0;
       if (onTrack) { S.off_looks = 0; S.doubt = false; }
       else if (loud) { S.off_looks = (S.off_looks || 0) + 1; if (S.off_looks >= C.DOUBT_LOOKS) S.doubt = true; }
     } else if (S.song_id == null) { S.off_looks = 0; S.doubt = false; }
@@ -607,9 +658,53 @@ export function createDecider(songs, opts) {
 
   /** Put a song up by hand (demo / operator). driver 'hand' is never released automatically. */
   function hold(fields, now) {
-    Object.assign(S, {driver: 'hand', mode: 'timed', anchor: null, started_at: null, cue: null}, fields,
-                  {last_confirm: now, on_track_at: now});
+    Object.assign(S, {driver: 'hand', mode: 'timed', anchor: null, started_at: null, key: 0, cue: null}, fields,
+                  {last_confirm: now, on_track_at: now, ear_at: null, on_looks: 0});   // put up by hand: never learnt from
     PENDING.song_id = null; CHALLENGE.song_id = null; CHALLENGE.n = 0; bump();
+  }
+
+  /** Should the device be listening for sung words? While searching (music, nothing up), and
+   *  while the song up has only an estimated clock (words, a live recording) that words correct.
+   *  Never while a fingerprint clock or a hand-held song is up. */
+  /** Room memory: should the engine learn the look that just ended at heardAt (result r)? Only
+   *  when the fingerprints took this song (driver 'ear', not words, a live estimate or a hand)
+   *  at least LEARN_AFTER ago, LEARN_LOOKS looks in a row found it exactly on track, this look
+   *  strongly (LEARN_VOTES) and at the clock's own place, and nothing is in doubt. Returns the
+   *  worker's learn message ({at, song_id, lyric_offset, ref_id}) or null. */
+  function learn(r, heardAt, win, now) {
+    if (S.ear_at !== S.ear_seen) { S.ear_seen = S.ear_at; S.ear_ms = S.music_since; }   // when the music had started, at the lock
+    if (!r || S.song_id == null || S.driver !== 'ear' || S.mode !== 'timed' || S.started_at == null || S.ear_at == null) return null;
+    if (S.doubt || (S.on_looks || 0) < C.LEARN_LOOKS || now - S.ear_at < C.LEARN_AFTER) return null;
+    const need = C.LEARN_VOTES != null ? C.LEARN_VOTES : 2 * C.TRACK_MIN;
+    if (r.track_votes == null || r.track_votes < need || r.track_offset == null) return null;
+    if (r.track_recent != null && r.track_recent < C.TRACK_RECENT_MIN) return null;
+    if (Math.abs(r.track_offset - (heardAt - win - S.started_at)) > C.TRACK_TOL) return null;   // asked about another place
+    // ...and only a song placed at its TOP, when the music started. Songs start at the top in church;
+    // a song placed mid-song could be at the wrong copy of a repeated section (a concert recording
+    // that plays it twice), and a memory learnt there would make that mistake stick. This also means
+    // every look since the music started was this song: they are filled in too.
+    const from_top = S.ear_ms != null && Math.abs(S.started_at - S.ear_ms) <= C.TOP_TOL;
+    if (!from_top) return null;
+    return {at: heardAt, song_id: S.song_id, lyric_offset: r.track_offset, ref_id: r.track_ref || null, from_top, key: S.key || 0};
+  }
+
+  /** The key to ask this look at: the song's, or 0 with nothing up. */
+  const key = () => (S.song_id != null ? S.key || 0 : 0);
+  /** Other keys to try in this look (null = none). afford = how many this device can manage per
+   *  look (app.js measures it): all of them at once, or a few per look in rotation. */
+  function keys(at, afford) {
+    const k = key();
+    let list = null;
+    const musicOn = S.music_since != null && at - S.music_since >= C.KEY_AFTER && at - Math.max(S.last_loud, S.last_sound) < 3;
+    if (S.song_id == null || S.driver === 'words' || S.driver === 'live') { if (musicOn) list = C.KEYS.filter(x => x !== k); }
+    else if (S.doubt && S.driver === 'ear') list = [0, k + 1, k - 1].filter((x, i, a) => x !== k && a.indexOf(x) === i && Math.abs(x) <= 6);
+    if (!list || !list.length) return null;
+    const n = Math.max(1, Math.min(list.length, afford == null ? list.length : afford));
+    if (n >= list.length) return list;
+    const out = [];
+    for (let i = 0; i < n; i++) out.push(list[(S.key_turn + i) % list.length]);
+    S.key_turn = (S.key_turn + n) % list.length;
+    return out;
   }
 
   /* ---------------- MENTIONED: a title said, a line quoted ---------------- */
@@ -737,6 +832,6 @@ export function createDecider(songs, opts) {
    *  recording) that words correct. Never while a fingerprint clock or a hand-held song is up. */
   const wantWords = () => S.song_id == null ? true : (S.driver === 'words' || S.driver === 'live');
 
-  return {state: S, config: C, heard, track, top, result, tick, hold, words, titles, wantWords, stop: clear, believable,
+  return {state: S, config: C, heard, track, top, result, tick, hold, words, titles, wantWords, learn, key, keys, stop: clear, believable,
           listening: on => { S.active = !!on; }};
 }

@@ -1,7 +1,7 @@
 /* Everything runs on this device. No server, no network after the first load. */
-import {Orb} from './orb.js?v=202609301608';
+import {Orb} from './orb.js?v=202609301610';
 // Stamped by publish_site.sh on every publish ('dev' when served straight from this Mac).
-const APP_VERSION = '202609301608';
+const APP_VERSION = '202609301610';
 
 const $ = s => document.querySelector(s);
 // the orb is decoration: if this device can't draw it (old GPU, WebGL off, a shader error), the
@@ -50,8 +50,8 @@ let privateCount = 0;
 /* ---------------- engine (runs in a worker, on device) ---------------- */
 let worker = null, engineReady = false, loadMsgT = 0;
 function startEngine(){
-  try{ worker = new Worker('engine/fp-worker.js?v=202609301608', {type:'module'}); }
-  catch(e){ try{ worker = new Worker('engine/fp-worker.js?v=202609301608'); }catch(e2){ worker = null; } }
+  try{ worker = new Worker('engine/fp-worker.js?v=202609301610', {type:'module'}); }
+  catch(e){ try{ worker = new Worker('engine/fp-worker.js?v=202609301610'); }catch(e2){ worker = null; } }
   if(!worker){ $('#load').classList.add('done'); return; }
   worker.onmessage = ev => {
     const m = ev.data || {};
@@ -60,12 +60,32 @@ function startEngine(){
       if(!loadMsgT) loadMsgT = setTimeout(() => { if(!engineReady) $('#loadMsg').hidden = false; }, 2500); }
     if(m.type === 'ready'){ engineReady = true; $('#load').classList.add('done'); $('#loadMsg').hidden = true; if(m.decide && dec) Object.assign(dec.config, m.decide); }
     if(m.type === 'result') onResult(m);
+    if(m.type === 'room'){ roomInfo = m; if(!$('#cp').hidden) renderRoom();
+      if(m.error && !m.ready) console.warn('room memory:', m.error); }
     if(m.type === 'error'){ $('#load').classList.add('done'); $('#loadMsg').hidden = true; console.warn('engine:', m.message); }
   };
   worker.onerror = () => { worker = null; $('#load').classList.add('done'); };
   worker.postMessage({type:'load', base: new URL('engine/', location.href).href});
 }
 
+/* ---------------- room memory: faster at a song every time it hears it in this room ----------------
+   Once a song is locked and proven on track, each look's sounds are stored for that song at that
+   place (engine.js learn), on this device only. decide.js learn() says when; the worker keeps them. */
+let roomInfo = null;
+function renderRoom(){
+  const el = $('#cpRoom'); if(!el) return;
+  const r = roomInfo;
+  el.textContent = !r ? 'Starting…' : !r.ready ? 'Loading…'
+    : `${r.songs} song${r.songs === 1 ? '' : 's'} learned ${r.mac ? 'on the Mac' : 'on this device'}` + (r.persist ? '' : ' (this browser won’t keep it after it closes)');
+  $('#cpForget').hidden = !(r && r.songs);
+}
+// per-look cost, to decide how many other keys (a transposed track) a look can afford
+let costBase = null, costKey = null;
+function keysAfford(){
+  if(costBase == null) return 2;
+  const perKey = costKey != null ? costKey : costBase / 5;
+  return Math.max(1, Math.min(6, Math.floor((0.45 * EVERY - costBase) / Math.max(1, perKey))));
+}
 let closest = null, lastDoubt = false;   // lastDoubt: the Mac server's doubt flag (server mode)                  // the best guess of the last 30 s, for the log when nothing locks
 function onResult(m){
   if(!dec) return;
@@ -73,7 +93,16 @@ function onResult(m){
   if(m.song_id && (!closest || now - closest.at > 30 || m.votes > closest.votes))
     closest = {id: m.song_id, votes: m.votes, margin: m.margin, at: now};
   // m.at = when the window ENDED (sendWindow's clock); offset is where it STARTS in the recording
-  dec.result(m, m.at != null ? m.at : now - (m.ms||0)/1000, m.win || 5, now);
+  const heardAt = m.at != null ? m.at : now - (m.ms||0)/1000;
+  if(m.ms != null){
+    const nk = (m.alts || []).length;
+    if(!nk) costBase = costBase == null ? m.ms : 0.8 * costBase + 0.2 * m.ms;
+    else if(costBase != null){ const pk = Math.max(0, (m.ms - costBase) / nk); costKey = costKey == null ? pk : 0.8 * costKey + 0.2 * pk; }
+  }
+  dec.result(m, heardAt, m.win || 5, now);
+  // room memory: a look heard confidently on track teaches the engine how this song sounds here
+  const L = dec.learn(m, heardAt, m.win || 5, now);
+  if(L && worker) worker.postMessage(Object.assign({type:'learn'}, L));
   if(dec.state.last_match) lastMatchInfo = dec.state.last_match;
   applyLocal(now);
 }
@@ -99,7 +128,15 @@ let actx, ring = [], ringLen = 0, level = 0, busy = false;
 let mstream = null, analyser = null, fbuf = null, inputId = null;
 let srcNode = null, procNode = null, lastFrameAt = 0;   // lastFrameAt: when sound last arrived (word search watches it)
 try{ inputId = localStorage.getItem('cm.input'); }catch(e){}
-async function startMic(deviceId, opts){
+// one microphone start at a time: two at once (the page's own start and a tap) closed each other's
+// audio mid-start on Safari -> "null is not an object (evaluating 'actx.state')"
+let micChain = Promise.resolve();
+function startMic(deviceId, opts){
+  const p = micChain.then(() => startMic0(deviceId, opts));
+  micChain = p.catch(() => {});
+  return p;
+}
+async function startMic0(deviceId, opts){
   // keep: a fresh microphone stream into the SAME running audio graph. Used to bring the mic back
   // without a tap (a new audio graph on iPhone/iPad needs one)
   const keep = !!(opts && opts.keepContext && actx && actx.state === 'running' && procNode);
@@ -129,13 +166,13 @@ async function startMic(deviceId, opts){
         const own = devs.find(d => /macbook|built-?in|internal|ipad microphone/i.test(d.label));
         if(own && own.deviceId !== stream.getAudioTracks()[0].getSettings().deviceId){
           stream.getTracks().forEach(t => t.stop());
-          return startMic(own.deviceId, opts);
+          return startMic0(own.deviceId, opts);
         }
       }
     }catch(e){}
   }
   mstream = stream; ring = []; ringLen = 0;
-  if(keep){
+  if(keep && actx && actx.state !== 'closed' && procNode){
     try{ srcNode && srcNode.disconnect(); }catch(e){}
     srcNode = actx.createMediaStreamSource(stream);
     srcNode.connect(procNode); if(analyser) srcNode.connect(analyser);
@@ -143,7 +180,7 @@ async function startMic(deviceId, opts){
   }
   // the device's own rate. Asking for 16 kHz here works in Chrome but gives SILENCE in Safari,
   // so the audio is converted to 16 kHz by us (to16k) or by the Mac server (X-Rate), never by the browser
-  if(!reuse) actx = new (window.AudioContext || window.webkitAudioContext)();
+  if(!reuse || !actx || actx.state === 'closed') actx = new (window.AudioContext || window.webkitAudioContext)();
   if(actx.state !== 'running'){
     try{ await Promise.race([actx.resume(), new Promise(r => setTimeout(r, 1500))]); }catch(e){}
   }
@@ -247,7 +284,18 @@ async function renderDevices(){
     list.appendChild(b);
   });
 }
-function openPanel(){ $('#cp').hidden = false; renderPanel(); renderNow(); renderDevices(); }
+function openPanel(){ $('#cp').hidden = false; renderPanel(); renderNow(); renderDevices(); renderRoom(); }
+$('#cpForget') && ($('#cpForget').onclick = () => {
+  const mac = serverMode;
+  if((!worker && !mac) || !confirm(`Forget what ${mac ? 'the Mac has' : 'this device has'} learned about how songs sound in this room?`)) return;
+  if(mac) fetch('cue', {method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({action:'forget_room'})}).catch(()=>{});
+  else worker.postMessage({type:'forget'});
+  logEvent('input', `Room memory forgotten ${mac ? 'on the Mac' : 'on this device'}`);
+});
+// room memory is saved every few seconds; save now when the app goes to the background or closes
+const flushRoom = () => { if(worker) worker.postMessage({type:'flush'}); };
+document.addEventListener('visibilitychange', () => { if(document.visibilityState === 'hidden') flushRoom(); });
+addEventListener('pagehide', flushRoom);
 let holdT = null, holdXY = null;
 addEventListener('pointerdown', e => { if(!$('#cp').hidden) return; holdXY = [e.clientX, e.clientY];
   clearTimeout(holdT); holdT = setTimeout(openPanel, 750); });
@@ -280,6 +328,7 @@ async function pollServer(){
     skew = s.server_now + (performance.now()-t0)/2000 - Date.now()/1000;
     const l = s.listen || {};
     lastDoubt = !!s.doubt;                  // the Mac says the song on screen stopped matching
+    if(s.room) roomInfo = {songs: s.room.songs, postings: s.room.postings, ready: true, persist: true, mac: true};
     confNow = (l.conf_at && s.server_now - l.conf_at < 4) ? (l.conf || 0) : 0;
     if(l.last_match) lastMatchInfo = l.last_match;
     if(l.heard && l.heard_at && l.heard_at !== pollServer.heardAt && l.heard.trim().length > 3){
@@ -335,7 +384,8 @@ function sendWindow(){
   const done = ev => { if(ev.data && ev.data.type === 'result'){ busy = false; worker.removeEventListener('message', done); } };
   worker.addEventListener('message', done);
   setTimeout(() => { busy = false; }, 4000);
-  worker.postMessage({type:'match', pcm:f, win, at, track: dec.track(at, win), top: dec.top(at, win)}, [f.buffer]);
+  worker.postMessage({type:'match', pcm:f, win, at, track: dec.track(at, win), top: dec.top(at, win),
+                     key: dec.key ? dec.key() : 0, keys: dec.keys ? dec.keys(at, keysAfford()) : null}, [f.buffer]);
 }
 
 /* ---------------- choreography ---------------- */

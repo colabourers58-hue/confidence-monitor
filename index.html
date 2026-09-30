@@ -205,6 +205,7 @@ if(/iPad|iPhone|iPod/.test(navigator.userAgent)||(/Macintosh/.test(navigator.use
   #log div{display:grid;grid-template-columns:auto 1fr;gap:12px;padding:8px 2px;border-bottom:1px solid rgba(84,84,88,.35);font-size:14px;line-height:1.35}
   #log time{color:var(--label-3);font-variant-numeric:tabular-nums}
   #log .id{color:#30d158} #log .miss{color:#ff9f0a} #log .heard{color:var(--label-2)}
+  #cp .forget{font-size:13px;font-weight:600;padding:3px 10px;margin-left:6px;background:rgba(120,120,128,.24);color:var(--label)}
   #cpCopy{font-size:15px;font-weight:600;padding:10px 14px;background:rgba(120,120,128,.24);color:var(--label);margin-top:10px}
   #cpBtn{position:fixed;right:calc(14px + env(safe-area-inset-right));bottom:calc(14px + env(safe-area-inset-bottom));z-index:9;
          width:44px;height:44px;border-radius:22px;border:0;background:rgba(120,120,128,.16);display:flex;align-items:center;
@@ -245,6 +246,7 @@ if(/iPad|iPhone|iPod/.test(navigator.userAgent)||(/Macintosh/.test(navigator.use
     <div class="meter"><i id="cpMeter"></i></div>
     <div class="mrow"><span id="cpLevel">–</span><span id="cpHearing">–</span></div>
     <div class="mrow words"><span>Word search</span><span id="cpWords">–</span></div>
+    <div class="mrow words room"><span>Room memory</span><span><span id="cpRoom">–</span> <button id="cpForget" class="forget" hidden>Forget</button></span></div>
     <div id="devlist"></div></section>
   <section class="card"><h3>Right now</h3><div class="now" id="cpNow">–</div></section>
   <section class="card"><h3>This session</h3><div class="stats" id="cpStats"></div></section>
@@ -273,6 +275,6 @@ if(/iPad|iPhone|iPod/.test(navigator.userAgent)||(/Macintosh/.test(navigator.use
   <li>Tap the Share button <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2l4.2 4.2-1.4 1.4L13 5.8V15h-2V5.8L9.2 7.6 7.8 6.2zM5 10h3v2H6v8h12v-8h-2v-2h3a1 1 0 0 1 1 1v10a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V11a1 1 0 0 1 1-1z"/></svg> <span id="shareWhere">at the bottom of the screen</span>.</li>
   <li>Choose <b style="display:inline;font-size:inherit">Add to Home Screen</b>, then Add.</li></ol></div><div class="arrow"></div></div>
 <div id="gate"><b>Tap to begin</b><small>One tap allows the microphone. After that it runs on its own.</small></div>
-<script type="module" src="app.js?v=202609301608"></script>
+<script type="module" src="app.js?v=202609301610"></script>
 </body>
 </html>
