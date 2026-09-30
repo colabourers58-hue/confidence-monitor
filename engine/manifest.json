@@ -21,13 +21,13 @@
  },
  "source": {
   "file": "app/library/fingerprints.npz",
-  "postings": 29585362,
-  "bytes": 295891709,
-  "sha256": "87f2a8662ca4370786946300208283beb44dc4c13b71cd9e19440456bb7f3913",
+  "postings": 29786428,
+  "bytes": 297902708,
+  "sha256": "bdc3605d66d3b290448fb57cd561abf20fab5fb8c01b7ead836f71332ae0b2d8",
   "refs_json": true
  },
  "nbuckets": 262657,
- "universe": 19829184,
+ "universe": 19964920,
  "sections": [
   {
    "name": "bucket_bits",
@@ -39,46 +39,46 @@
    "name": "stream",
    "type": "bits",
    "offset": 1050632,
-   "bytes": 77590974,
-   "bits": 620727786
+   "bytes": 78121458,
+   "bits": 624971662
   }
  ],
  "stats": {
-  "distinct_hashes": 2364712,
-  "postings": 29585362,
-  "stream_bits": 620727786,
-  "unary_ones": 29409953,
+  "distinct_hashes": 2372664,
+  "postings": 29786428,
+  "stream_bits": 624971662,
+  "unary_ones": 29273427,
   "max_rice_k": 24
  },
  "checksum": [
-  3616115675,
-  3229278770
+  502999174,
+  1646280021
  ],
- "total_bytes": 78641606,
+ "total_bytes": 79172090,
  "shards": [
   {
-   "file": "index/fp-00-0c83525fcf.bin",
+   "file": "index/fp-00-af00ea3f15.bin",
    "bytes": 14000000
   },
   {
-   "file": "index/fp-01-a049d05543.bin",
+   "file": "index/fp-01-3298c7b5c7.bin",
    "bytes": 14000000
   },
   {
-   "file": "index/fp-02-67d186e49e.bin",
+   "file": "index/fp-02-19101acb53.bin",
    "bytes": 14000000
   },
   {
-   "file": "index/fp-03-2bb2590048.bin",
+   "file": "index/fp-03-c01bdc189d.bin",
    "bytes": 14000000
   },
   {
-   "file": "index/fp-04-d1c67d201c.bin",
+   "file": "index/fp-04-0fbfb12fcc.bin",
    "bytes": 14000000
   },
   {
-   "file": "index/fp-05-d0893635ef.bin",
-   "bytes": 8641606
+   "file": "index/fp-05-b1e1a0bac3.bin",
+   "bytes": 9172090
   }
  ],
  "refs": [
@@ -9816,6 +9816,94 @@
    "excluded": true,
    "duration": 277.44,
    "start": 19812149
+  },
+  {
+   "ref_id": "soonandverysoon::aida-live-at-taita-hills",
+   "song_id": "soonandverysoon",
+   "via": "release",
+   "live": true,
+   "shift": 0.0,
+   "aligned": null,
+   "excluded": true,
+   "duration": 256.94,
+   "start": 19829184
+  },
+  {
+   "ref_id": "welcomebacktojesus::aida-live-at-adelaide-chapel",
+   "song_id": "welcomebacktojesus",
+   "via": "release",
+   "live": true,
+   "shift": 0.0,
+   "aligned": null,
+   "excluded": true,
+   "duration": 315.822,
+   "start": 19845230
+  },
+  {
+   "ref_id": "welcomebacktojesus",
+   "song_id": "welcomebacktojesus",
+   "via": "instrumental",
+   "live": false,
+   "shift": 0.0,
+   "aligned": null,
+   "excluded": false,
+   "duration": 200.124,
+   "start": 19864645
+  },
+  {
+   "ref_id": "sayido::aida-live-at-adelaide-chapel",
+   "song_id": "sayido",
+   "via": "release",
+   "live": true,
+   "shift": 0.0,
+   "aligned": null,
+   "excluded": true,
+   "duration": 204.488,
+   "start": 19876861
+  },
+  {
+   "ref_id": "sayido",
+   "song_id": "sayido",
+   "via": "instrumental",
+   "live": false,
+   "shift": 0.0,
+   "aligned": null,
+   "excluded": false,
+   "duration": 256.104,
+   "start": 19889364
+  },
+  {
+   "ref_id": "quiettimes::aida-live-at-taita-hills",
+   "song_id": "quiettimes",
+   "via": "release",
+   "live": true,
+   "shift": 0.0,
+   "aligned": null,
+   "excluded": true,
+   "duration": 306.939,
+   "start": 19905010
+  },
+  {
+   "ref_id": "thelordismylight::aida-live-in-soweto-south-africa",
+   "song_id": "thelordismylight",
+   "via": "release",
+   "live": true,
+   "shift": 0.0,
+   "aligned": null,
+   "excluded": true,
+   "duration": 369.337,
+   "start": 19924062
+  },
+  {
+   "ref_id": "thelordismylight",
+   "song_id": "thelordismylight",
+   "via": "instrumental",
+   "live": false,
+   "shift": 0.0,
+   "aligned": null,
+   "excluded": false,
+   "duration": 309.812,
+   "start": 19946531
   }
  ]
 }
