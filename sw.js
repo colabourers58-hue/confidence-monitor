@@ -1,6 +1,6 @@
 /* Keeps the whole app on the device. First visit stores everything; after that it
    never needs a network. Bump VERSION to push an update the next time it is online. */
-const VERSION = 'cm-202609301907';   // stamped by publish_site.sh
+const VERSION = 'cm-202609301910';   // stamped by publish_site.sh
 // ONNX Runtime Web (runs the learned fingerprint in engine/fp-worker.js), from its CDN, kept offline
 const ORT_BASE = 'https://cdn.jsdelivr.net/npm/onnxruntime-web@1.20.1/dist/';
 const ORT_FILES = ['ort.wasm.min.js', 'ort.wasm.min.mjs', 'ort-wasm-simd-threaded.mjs', 'ort-wasm-simd-threaded.wasm'];
@@ -27,6 +27,20 @@ self.addEventListener('install', e => {
     // fetches them through this worker after it takes control (app.js keepOffline()), with no limit.
     for(const f of ['engine/manifest.json', 'engine/fp-worker.js', 'engine/engine.js', 'engine/fp2.js', 'asr/asr-worker.js', 'asr/manifest.json'])
       try{ await c.add(new Request(f, {cache:'reload'})); }catch(err){}
+    // the song index (and the learned fingerprint) for THIS version before it takes over, so an update
+    // never leaves the device without the index, but never longer than ~3.5 min: past that the
+    // install would be killed, so the rest is left to the page (keepOffline())
+    const big = (async () => {
+      try{
+        const m = await (await fetch('engine/manifest.json', {cache:'no-store'})).json();
+        for(const x of m.shards || []){ const f = 'engine/' + (x.file || x);
+          if(!(await c.match(f))){ const old = await caches.match(f); if(old) await c.put(f, old); else try{ await c.add(f); }catch(err){} } }
+        const m2 = await (await fetch('engine/fp2/manifest.json', {cache:'no-store'})).json();
+        for(const f of ['engine/fp2/manifest.json', 'engine/fp2/' + m2.model.file, ...(m2.shards || []).map(x => 'engine/fp2/' + x.file)])
+          if(!(await c.match(f))) try{ await c.add(new Request(f, {cache:'reload'})); }catch(err){}
+      }catch(err){}
+    })();
+    await Promise.race([big, new Promise(r => setTimeout(r, 210000))]);
     self.skipWaiting();
   })());
 });
