@@ -120,7 +120,7 @@ export function createWordListener(o) {
       o.log('info', 'Word search not allowed on this device (' + e + '). Songs are still found from the music.');
     } else if (e === 'network') {
       W.status = 'offline'; retryAt = now() + 60;
-      o.log('info', 'The browser’s own recogniser can’t reach its service; the words are still heard on this device.');
+      o.log('info', 'Word search needs the internet on this browser; trying again in a minute.');
     } else if (e === 'audio-capture') {
       // the microphone can't be shared with the recogniser on this device
       W.disabled = 'mic'; W.status = 'off-mic';
@@ -203,9 +203,10 @@ export function createWordListener(o) {
   W.guarding = t => W.running || t < W.guardUntil;
   W.describe = () => ({
     unsupported: 'Not available in this browser. Songs are found from the music alone.',
-    ready: 'Ready: listens for a song’s title or its lines whenever no song is up.',
+    ready: 'Ready: listens for a song’s title or its lines whenever no song is up.' +
+           (google ? ' Needs the internet in this browser (Google recognises the words).' : ''),
     listening: 'Listening to the singing now' + (W.heard ? '' : ' (nothing recognised yet)') + '.',
-    offline: 'Resting; the words are still heard on this device.',
+    offline: 'Needs the internet on this browser. It will try again.',
     'off-blocked': 'Turned off: this device didn’t allow speech recognition.',
     'off-mic': 'Turned off for this session: it interrupted the microphone on this device.',
     'off-quiet': 'Turned off for this session: the browser kept hearing nothing.',
