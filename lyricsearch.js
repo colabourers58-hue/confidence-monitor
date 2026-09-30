@@ -36,7 +36,10 @@ function round2(x) {
 const isSection = c => !!(c.section || c.s);
 const pyLen = t => [...t].length;                  // Python counts code points
 
-export function createIndex(songs) {
+export function createIndex(songs, preached) {
+  // 3-grams the preacher says all the time (data/preached.json, from his books): a line heard in a
+  // sermon made only of these is most likely scripture being preached, not the song
+  const PREACHED = new Set(preached || []);
   const lines = [];                                // [song_id, title, cue_index, text]
   const post = new Map();                          // 3-gram -> line numbers, ascending
   for (const s of songs) {
@@ -84,7 +87,11 @@ export function createIndex(songs) {
     // how clearly does the winning SONG beat the next best song
     const ranked = [...bysong.values()].sort((a, b) => b - a);
     const runner = ranked.length > 1 ? ranked[1] : 0.0;
-    return {song_id: sid, title, cue: ci, line: txt, score: round2(best), grams: hitg.get(best_li).size,
+    // fresh: the part of the line's evidence that is not everyday preaching (summed in sorted order,
+    // as the Python does, so the two round alike)
+    let fresh = 0.0;
+    for (const g of [...hitg.get(best_li)].sort()) if (!PREACHED.has(g)) fresh += idf.get(g);
+    return {song_id: sid, title, cue: ci, line: txt, score: round2(best), grams: hitg.get(best_li).size, fresh: round2(fresh),
             margin: round2(bysong.get(sid) / Math.max(runner, 0.01))};
   }
 

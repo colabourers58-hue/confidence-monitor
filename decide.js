@@ -116,6 +116,12 @@ export const DEFAULTS = {
   // singing does (a later line of it heard), or another song clearly recognised replaces it.
   CUE_SEC: 180,          // a song called by its title waits this long for its music (from the last mention)
   HOLD_SEC: 60,          // a quoted line with nothing after it is held this long
+  CANCEL_SEC: 15,        // held and the talking goes on (words that aren't this song) this long: let it go (0 = never)
+  WORDS_ONCE: true,      // words alone: one sighting of a line is enough (else it must be seen twice, WORDS_CONFIRM)...
+  WORDS_FRESH: 10,       // ...if this much of its evidence is not everyday preaching (lyricsearch fresh)
+  PREACHED_GAP: 10,      // a line made of preached phrases must be heard again this long after (a new utterance)...
+  PREACHED_WITHIN: 40,   // ...within this long
+  TITLE_ANY_MIN: 99,     // a title of this many words or more pulls its song up even if it is a common phrase
   LINE_ALONE: 15,        // a words-only song with no further line and no music this long was a quote: hold its line
   CONTINUE_SEC: 30,      // "singing on" = a line up to this far (song time) after the one held
   MENTION_AGAIN: 60,     // a common title (3+ words) said twice within this long counts as meant
@@ -487,7 +493,12 @@ export function createDecider(songs, opts) {
     }
     if (S.driver === 'hand' || (S.driver === 'ear' && S.song_id != null)) return false;   // a real track is up: leave it
     // a song held because it was mentioned: is this a line of it?
-    if (S.song_id == null && S.cue) { const h = heldWords(recent || text, at, now, ix); if (h != null) return h; }
+    if (S.song_id == null && S.cue) {
+      const h = heldWords(recent || text, at, now, ix);
+      if (h != null) return h;
+      // the talking has gone on without any more of this song: it was only mentioned
+      if (C.CANCEL_SEC && at - S.cue.last > C.CANCEL_SEC) { S.cue = null; bump(); }
+    }
     // a song is up on an estimated clock: where in THIS song are they singing?
     if (S.song_id != null) {
       const s = song(S.song_id), L = ix.song_lines(recent || text, S.song_id);
@@ -524,9 +535,14 @@ export function createDecider(songs, opts) {
     if (!agrees && r.grams < C.WORDS_GRAMS_ALONE) return false;   // two common 3-grams ('I wish you were') prove nothing
     // words alone: they must name this song twice, a moment apart
     if (!agrees) {
-      const again = WORDS1.song_id === r.song_id && at - WORDS1.at <= C.WORDS_CONFIRM_SEC;
-      if (!again) WORDS1 = {song_id: r.song_id, at};
-      if (!again || at - WORDS1.at < C.WORDS_CONFIRM) return false;
+      // how much of the evidence is not everyday preaching (scripture the preacher quotes all the time)
+      const fresh = r.fresh == null ? r.score : r.fresh, plain = fresh >= C.WORDS_FRESH;
+      if (!(C.WORDS_ONCE && plain)) {
+        const gap = plain ? C.WORDS_CONFIRM : C.PREACHED_GAP, within = plain ? C.WORDS_CONFIRM_SEC : C.PREACHED_WITHIN;
+        const again = WORDS1.song_id === r.song_id && at - WORDS1.at <= within;
+        if (!again) WORDS1 = {song_id: r.song_id, at};
+        if (!again || at - WORDS1.at < gap) return false;
+      }
     }
     WORDS1 = {song_id: null, at: -1e9};
     PENDING.song_id = null;
@@ -738,6 +754,7 @@ export function createDecider(songs, opts) {
       let how = null;
       if (!h.common) how = 'its title';
       else if (h.cued) how = 'its title, called by name';
+      else if (h.n >= C.TITLE_ANY_MIN) how = 'its title';
       else {
         const P = piles(h.song_id), M = MENT.get(h.key);
         if (P && P.votes >= C.TITLE_EVIDENCE) how = 'its title, and the music agrees';

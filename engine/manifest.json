@@ -21,13 +21,13 @@
  },
  "source": {
   "file": "app/library/fingerprints.npz",
-  "postings": 27341712,
-  "bytes": 273452045,
-  "sha256": "ac2e426410a0587323bcbb861b7711cadf51dd28a4513f6cecde5bc9aef3d874",
+  "postings": 27467775,
+  "bytes": 274712900,
+  "sha256": "3a0f3efeabdc36fd633823f9072deb198d3e545f6187a915ffd5d531e261008e",
   "refs_json": true
  },
  "nbuckets": 262657,
- "universe": 18372967,
+ "universe": 18454042,
  "sections": [
   {
    "name": "bucket_bits",
@@ -39,46 +39,46 @@
    "name": "stream",
    "type": "bits",
    "offset": 1050632,
-   "bytes": 71666172,
-   "bits": 573329375
+   "bytes": 71999244,
+   "bits": 575993950
   }
  ],
  "stats": {
-  "distinct_hashes": 2277470,
-  "postings": 27341712,
-  "stream_bits": 573329375,
-  "unary_ones": 26587112,
+  "distinct_hashes": 2283702,
+  "postings": 27467775,
+  "stream_bits": 575993950,
+  "unary_ones": 26836231,
   "max_rice_k": 24
  },
  "checksum": [
-  978246908,
-  488274205
+  168524532,
+  127224221
  ],
- "total_bytes": 72716804,
+ "total_bytes": 73049876,
  "shards": [
   {
-   "file": "index/fp-00-1359438856.bin",
+   "file": "index/fp-00-e574d606b3.bin",
    "bytes": 14000000
   },
   {
-   "file": "index/fp-01-008212ae00.bin",
+   "file": "index/fp-01-625c0e3ffd.bin",
    "bytes": 14000000
   },
   {
-   "file": "index/fp-02-57c0f97c0e.bin",
+   "file": "index/fp-02-986aebdaca.bin",
    "bytes": 14000000
   },
   {
-   "file": "index/fp-03-dd6d150a15.bin",
+   "file": "index/fp-03-273cdd60b2.bin",
    "bytes": 14000000
   },
   {
-   "file": "index/fp-04-0292118bf2.bin",
+   "file": "index/fp-04-d88e10f9ab.bin",
    "bytes": 14000000
   },
   {
-   "file": "index/fp-05-907f9450b4.bin",
-   "bytes": 2716804
+   "file": "index/fp-05-d514d24507.bin",
+   "bytes": 3049876
   }
  ],
  "refs": [
@@ -9134,6 +9134,61 @@
    "excluded": true,
    "duration": 194.509,
    "start": 18360817
+  },
+  {
+   "ref_id": "jesusprayed::love-concert",
+   "song_id": "jesusprayed",
+   "via": "release",
+   "live": true,
+   "shift": 0.0,
+   "aligned": false,
+   "excluded": false,
+   "duration": 250.032,
+   "start": 18372967
+  },
+  {
+   "ref_id": "jesusprayed::aida-live-in-soweto-south-africa",
+   "song_id": "jesusprayed",
+   "via": "release",
+   "live": true,
+   "shift": 0.0,
+   "aligned": false,
+   "excluded": false,
+   "duration": 258.913,
+   "start": 18388397
+  },
+  {
+   "ref_id": "jesusprayed::aida-live-in-leysin",
+   "song_id": "jesusprayed",
+   "via": "release",
+   "live": true,
+   "shift": 0.0,
+   "aligned": false,
+   "excluded": false,
+   "duration": 266.607,
+   "start": 18404429
+  },
+  {
+   "ref_id": "jesusprayed::aida-live-in-gaborone",
+   "song_id": "jesusprayed",
+   "via": "release",
+   "live": true,
+   "shift": 0.0,
+   "aligned": false,
+   "excluded": false,
+   "duration": 280.425,
+   "start": 18420922
+  },
+  {
+   "ref_id": "jesusprayed::propose-to-me-concert",
+   "song_id": "jesusprayed",
+   "via": "release",
+   "live": true,
+   "shift": 0.0,
+   "aligned": false,
+   "excluded": false,
+   "duration": 258.038,
+   "start": 18438258
   }
  ]
 }

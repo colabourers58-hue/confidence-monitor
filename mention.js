@@ -30,7 +30,8 @@ const TENS = ['', '', 'twenty', 'thirty', 'forty', 'fifty', 'sixty', 'seventy', 
 const CUE = new Set(['sing', 'singing', 'sang', 'sung', 'song', 'songs', 'hymn', 'hymns', 'play', 'playing', 'next', 'chorus']);
 const LINK = new Set(['is', 'it', 'called', 'titled', 'entitled', 'named', 'us', 'let', 'we', 'are', 'will', 'going',
   'to', 'now', 'again', 'next', 'one', 'this', 'that', 'our', 'your', 'my', 'all', 'together',
-  'please', 'then', 'and', 'shall', 'can', 'do', 'be', 'for', 'of', 'you', 'me', 'up', 'with']);
+  'please', 'then', 'and', 'shall', 'can', 'do', 'be', 'for', 'of', 'you', 'me', 'up', 'with',
+  'them', 'him', 'her', 'everybody', 'everyone', 'church']);   // 'sing that song for them. Forgiven' (Lenk 2025)
 const CUE_GAP = 3;
 const SMALL = new Set(['i', 'to', 'of', 'in', 'on', 'at', 'my', 'me', 'is', 'it', 'so', 'and', 'or', 'for', 'you',
   'your', 'we', 'us', 'be', 'oh', 'he', 'his', 'our', 'by', 'as', 'am', 'are', 'with', 'not', 'do']);

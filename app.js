@@ -1,7 +1,7 @@
 /* Everything runs on this device. No server, no network after the first load. */
-import {Orb} from './orb.js?v=202609301617';
+import {Orb} from './orb.js?v=202609301623';
 // Stamped by publish_site.sh on every publish ('dev' when served straight from this Mac).
-const APP_VERSION = '202609301617';
+const APP_VERSION = '202609301623';
 
 const $ = s => document.querySelector(s);
 // the orb is decoration: if this device can't draw it (old GPU, WebGL off, a shader error), the
@@ -50,8 +50,8 @@ let privateCount = 0;
 /* ---------------- engine (runs in a worker, on device) ---------------- */
 let worker = null, engineReady = false, loadMsgT = 0;
 function startEngine(){
-  try{ worker = new Worker('engine/fp-worker.js?v=202609301617', {type:'module'}); }
-  catch(e){ try{ worker = new Worker('engine/fp-worker.js?v=202609301617'); }catch(e2){ worker = null; } }
+  try{ worker = new Worker('engine/fp-worker.js?v=202609301623', {type:'module'}); }
+  catch(e){ try{ worker = new Worker('engine/fp-worker.js?v=202609301623'); }catch(e2){ worker = null; } }
   if(!worker){ $('#load').classList.add('done'); return; }
   worker.onmessage = ev => {
     const m = ev.data || {};
@@ -795,7 +795,7 @@ setInterval(reviveMic, 5000);              // a track can end quietly (headphone
    The last resort when the music alone can't find the song: the browser's own speech
    recognition (words.js), searched against every song's lyrics (lyricsearch.js, the Mac's
    search ported). decide.js wantWords() says when; decide.js words() decides what it means. */
-let words = null, LSIX = null, LS = null, MN = null, TIX = null, TITLES = null;
+let words = null, LSIX = null, LS = null, MN = null, TIX = null, TITLES = null, PREACHED = [];
 const WORD_SEARCH = true;            // the browser's own speech recognition (words.js): titles and lines
 async function startWords(){
   if(!WORD_SEARCH) return;
@@ -804,6 +804,8 @@ async function startWords(){
     // song titles (and other names songs go by): a title said pulls its song up (mention.js)
     try{ MN = await import('./mention.js?v=' + APP_VERSION);
          TITLES = await (await fetch('data/titles.json?v=' + APP_VERSION)).json(); }catch(e){ console.warn('titles:', e); TITLES = TITLES || {}; }
+    // the lyric phrases the preacher uses every week: a line made only of these must be heard twice
+    try{ PREACHED = (await (await fetch('data/preached.json?v=' + APP_VERSION)).json()).grams || []; }catch(e){ PREACHED = []; }
     words = (await import('./words.js?v=' + APP_VERSION)).createWordListener({
       now: () => performance.now()/1000,
       health: () => ({frameAt: lastFrameAt, level, track: mstream && mstream.getAudioTracks()[0], actx}),
@@ -811,7 +813,7 @@ async function startWords(){
       onMicTrouble: restoreMic,
       onWords: (pool, recent, at) => {
         if(!dec) return;
-        if(!LSIX) LSIX = LS.createIndex(Object.values(SONGS));
+        if(!LSIX) LSIX = LS.createIndex(Object.values(SONGS), PREACHED);
         if(MN && !TIX) TIX = MN.createTitleIndex(Object.values(SONGS), TITLES || {});   // private songs too, once unlocked
         const now = performance.now()/1000;
         // a title said: its song goes up held at its top, waiting for the music
