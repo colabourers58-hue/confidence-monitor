@@ -1,6 +1,6 @@
 /* Keeps the whole app on the device. First visit stores everything; after that it
    never needs a network. Bump VERSION to push an update the next time it is online. */
-const VERSION = 'cm-202609301458';   // stamped by publish_site.sh
+const VERSION = 'cm-202609301504';   // stamped by publish_site.sh
 const SHELL = ['./', 'index.html', 'app.js', 'orb.js', 'manifest.webmanifest', 'manifest-ios.webmanifest', 'icon-512.png', 'icon-192.png',
                'data/songs.json', 'fonts/inter-600.woff2', 'fonts/inter-800.woff2', 'awake.mp4'];
 self.addEventListener('install', e => {
@@ -10,7 +10,7 @@ self.addEventListener('install', e => {
     await c.addAll(SHELL.map(u => new Request(u, {cache:'reload'})));
     // the offline-only files one by one, so a host without them (the Mac serves none of
     // them) can't fail the install
-    for(const f of ['decide.js', 'lyricsearch.js', 'words.js']){ try{ await c.add(f); }catch(err){} }
+    for(const f of ['decide.js', 'lyricsearch.js', 'words.js', 'mention.js', 'data/titles.json']){ try{ await c.add(f); }catch(err){} }
     try{
       const m = await (await fetch('engine/manifest.json', {cache:'no-store'})).json();
       const files = ['engine/manifest.json', 'engine/fp-worker.js', 'engine/engine.js',

@@ -1,7 +1,8 @@
-/* Listening to the WORDS, on the device: the browser's own speech recognition, used only as a
- * last resort (decide.js wantWords(): music for 10 s with no song found, or a song up whose
- * clock is only an estimate). The Mac does this with Whisper; a phone can't run Whisper, but
- * most browsers can recognise speech.
+/* Listening to the WORDS, on the device: the browser's own speech recognition. It runs whenever no
+ * song is up (decide.js wantWords(): a song's title or a line of it can be said at any moment, and
+ * that alone pulls the song up), and while a song up has only an estimated clock; it pauses while
+ * the fingerprints are following a song. The Mac does this with Whisper; a phone can't run Whisper,
+ * but most browsers can recognise speech.
  *
  * The fingerprints come first, always. Speech recognition wants the microphone too, and some
  * devices (iPhone and iPad Safari in particular) can mute or interrupt the page's own microphone
@@ -20,6 +21,8 @@ const RECENT_SEC = 4;        // "what is being sung right now"
 const RECENT_WORDS = 12;
 const DEAD_SEC = 1.0;        // microphone silent / stalled this long while recognising: it broke the mic
 const GUARD_AFTER = 6;       // keep watching (and keep app.js's own dead-mic alarm quiet) this long after
+const VOICE_LEVEL = 0.008;   // mic RMS a voice in the room reaches: a session that heard none and
+                             // recognised nothing proves nothing (a quiet room), so it isn't held against it
 
 export function createWordListener(o) {
   // o: {health() -> {frameAt, level, track, actx}, onWords(pool, recent, at), onMicTrouble(), log(kind, text), now()}
@@ -33,7 +36,7 @@ export function createWordListener(o) {
     status: Rec ? 'ready' : 'unsupported',   // ready | listening | off-blocked | off-mic | offline | off-quiet | unsupported
     running: false, want: false, disabled: null, guardUntil: 0, heard: 0,
   };
-  let rec = null, entries = [], restartT = 0, retryAt = 0, starts = [], emptySessions = 0, gotResult = false;
+  let rec = null, entries = [], restartT = 0, retryAt = 0, starts = [], emptySessions = 0, gotResult = false, loudest = 0;
   let watchT = 0, zeroSince = null, lastSent = '', sendT = 0;
   const now = () => o.now();
 
@@ -68,6 +71,7 @@ export function createWordListener(o) {
       else if (t - zeroSince > DEAD_SEC) why = h.track.muted ? 'the microphone was muted' : 'the microphone went silent';
     } else zeroSince = null;
     if (why) trouble(why);
+    if (W.running && h.level > loudest) loudest = h.level;
   }
   function startWatch() { if (!watchT) watchT = setInterval(watch, 200); }
 
@@ -129,7 +133,8 @@ export function createWordListener(o) {
     if (this !== rec) return;                // one we stopped ourselves
     rec = null; W.running = false; W.guardUntil = now() + GUARD_AFTER; startWatch();
     if (W.status === 'listening') W.status = 'ready';
-    if (!W.probing) { if (!gotResult) emptySessions++; else emptySessions = 0; }
+    // nothing recognised although someone was talking: that counts against it. A quiet room doesn't
+    if (!W.probing) { if (gotResult) emptySessions = 0; else if (loudest >= VOICE_LEVEL) emptySessions++; }
     // a browser that ends every session with nothing (Android restarts also make a sound): give up
     if (emptySessions >= (android ? 3 : 8)) {
       W.disabled = 'quiet'; W.status = 'off-quiet';
@@ -146,11 +151,13 @@ export function createWordListener(o) {
     if (starts.length >= (android ? 6 : 20)) return;          // never thrash
     const h = o.health();
     if (!healthy(h, t)) return;              // the mic is already in trouble: don't make it worse, and don't get blamed
+    // Android plays a sound every time recognition starts: there, only start when someone is talking
+    if (android && !W.probing && h.level < VOICE_LEVEL) return;
     try {
       rec = new Rec();
       rec.continuous = true; rec.interimResults = true; rec.lang = 'en-US'; rec.maxAlternatives = 1;
       rec.onresult = onresult; rec.onerror = onerror; rec.onend = onend;
-      gotResult = false;
+      gotResult = false; loudest = h.level;
       rec.start();
       starts.push(t); W.running = true; W.status = 'listening'; zeroSince = null;
       startWatch();
@@ -196,7 +203,7 @@ export function createWordListener(o) {
   W.guarding = t => W.running || t < W.guardUntil;
   W.describe = () => ({
     unsupported: 'Not available in this browser. Songs are found from the music alone.',
-    ready: 'Ready for when the music alone can’t find the song.' +
+    ready: 'Ready: listens for a song’s title or its lines whenever no song is up.' +
            (google ? ' Needs the internet in this browser (Google recognises the words).' : ''),
     listening: 'Listening to the singing now' + (W.heard ? '' : ' (nothing recognised yet)') + '.',
     offline: 'Needs the internet on this browser. It will try again.',

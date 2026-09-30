@@ -107,6 +107,25 @@ export const DEFAULTS = {
   WORDS_CONFIRM: 2,      // words alone must name the same song twice, at least this far apart...
   WORDS_CONFIRM_SEC: 20, // ...within this long (a harsh room makes speech recognition invent lines)
   WORDS_AGREE: 3,        // a fingerprint candidate this close (s) to a words clock keeps the song up
+  // MENTIONED (titles(), and words() with no music). Joel: "all it should take for a song to be pulled
+  // up is for the song to be mentioned: the title or lines from the song". A mentioned song goes up
+  // HELD (S.cue, the clock stopped) while nothing else is up: a title at the song's top, a quoted
+  // line at that line. The music then starts it (its fingerprints get a head start: PRIOR_*), or the
+  // singing does (a later line of it heard), or another song clearly recognised replaces it.
+  CUE_SEC: 180,          // a song called by its title waits this long for its music (from the last mention)
+  HOLD_SEC: 60,          // a quoted line with nothing after it is held this long
+  LINE_ALONE: 15,        // a words-only song with no further line and no music this long was a quote: hold its line
+  CONTINUE_SEC: 30,      // "singing on" = a line up to this far (song time) after the one held
+  MENTION_AGAIN: 60,     // a common title (3+ words) said twice within this long counts as meant
+  MENTION_GAP: 10,       // a sighting this long after the last one is a new mention (the words pool lasts ~9 s)
+  TITLE_EVIDENCE: 8,     // a common title: fingerprint evidence for that song this strong confirms it
+  MUSIC_VOTES: 8,        // a look whose best match has this many votes = recorded music is playing...
+  MUSIC_RECENT: 8,       // ...if within this long. Level alone can't tell a preacher from a band.
+  PRIOR_VOTES: 8,        // the song held by name: one look this strong at its top starts it (others need 14)
+  PRIOR_MARGIN: 1.2,     // ...this far ahead of every other song in that look
+  PRIOR_ACC_VOTES: 16,   // added-up evidence for the held song: this much (others need 30)...
+  PRIOR_ACC_LOOKS: 2,    // ...from this many looks (others 3)...
+  PRIOR_ACC_MARGIN: 1.3, // ...and this far ahead of any other song's pile (others 2)
 };
 
 export function createDecider(songs, opts) {
@@ -129,8 +148,13 @@ export function createDecider(songs, opts) {
     music_since: null,  // when the current stretch of music began (after a quiet gap)
     up_at: -1e9,        // when a song was last on screen
     last_match: null, conf: 0, conf_at: 0, rev: 0,
+    cue: null,          // a MENTIONED song, held with its clock stopped while nothing is up:
+                        // {song_id, kind: 'title'|'line', cue (line index or null), pos (song time shown), at, last, name, how}
+    music_at: -1e9,     // when a look last heard recorded music (MUSIC_VOTES)
   };
   const PENDING = {song_id: null, started: null, at: 0, n: 0};
+  const PRIOR = {started: null, at: -1e9, n: 0};   // the held song's own agreeing looks
+  const MENT = new Map();                          // title key -> {occ, last, times}: when it was said
   const CHALLENGE = {song_id: null, started: null, n: 0, at: 0};
   let EVIDENCE = [];     // weak looks: {song_id, start, votes, at}
   let QUIET = [];        // recent quiet levels, for the floor
@@ -148,7 +172,7 @@ export function createDecider(songs, opts) {
 
   function take(id, started, now) {
     Object.assign(S, {song_id: id, started_at: started, last_confirm: now, on_track_at: now,
-                      driver: 'ear', mode: 'timed', anchor: null});
+                      driver: 'ear', mode: 'timed', anchor: null, cue: null});
     PENDING.song_id = null; bump();
   }
   function clear() {
@@ -214,7 +238,10 @@ export function createDecider(songs, opts) {
     S.acc = P && {song_id: P.song_id, votes: P.votes, looks: P.looks, rival: P.rival, start: P.start, at: now};
     if (!P) return false;
     const winner = P.song_id, mine = P.pile, sum = P.votes, looks = P.looks, rival = P.rival;
-    if (sum < C.ACC_VOTES || looks < C.ACC_LOOKS || mine.length < C.ACC_LOOKS || sum < C.ACC_MARGIN * Math.max(rival, 1) || !S.auto) return false;
+    // the song held because it was mentioned is the likely one: its own pile needs less
+    const prior = S.song_id == null && S.cue && S.cue.song_id === winner;
+    const NV = prior ? C.PRIOR_ACC_VOTES : C.ACC_VOTES, NL = prior ? C.PRIOR_ACC_LOOKS : C.ACC_LOOKS, NM = prior ? C.PRIOR_ACC_MARGIN : C.ACC_MARGIN;
+    if (sum < NV || looks < NL || mine.length < NL || sum < NM * Math.max(rival, 1) || !S.auto) return false;
     // already up at this very place (a words estimate the fingerprints now confirm): hand it to the ear
     if (S.song_id === winner && S.started_at != null && Math.abs(S.started_at - P.start) < C.RESYNC_SEC) {
       Object.assign(S, {driver: 'ear', last_confirm: now, on_track_at: now}); EVIDENCE = []; bump();
@@ -236,7 +263,7 @@ export function createDecider(songs, opts) {
           const n = near(e.start); if (!top || n.votes > top.votes) top = n;
         }
         if (top && top.votes >= C.TOP_SHARE * sum) { st = top.start; how += ', from the top'; }
-        else if (new Set(mine.filter(e => e.full).map(e => e.look)).size < C.ACC_LOOKS) return false;   // wait for whole looks
+        else if (new Set(mine.filter(e => e.full).map(e => e.look)).size < NL) return false;   // wait for whole looks
       } else if ((ms == null || heardAt - ms > C.TOP_SEC) && now - S.up_at > C.FRESH_SEC) {
         // no music start to go by: the latest-starting pile of this song that could be its top
         let top = null;
@@ -247,8 +274,9 @@ export function createDecider(songs, opts) {
       }
     }
     r = Object.assign({}, r, {song_id: winner, ref_id: (cands.find(c => c.song_id === winner) || {}).ref_id || r.ref_id});
+    if (prior) how += ', called by name first';
     Object.assign(S, {song_id: r.song_id, started_at: st, paused_at: null, last_confirm: now, on_track_at: now,
-                      driver: 'ear', mode: 'timed', anchor: null, searching: false});
+                      driver: 'ear', mode: 'timed', anchor: null, searching: false, cue: null});
     S.last_match = {song_id: r.song_id, offset: heardAt - win - st, votes: sum, margin: sum / Math.max(rival, 1),
                     at: heardAt, via: r.ref_id && r.ref_id.includes('::') ? r.ref_id : null, how};
     EVIDENCE = []; PENDING.song_id = null;
@@ -398,10 +426,10 @@ export function createDecider(songs, opts) {
       let anchor = 0;
       for (let j = 0; j < cues.length; j++) if (!isSec(cues[j])) { anchor = j; break; }
       cues.forEach((c, j) => { if (!isSec(c) && c.t != null && c.t <= tEst) anchor = j; });
-      Object.assign(S, {song_id: sid, started_at: null, driver: 'live', mode: 'words', anchor, last_confirm: now});
+      Object.assign(S, {song_id: sid, started_at: null, driver: 'live', mode: 'words', anchor, last_confirm: now, cue: null});
     } else {
       Object.assign(S, {song_id: sid, started_at: heardAt - (m.offset_sec + win) * k, paused_at: null, driver: 'live',
-                        mode: 'timed', anchor: null, last_confirm: now, on_track_at: now});
+                        mode: 'timed', anchor: null, last_confirm: now, on_track_at: now, cue: null});
     }
     bump();
     return true;
@@ -417,6 +445,8 @@ export function createDecider(songs, opts) {
       if (pk > 0) { S.conf = Math.max(now - S.conf_at < 3 ? S.conf : 0, 0.9 * pk); S.conf_at = now; }
     }
     if (S.driver === 'hand' || (S.driver === 'ear' && S.song_id != null)) return false;   // a real track is up: leave it
+    // a song held because it was mentioned: is this a line of it?
+    if (S.song_id == null && S.cue) { const h = heldWords(recent || text, at, now, ix); if (h != null) return h; }
     // a song is up on an estimated clock: where in THIS song are they singing?
     if (S.song_id != null) {
       const s = song(S.song_id), L = ix.song_lines(recent || text, S.song_id);
@@ -433,6 +463,7 @@ export function createDecider(songs, opts) {
           const d = outside(s, x.cue, pos, C.WORDS_RECENT);
           if (!best || d < best.d) best = {cue: x.cue, d};
         }
+        if (best) S.last_words = {cue: best.cue, at, moved: false};     // the line last heard (a quote is held there)
         if (!best || best.d <= C.WORDS_OUT) return false;
         S.started_at = at - (s.cues[best.cue].t + half(s, best.cue));
         S.last_words = {cue: best.cue, at, moved: true};
@@ -462,17 +493,25 @@ export function createDecider(songs, opts) {
                     how: 'from the sung words', line: r.line, score: r.score};
     if (!hasTimes(s) || s.cues[r.cue].t == null) {   // no timings: the one case left for a block of words
       Object.assign(S, {song_id: r.song_id, started_at: null, paused_at: null, driver: 'words', mode: 'words',
-                        anchor: r.cue, last_confirm: now, searching: false});
+                        anchor: r.cue, last_confirm: now, searching: false, cue: null});
       bump(); return true;
     }
     // which line is being sung right now: the newest words, if they name a line of this song
     let cue = r.cue;
     const L = recent ? ix.song_lines(recent, r.song_id) : [];
     if (L.length && L[0].score >= C.WORDS_ANCHOR && s.cues[L[0].cue].t != null) cue = L[0].cue;
+    // no recorded music: a quote, or singing the fingerprints can't hear. HOLD the line (the clock
+    // stopped); a later line of it (singing on) or the music starts it; nothing for HOLD_SEC, it goes
+    if (!agrees && !recorded(now)) {
+      if (S.song_id != null) clear();
+      S.cue = {song_id: r.song_id, kind: 'line', cue, pos: s.cues[cue].t, at: now, last: now, name: s.title, how: 'a line of it was heard'};
+      S.key = 0; PRIOR.at = -1e9; bump();
+      return true;
+    }
     let started = at - (s.cues[cue].t + half(s, cue)), driver = 'words';
     if (agrees) { started = P.start; driver = 'ear'; S.last_match.how = `sung words + ${P.looks} looks agree`; }
     Object.assign(S, {song_id: r.song_id, started_at: started, paused_at: null, driver, mode: 'timed', anchor: null,
-                      last_confirm: now, on_track_at: now, searching: false});
+                      last_confirm: now, on_track_at: now, searching: false, cue: null});
     S.last_words = {cue, at, moved: false};
     if (driver === 'ear') EVIDENCE = [];
     bump();
@@ -481,6 +520,11 @@ export function createDecider(songs, opts) {
 
   /** The engine's answer for a window that ended at heardAt (the /hear handler). */
   function result(r, heardAt, win, now) {
+    if (r) {                               // recorded music in the room (a quote is held; singing to it scrolls)
+      let mv = r.votes || 0;
+      for (const c of r.cands || []) mv = Math.max(mv, c.votes || 0);
+      if (mv >= C.MUSIC_VOTES) S.music_at = now;
+    }
     let m = r && r.song_id && r.votes >= C.MIN_VOTES ? r : null;
     if (m && !isLive(m)) m = placeFromTop(m, heardAt, win, now);
     const liveHit = !!(m && isLive(m) && believable(m));
@@ -503,6 +547,8 @@ export function createDecider(songs, opts) {
       S.last_confirm = S.on_track_at = now;
       CHALLENGE.song_id = null; CHALLENGE.n = 0; PENDING.song_id = null;
     } else if (!liveHit) changed = consider(m, heardAt, win, now);
+    // a song held because it was mentioned is the likely one: its own looks need less
+    if (!changed && S.song_id == null && S.cue) changed = considerPrior(r, heardAt, win, now);
     // an estimated clock (words): a fingerprint candidate of this song at this place keeps it up
     if (S.driver === 'words' && S.started_at != null && r && r.cands)
       for (const c of r.cands) if (c.song_id === S.song_id && !c.live && c.votes >= C.ACC_FLOOR &&
@@ -529,9 +575,23 @@ export function createDecider(songs, opts) {
 
   /** server.py maybe_release(): a song the room no longer has must come off. True if released. */
   function tick(now) {
+    // a mentioned song waits: a title CUE_SEC for its music, a quoted line HOLD_SEC (from the last sign of it)
+    if (S.song_id == null && S.cue) {
+      if (now - S.cue.last > (S.cue.kind === 'title' ? C.CUE_SEC : C.HOLD_SEC)) { S.cue = null; bump(); return true; }
+      return false;
+    }
     if (!['ear', 'live', 'words'].includes(S.driver) || S.song_id == null) return false;
     const dur = (song(S.song_id) || {}).duration || 0;
     if (S.started_at != null && dur && now - S.started_at > dur + C.END_GRACE) { clear(); return true; }
+    // a words-only song with no further line and no recorded music for LINE_ALONE: it was a quote.
+    // Hold the line last heard rather than scroll on through a song nobody is singing
+    if (S.driver === 'words' && S.started_at != null && S.last_words && now - S.last_confirm > C.LINE_ALONE && !recorded(now)) {
+      const sid = S.song_id, s = song(sid), k = S.last_words.cue;
+      clear();
+      S.cue = {song_id: sid, kind: 'line', cue: k, pos: s.cues[k].t, at: now, last: now, name: s.title,
+               how: 'no more lines and no music: holding the line heard'};
+      bump(); return true;
+    }
     if (!S.active) return false;
     // a pause, a quiet bridge or an a cappella moment is silence, not a different song. (Sound means
     // music-level OR clearly above the room's floor: a soft song is not silence.)
@@ -544,16 +604,136 @@ export function createDecider(songs, opts) {
 
   /** Put a song up by hand (demo / operator). driver 'hand' is never released automatically. */
   function hold(fields, now) {
-    Object.assign(S, {driver: 'hand', mode: 'timed', anchor: null, started_at: null}, fields,
+    Object.assign(S, {driver: 'hand', mode: 'timed', anchor: null, started_at: null, cue: null}, fields,
                   {last_confirm: now, on_track_at: now});
     PENDING.song_id = null; CHALLENGE.song_id = null; CHALLENGE.n = 0; bump();
   }
 
-  /** Should the device be listening for sung words? While searching (music, nothing up), and
-   *  while the song up has only an estimated clock (words, a live recording) that words correct.
-   *  Never while a fingerprint clock or a hand-held song is up. */
-  const wantWords = () => S.song_id == null ? !!S.searching : (S.driver === 'words' || S.driver === 'live');
+  /* ---------------- MENTIONED: a title said, a line quoted ---------------- */
+  const recorded = now => now - S.music_at <= C.MUSIC_RECENT;
 
-  return {state: S, config: C, heard, track, top, result, tick, hold, words, wantWords, stop: clear, believable,
+  /** A title heard (text = the last ~9 s of words, at = when; tix = a mention.js title index, lix =
+   *  a lyricsearch.js index). Only while nothing is up. Returns {song_id, name, how} when a song goes
+   *  up held at its top (S.cue kind 'title'), else null. A DISTINCTIVE title needs nothing more; a
+   *  COMMON one (mention.js) needs a cue before it ('let's sing'), fingerprint evidence for the song,
+   *  a line of the song besides the title's own words, or (3+ words) to be said twice. */
+  function titles(text, at, now, tix, lix) {
+    if (!tix || !text) return null;
+    const hits = tix.find(text), seen = new Set();
+    // when each title was said: a sighting is a NEW mention if the title now occurs more often in the
+    // words than last time, or it's been MENTION_GAP since it was last seen (the words pool keeps a
+    // mention in view for ~9 s)
+    for (const h of hits) {
+      seen.add(h.key);
+      let M = MENT.get(h.key);
+      if (!M) MENT.set(h.key, M = {occ: 0, last: -1e9, times: []});
+      const add = h.occ > M.occ ? h.occ - M.occ : (at - M.last > C.MENTION_GAP ? 1 : 0);
+      M.times = M.times.filter(t => at - t <= C.MENTION_AGAIN);
+      for (let i = 0; i < add; i++) M.times.push(at);
+      M.occ = h.occ; M.last = at;
+    }
+    for (const [k, M] of MENT) { if (!seen.has(k)) M.occ = 0; if (at - M.last > C.MENTION_AGAIN) MENT.delete(k); }
+    if (S.song_id != null || !S.auto) return null;        // a song is up: titles never move it
+    for (const h of hits) {
+      const s = song(h.song_id);
+      if (!s) continue;
+      let how = null;
+      if (!h.common) how = 'its title';
+      else if (h.cued) how = 'its title, called by name';
+      else {
+        const P = piles(h.song_id), M = MENT.get(h.key);
+        if (P && P.votes >= C.TITLE_EVIDENCE) how = 'its title, and the music agrees';
+        else if (lix && tix.without) {
+          const L = lix.song_lines(tix.without(text, h), h.song_id);
+          if (L.length && L[0].score >= C.WORDS_ANCHOR) how = 'its title, and a line of it';
+        }
+        if (!how && h.n >= 3 && M && M.times.length >= 2 && M.times[M.times.length - 1] - M.times[0] >= C.WORDS_CONFIRM) how = 'its title, said twice';
+      }
+      if (!how) continue;
+      if (S.cue && S.cue.song_id === h.song_id) { S.cue.last = now; return null; }   // already held: keep it longer
+      S.cue = {song_id: h.song_id, kind: 'title', cue: null, pos: 0, at: now, last: now, name: h.name, how};
+      PRIOR.at = -1e9; WORDS1 = {song_id: null, at: -1e9}; bump();
+      return {song_id: h.song_id, name: h.name, how, common: h.common};
+    }
+    return null;
+  }
+
+  /** A line of the HELD song heard. null = not a line of it; true/false = whether the screen changed.
+   *  A line after the held one (singing on), or any line of it with recorded music playing, starts
+   *  the clock from that line; otherwise the hold moves to the line heard. */
+  function heldWords(text, at, now, ix) {
+    const c = S.cue, s = song(c.song_id);
+    if (!s || !hasTimes(s)) return null;
+    const L = ix.song_lines(text, c.song_id);
+    if (!L.length || L[0].score < C.WORDS_ANCHOR) return null;
+    const near = L.filter(x => x.score >= 0.9 * L[0].score && s.cues[x.cue].t != null);
+    if (!near.length) return null;
+    const t0 = c.kind === 'line' ? s.cues[c.cue].t : null;
+    let on = null;                         // singing on: the first copy after the held line, not far after it
+    if (t0 != null) for (const x of near) {
+      const t = s.cues[x.cue].t;
+      if (t > t0 + 0.01 && t - t0 <= C.CONTINUE_SEC && (on == null || t < s.cues[on].t)) on = x.cue;
+    }
+    if (on == null && recorded(now)) on = near[0].cue;
+    if (on != null) {
+      Object.assign(S, {song_id: c.song_id, started_at: at - (s.cues[on].t + half(s, on)), paused_at: null, driver: 'words',
+                        mode: 'timed', anchor: null, last_confirm: now, on_track_at: now, searching: false, ear_at: null,
+                        on_looks: 0, key: 0, cue: null});
+      S.last_words = {cue: on, at, moved: false};
+      S.last_match = {song_id: c.song_id, offset: null, votes: 0, margin: null, at, via: null, line: s.cues[on].text,
+                      how: c.kind === 'title' ? 'called by name, then its words' : 'the singing went on from the line held'};
+      bump(); return true;
+    }
+    const k = near.some(x => x.cue === c.cue) ? c.cue : near[0].cue;
+    c.last = now;
+    if (c.kind === 'line' && c.cue === k) return false;
+    S.cue = Object.assign({}, c, {kind: 'line', cue: k, pos: s.cues[k].t, last: now, how: 'a line of it was heard'});
+    bump(); return true;
+  }
+
+  /** The held song's fingerprints, with a head start: one look of PRIOR_VOTES at its top starts it
+   *  (the music started, it was just called); elsewhere 2 agreeing looks (MID_AGREE_N if the music
+   *  just started and this isn't the top). Every other song keeps the usual rules, so a different
+   *  song clearly recognised still wins. */
+  function considerPrior(r, heardAt, win, now) {
+    const X = S.cue.song_id;
+    if (!r || !S.auto || !song(X) || isLive({song_id: X})) return false;
+    let best = null, other = 0;
+    for (const c of [r, ...(r.cands || [])]) {
+      if (!c || !c.song_id || c.live || c.offset_sec == null || (c.key || 0) !== 0) continue;
+      if (c.song_id === X) { if (!best || c.votes > best.votes) best = c; }
+      else other = Math.max(other, c.votes || 0);
+    }
+    if (!best || best.votes < C.PRIOR_VOTES || best.votes < C.PRIOR_MARGIN * other) return false;
+    let m = {song_id: X, ref_id: best.ref_id, offset_sec: best.offset_sec, votes: best.votes, live: false,
+             margin: best.votes / Math.max(other, 1), cands: r.cands};
+    if (r.song_id === X) Object.assign(m, {top_votes: r.top_votes, top_offset: r.top_offset});
+    m = placeFromTop(m, heardAt, win, now);
+    const started = heardAt - (m.offset_sec + win);
+    const go = (st, how) => {
+      take(X, st, now);
+      S.last_match = {song_id: X, offset: heardAt - win - st, votes: m.votes, margin: m.margin, at: heardAt,
+                      via: m.ref_id && m.ref_id.includes('::') ? m.ref_id : null, top: m.top, how};
+      PRIOR.at = -1e9; EVIDENCE = [];
+      return true;
+    };
+    if (m.top === true) return go(started, 'called by name, then heard from the top');
+    if (m.top === false && S.music_since != null && heardAt - win < S.music_since) return false;   // heard too little to tell
+    const need = m.top === false ? C.MID_AGREE_N : 2;
+    if (now - PRIOR.at < C.CANDIDATE_TTL && Math.abs(PRIOR.started - started) < C.AGREE_SEC) {
+      PRIOR.n++; PRIOR.at = now; PRIOR.started = (PRIOR.started + started) / 2;
+      if (PRIOR.n >= need) return go(PRIOR.started, `called by name, then ${PRIOR.n} looks agree`);
+      return false;
+    }
+    Object.assign(PRIOR, {started, at: now, n: 1});
+    return false;
+  }
+
+  /** Should the device be listening for words? Always while nothing is up (a title or a line said at
+   *  any moment can pull a song up), and while the song up has only an estimated clock (words, a live
+   *  recording) that words correct. Never while a fingerprint clock or a hand-held song is up. */
+  const wantWords = () => S.song_id == null ? true : (S.driver === 'words' || S.driver === 'live');
+
+  return {state: S, config: C, heard, track, top, result, tick, hold, words, titles, wantWords, stop: clear, believable,
           listening: on => { S.active = !!on; }};
 }

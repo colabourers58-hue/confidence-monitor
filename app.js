@@ -1,7 +1,7 @@
 /* Everything runs on this device. No server, no network after the first load. */
-import {Orb} from './orb.js?v=202609301458';
+import {Orb} from './orb.js?v=202609301504';
 // Stamped by publish_site.sh on every publish ('dev' when served straight from this Mac).
-const APP_VERSION = '202609301458';
+const APP_VERSION = '202609301504';
 
 const $ = s => document.querySelector(s);
 // the orb is decoration: if this device can't draw it (old GPU, WebGL off, a shader error), the
@@ -50,8 +50,8 @@ let privateCount = 0;
 /* ---------------- engine (runs in a worker, on device) ---------------- */
 let worker = null, engineReady = false, loadMsgT = 0;
 function startEngine(){
-  try{ worker = new Worker('engine/fp-worker.js?v=202609301458', {type:'module'}); }
-  catch(e){ try{ worker = new Worker('engine/fp-worker.js?v=202609301458'); }catch(e2){ worker = null; } }
+  try{ worker = new Worker('engine/fp-worker.js?v=202609301504', {type:'module'}); }
+  catch(e){ try{ worker = new Worker('engine/fp-worker.js?v=202609301504'); }catch(e2){ worker = null; } }
   if(!worker){ $('#load').classList.add('done'); return; }
   worker.onmessage = ev => {
     const m = ev.data || {};
@@ -82,12 +82,13 @@ function applyLocal(now){
   const s = dec.state, song = s.song_id && SONGS[s.song_id];
   if(song && s.mode === 'words' && s.anchor != null) showWords(song, s.anchor);     // only a song with no timings
   else if(song && s.started_at != null){
-    if(!st.song || st.song.id !== song.id || st.words || Math.abs(st.started - s.started_at) > 0.25)
+    if(!st.song || st.song.id !== song.id || st.words || st.paused != null || Math.abs(st.started - s.started_at) > 0.25)
       catchSong(song, s.started_at, s.driver === 'words' ? (s.last_match && s.last_match.how) || 'from the sung words'
                                   : s.driver === 'live' ? 'a live recording: clock estimated, the singing corrects it'
                                   : (s.last_match && s.last_match.how) || 'following the track');
     else st.started = s.started_at;      // same clock, no jitter: follow it exactly
   }
+  else if(!song && s.cue && SONGS[s.cue.song_id]) holdSong(SONGS[s.cue.song_id], s.cue);   // mentioned: held, clock stopped
   else if(st.song) release();
   if(st.song) st.lastConfirm = now;       // the decider says when to let go
 }
@@ -210,7 +211,11 @@ function renderNow(){
   else if(confNow > 0.05) t = `Thinking… ${Math.round(confNow*100)}% sure`;
   else if(level*3.2 > 0.10) t = 'Hearing music, listening for a song';
   else t = 'Resting, listening for music';
-  if(st.song && !serverMode && dec && (dec.state.driver === 'words' || dec.state.driver === 'live'))
+  if(st.song && st.paused != null && heldInfo)
+    t = `Ready: <b>${esc(st.song.title)}</b><small>${heldInfo.kind === 'title'
+          ? `Its title was heard${heldInfo.name && heldInfo.name !== st.song.title ? ` (“${esc(heldInfo.name)}”)` : ''}. Waiting for the music or the singing to start it`
+          : 'A line of it was heard. Held on that line until the singing goes on or the music starts'}</small>`;
+  else if(st.song && !serverMode && dec && (dec.state.driver === 'words' || dec.state.driver === 'live'))
     t = `Showing <b>${esc(st.song.title)}</b><small>Place estimated from ${dec.state.driver === 'words' ? 'the sung words' : 'a live recording'}; ` +
         `${words && words.running ? 'listening to the singing to correct it' : 'the music keeps checking it'}</small>`;
   if(!serverMode && dec && dec.state.searching && !st.song){
@@ -284,13 +289,24 @@ async function pollServer(){
     if(song && s.mode === 'words' && s.anchor != null) showWords(song, s.anchor);
     else if(song && s.started_at != null){
       const startedPerf = performance.now()/1000 - ((Date.now()/1000 + skew) - s.started_at);
-      if(!st.song || st.song.id !== song.id || st.words || Math.abs(st.started - startedPerf) > 0.25)
+      if(!st.song || st.song.id !== song.id || st.words || st.paused != null || Math.abs(st.started - startedPerf) > 0.25)
         catchSong(song, startedPerf, s.driver === 'words' ? (l.last_match && l.last_match.how) || 'from the sung words'
                                    : s.driver === 'live' ? 'a live recording: clock estimated, the singing corrects it'
                                    : (l.last_match && l.last_match.how) || 'following the track');
       st.lastConfirm = performance.now()/1000;
     }
+    else if(!song && s.cued && SONGS[s.cued.song_id]){        // mentioned: the Mac holds it, clock stopped
+      const c = s.cued, k = c.song_id + '#' + c.kind + '#' + c.cue;
+      if(k !== pollServer.cued){
+        pollServer.cued = k;
+        const cs = SONGS[c.song_id];
+        logEvent('heard', c.kind === 'title' ? `Heard the title “${c.name || cs.title}”: song ready`
+                          : `Heard a line of ${cs.title}: “${((cs.cues[c.cue] || {}).text || '').slice(0, 60)}”. Holding it there`);
+      }
+      holdSong(SONGS[c.song_id], c);
+    }
     else if(st.song) release();
+    if(!s.cued) pollServer.cued = null;
     if(st.song) st.lastConfirm = performance.now()/1000;   // the Mac decides when to let go
   }catch(e){}
 }
@@ -337,16 +353,41 @@ function logIdentified(song, how){
 }
 function catchSong(song, started, how){
   orbHome = '';
-  const fresh = !st.song || st.song.id !== song.id || st.words;
+  const fresh = !st.song || st.song.id !== song.id || st.words, wasHeld = st.paused != null;
   // a correction while a song is up (another song, or the clock moved): the corner orb swells once
   // so the stage can see it just re-checked and moved
-  if(st.song && (st.song.id !== song.id || Math.abs(st.started - started) > 1.0)){
+  if(st.song && (st.song.id !== song.id || (!wasHeld && Math.abs(st.started - started) > 1.0))){
     orb.pulse(); logEvent('heard', st.song.id !== song.id ? `Switched to ${song.title}` : `Corrected the place in ${song.title} by ${(started - st.started > 0 ? '-' : '+') + Math.abs(started - st.started).toFixed(1)} s`);
   }
-  if(fresh) logIdentified(song, how || 'following the track');
-  st.words = null; document.body.classList.remove('words');
+  if(fresh || wasHeld) logIdentified(song, how || 'following the track');     // a held song starting counts as found
+  st.words = null; st.paused = null; heldInfo = null; document.body.classList.remove('words');
   st.song = song; st.started = started; st.lastConfirm = performance.now()/1000;
   if(fresh){
+    buildSong(song);
+    orb.setAmbient(1);
+    orb.explode();
+    document.body.classList.add('song');
+    document.body.classList.remove('caught'); void document.body.offsetWidth;
+    document.body.classList.add('caught');
+    setTimeout(() => document.body.classList.remove('caught'), 1600);
+    setTimeout(() => { if(st.song === song){ const [x,y] = dotUV(); orb.toStatus(x, y); orbCorner = [x, y]; } }, 380);
+  }
+}
+/* A MENTIONED song, held with its clock stopped (decide.js S.cue): its title was said (shown at its
+   top, the first line waiting) or a line of it quoted (shown at that line). The music or the singing
+   starts it (catchSong), another song replaces it, or it is let go. */
+let heldInfo = null;
+function holdSong(song, c){
+  heldInfo = c;
+  const pos = c.pos || 0;
+  if(st.song && st.song.id === song.id && st.paused === pos && !st.words) return;
+  const fresh = !st.song || st.song.id !== song.id || st.words;
+  if(st.song && !fresh && st.paused == null) logEvent('heard', `Holding ${song.title} on the line last heard (no more singing, no music)`);
+  st.words = null; document.body.classList.remove('words');
+  st.song = song; st.started = null; st.paused = pos; st.lastConfirm = performance.now()/1000;
+  activeCue = -2;
+  if(fresh){
+    orbHome = '';
     buildSong(song);
     orb.setAmbient(1);
     orb.explode();
@@ -384,7 +425,7 @@ function breatheCorner(now){          // refresh the corner size a few times a s
 }
 function release(){
   if(st.song) logEvent('release', `Let go of ${st.song.title}`);
-  st.song = null; st.started = null; st.pending = null; st.words = null;
+  st.song = null; st.started = null; st.pending = null; st.words = null; st.paused = null; heldInfo = null;
   document.body.classList.remove('song', 'words');
   orb.setAmbient(0);
   orbHome = ''; placeOrb();
@@ -394,7 +435,7 @@ function showWords(song, anchor){
   if(st.words === key) return;
   const fresh = !st.song || st.song.id !== song.id;
   if(fresh) logIdentified(song, 'following the singing');
-  st.words = key; st.song = song; st.started = null; st.lastConfirm = performance.now()/1000;
+  st.words = key; st.song = song; st.started = null; st.paused = null; heldInfo = null; st.lastConfirm = performance.now()/1000;
   if(fresh) buildSong(song);
   renderBlock(song, anchor);
   document.body.classList.add('song', 'words');
@@ -527,17 +568,17 @@ function frame(){
         $('#gate b').textContent = 'The microphone stopped. Tap to turn it back on'; $('#gate').classList.remove('gone'); } }
     else deadSince = null;
   }
-  const loud = level*3.2 > 0.10;
-  if(loud && !st.song && attemptStart == null){ attemptStart = now; logEvent('sound', 'Music started'); }
-  if(attemptStart != null && !st.song && now - attemptStart > 30 && !frame.missLogged){
+  const loud = level*3.2 > 0.10, up = st.song && st.paused == null;   // a held (mentioned) song isn't found yet
+  if(loud && !up && attemptStart == null){ attemptStart = now; logEvent('sound', 'Music started'); }
+  if(attemptStart != null && !up && now - attemptStart > 30 && !frame.missLogged){
     frame.missLogged = true;
     const why = serverMode ? '' : !engineReady ? ' (the songs were still downloading, so it had nothing to compare with)'
       : closest ? ` (closest guess: ${(SONGS[closest.id] || {}).title || closest.id}, ${closest.votes} matches, not sure enough)`
       : ' (nothing in the music matched any song)';
     logEvent('miss', 'Heard 30 s of music but could not identify it' + why);
   }
-  if(st.song || attemptStart == null) frame.missLogged = false;
-  if(!loud && !st.song && attemptStart != null && now - lastLoud > 12) attemptStart = null;
+  if(up || attemptStart == null) frame.missLogged = false;
+  if(!loud && !up && attemptStart != null && now - lastLoud > 12) attemptStart = null;
   if(!$('#cp').hidden && (frame.pt = (frame.pt || 0) + 1) % 6 === 0){
     const db = 20*Math.log10(level || 1e-6);
     $('#cpMeter').style.width = Math.min(100, Math.max(0, (db + 70) / 60 * 100)) + '%';
@@ -563,12 +604,13 @@ function frame(){
     if(dsong && ds.started_at != null && now - ds.started_at > (dsong.duration || 1e9) + 2.5) dec.stop();
     applyLocal(now);
     const s = dec.state; confNow = (s.song_id == null && now - s.conf_at < 4) ? s.conf : 0;
-    if(words) words.set(!!mstream && engineReady && dec.wantWords());
+    if(words) words.set(!!mstream && dec.wantWords());      // titles and lines need no song data download
   }
   // the song has run out: let it go now rather than holding the last line
   if(st.song && st.started != null && (now - st.started) > (st.song.duration || 1e9) + 2.5) release();
-  if(st.song && st.started != null){
-    const p = now - st.started, look = p + LEAD;
+  if(st.song && (st.started != null || st.paused != null)){
+    // held (mentioned, clock stopped): exactly the line held, no lead
+    const p = st.paused != null ? st.paused : now - st.started, look = st.paused != null ? p + 0.01 : p + LEAD;
     let i = -1; for(let k=0;k<cues.length;k++){ if(cues[k].t <= look) i = k; else break; }
     let ci = i; while(ci >= 0 && cues[ci].s) ci--;
     // the line being sung; before the first line, put that first line up early (dimmed)
@@ -665,12 +707,15 @@ setInterval(reviveMic, 5000);              // a track can end quietly (headphone
    The last resort when the music alone can't find the song: the browser's own speech
    recognition (words.js), searched against every song's lyrics (lyricsearch.js, the Mac's
    search ported). decide.js wantWords() says when; decide.js words() decides what it means. */
-let words = null, LSIX = null, LS = null;
-const WORD_SEARCH = true;            // the browser's own speech recognition, as a last resort (words.js)
+let words = null, LSIX = null, LS = null, MN = null, TIX = null, TITLES = null;
+const WORD_SEARCH = true;            // the browser's own speech recognition (words.js): titles and lines
 async function startWords(){
   if(!WORD_SEARCH) return;
   try{
     LS = await import('./lyricsearch.js?v=' + APP_VERSION);
+    // song titles (and other names songs go by): a title said pulls its song up (mention.js)
+    try{ MN = await import('./mention.js?v=' + APP_VERSION);
+         TITLES = await (await fetch('data/titles.json?v=' + APP_VERSION)).json(); }catch(e){ console.warn('titles:', e); TITLES = TITLES || {}; }
     words = (await import('./words.js?v=' + APP_VERSION)).createWordListener({
       now: () => performance.now()/1000,
       health: () => ({frameAt: lastFrameAt, level, track: mstream && mstream.getAudioTracks()[0], actx}),
@@ -679,14 +724,24 @@ async function startWords(){
       onWords: (pool, recent, at) => {
         if(!dec) return;
         if(!LSIX) LSIX = LS.createIndex(Object.values(SONGS));
-        const before = {id: dec.state.song_id, started: dec.state.started_at};
-        if(!dec.words(pool, recent, at, performance.now()/1000, LSIX)) return;
-        const s = dec.state, song = SONGS[s.song_id];
-        if(song && before.id === s.song_id && before.started != null && s.started_at != null)
+        if(MN && !TIX) TIX = MN.createTitleIndex(Object.values(SONGS), TITLES || {});   // private songs too, once unlocked
+        const now = performance.now()/1000;
+        // a title said: its song goes up held at its top, waiting for the music
+        const tt = TIX ? dec.titles(pool, at, now, TIX, LSIX) : null;
+        if(tt) logEvent('heard', `Heard the title “${tt.name}”: song ready` +
+                                 (SONGS[tt.song_id].title !== tt.name ? ` (${SONGS[tt.song_id].title})` : '') +
+                                 (tt.how !== 'its title' ? ` (${tt.how.replace(/^its title, (and )?/, '')})` : ''));
+        const before = {id: dec.state.song_id, started: dec.state.started_at,
+                        held: dec.state.cue && dec.state.cue.song_id + '#' + dec.state.cue.cue};
+        if(!dec.words(pool, recent, at, now, LSIX)){ if(tt) applyLocal(now); return; }
+        const s = dec.state, song = SONGS[s.song_id], held = !s.song_id && s.cue && SONGS[s.cue.song_id];
+        if(held && s.cue.kind === 'line' && before.held !== s.cue.song_id + '#' + s.cue.cue)
+          logEvent('heard', `Heard a line of ${held.title}: “${(held.cues[s.cue.cue].text || '').slice(0, 60)}”. Holding it there until the singing or the music goes on`);
+        else if(song && before.id === s.song_id && before.started != null && s.started_at != null)
           logEvent('info', `Moved ${song.title} to the line being sung (${(before.started - s.started_at >= 0 ? '+' : '')}${(before.started - s.started_at).toFixed(1)} s)`);
         else if(song && s.last_match && s.last_match.line)
           logEvent('info', `The words “${s.last_match.line.slice(0, 60)}” are in ${song.title}`);
-        applyLocal(performance.now()/1000);
+        applyLocal(now);
       },
     });
     if(!words.supported) logEvent('info', 'Word search isn’t available in this browser; songs are found from the music alone');
@@ -879,7 +934,12 @@ const demo = new URLSearchParams(location.search).get('demo');
 if(demo){
   const [id, at] = demo.split('@');
   $('#gate').classList.add('gone'); orb.toListening();
-  if(at && at.startsWith('w')){
+  if(at && at.startsWith('held')){      // ?demo=<id>@held (called by its title) or @held<seconds> (a line quoted)
+    setTimeout(() => { if(SONGS[id]){ const pos = parseFloat(at.slice(4)) || 0;
+      const c = {song_id: id, kind: pos ? 'line' : 'title', cue: null, pos, at: 0, last: 1e12, name: SONGS[id].title, how: 'demo'};
+      if(!serverMode && dec) dec.state.cue = c;
+      holdSong(SONGS[id], c); st.lastConfirm = 1e12; } }, 1200);
+  }else if(at && at.startsWith('w')){
     setTimeout(() => { if(SONGS[id]){ showWords(SONGS[id], parseInt(at.slice(1), 10)); st.lastConfirm = 1e12;
       if(!serverMode && dec) dec.hold({song_id:id, mode:'words', anchor:parseInt(at.slice(1), 10)}, performance.now()/1000); } }, 1200);
   }else{
