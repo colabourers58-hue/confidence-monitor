@@ -467,8 +467,44 @@ addEventListener('keydown', e => {
 });
 addEventListener('resize', () => { refit(); if(st.words) fitBlock(); if(st.song){ const [x,y] = dotUV(); orb.toStatus(x,y); } });
 
+/* ---------------- stay awake, stay listening ----------------
+   On a music stand the screen must never dim or sleep, and after a phone call, a lock or a
+   switch to another app the microphone has to come back by itself. */
+let wake = null, awakeVid = null;
+async function keepAwake(){
+  if(document.visibilityState !== 'visible') return;
+  try{
+    if('wakeLock' in navigator){
+      if(!wake){ wake = await navigator.wakeLock.request('screen'); wake.addEventListener('release', () => { wake = null; }); }
+      return;
+    }
+  }catch(e){ wake = null; }
+  // older iPads: a tiny silent video playing inline keeps the screen on
+  if(!awakeVid){
+    awakeVid = document.createElement('video');
+    Object.assign(awakeVid, {src:'awake.mp4', muted:true, loop:true, playsInline:true});
+    awakeVid.setAttribute('playsinline', ''); awakeVid.setAttribute('muted', '');
+    awakeVid.style.cssText = 'position:fixed;width:1px;height:1px;opacity:0;pointer-events:none';
+    document.body.appendChild(awakeVid);
+  }
+  awakeVid.play().catch(() => {});
+}
+async function reviveMic(){
+  if(document.visibilityState !== 'visible' || !$('#gate').classList.contains('gone')) return;
+  const tr = mstream && mstream.getAudioTracks()[0];
+  const dead = !tr || tr.readyState === 'ended' || tr.muted;
+  try{
+    if(dead){ await startMic(inputId); logEvent('start', 'Microphone back on'); }
+    else if(actx && actx.state !== 'running'){ await actx.resume(); }
+  }catch(e){ logEvent('miss', 'Microphone could not restart: tap the screen'); $('#gate').classList.remove('gone'); }
+}
+document.addEventListener('visibilitychange', () => { keepAwake(); reviveMic(); });
+addEventListener('pageshow', () => { keepAwake(); reviveMic(); });
+setInterval(reviveMic, 5000);              // a track can end quietly (headphones pulled, input unplugged)
+
 /* ---------------- boot ---------------- */
 async function begin(){
+  keepAwake();
   $('#gate').classList.add('gone');
   try{ await startMic(inputId); orb.toListening();
        const tr = mstream && mstream.getAudioTracks()[0]; logEvent('start', 'Started, listening from ' + ((tr && tr.label) || 'the default input')); }catch(e){ $('#gate b').textContent = 'Microphone not available'; $('#gate').classList.remove('gone'); }
