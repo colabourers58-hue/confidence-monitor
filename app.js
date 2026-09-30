@@ -1,7 +1,7 @@
 /* Everything runs on this device. No server, no network after the first load. */
-import {Orb} from './orb.js?v=202609301714';
+import {Orb} from './orb.js?v=202609301717';
 // Stamped by publish_site.sh on every publish ('dev' when served straight from this Mac).
-const APP_VERSION = '202609301714';
+const APP_VERSION = '202609301717';
 
 const $ = s => document.querySelector(s);
 // the orb is decoration: if this device can't draw it (old GPU, WebGL off, a shader error), the
@@ -50,8 +50,8 @@ let privateCount = 0;
 /* ---------------- engine (runs in a worker, on device) ---------------- */
 let worker = null, engineReady = false, loadMsgT = 0;
 function startEngine(){
-  try{ worker = new Worker('engine/fp-worker.js?v=202609301714', {type:'module'}); }
-  catch(e){ try{ worker = new Worker('engine/fp-worker.js?v=202609301714'); }catch(e2){ worker = null; } }
+  try{ worker = new Worker('engine/fp-worker.js?v=202609301717', {type:'module'}); }
+  catch(e){ try{ worker = new Worker('engine/fp-worker.js?v=202609301717'); }catch(e2){ worker = null; } }
   if(!worker){ $('#load').classList.add('done'); return; }
   worker.onmessage = ev => {
     const m = ev.data || {};
@@ -254,15 +254,16 @@ function renderNow(){
           : 'A line of it was heard. Held on that line until the singing goes on or the music starts'}</small>`;
   else if(st.song && !serverMode && dec && (dec.state.driver === 'words' || dec.state.driver === 'live'))
     t = `Showing <b>${esc(st.song.title)}</b><small>Place estimated from ${dec.state.driver === 'words' ? 'the sung words' : 'a live recording'}; ` +
-        `${words && words.running ? 'listening to the singing to correct it' : 'the music keeps checking it'}</small>`;
+        `${asrReady ? 'listening to the singing to correct it' : 'the music keeps checking it'}</small>`;
   if(!serverMode && dec && dec.state.searching && !st.song){
     const a = dec.state.acc;
     t = `Searching hard<small>${a ? `Adding up the evidence. Best so far: ${esc((SONGS[a.song_id] || {}).title || a.song_id)}, ${a.looks} look${a.looks === 1 ? '' : 's'} agree` : 'Adding up the evidence'}` +
-        `${words && words.running ? '. Listening to the words too' : ''}</small>`;
+        `${asrReady ? '. Listening to the words too' : ''}</small>`;
   }
   const ws = $('#cpWords');
-  if(ws) ws.textContent = serverMode ? 'Done by the Mac (Whisper).' : words ? words.describe()
-    : !WORD_SEARCH ? 'Not switched on in this version yet.' : 'Not available in this browser. Songs are found from the music alone.';
+  if(ws) ws.textContent = serverMode ? 'Done by the Mac (Whisper).'
+    : asrReady ? `On this device, no internet needed. ${asrMs.length ? (asrMedian() / 1000).toFixed(1) + ' s per 5 s of sound' + (asrMedian() > ASR_SLOW ? ' (a slow device: every other 5 s)' : '') : 'Waiting for sound'}.`
+    : asrInfo === 'starting' ? 'On this device: getting ready.' : 'On this device: ' + asrInfo + '. Songs are still found from the music.';
   if(!serverMode && !engineReady)
     t += `<small>Songs still downloading (${($('#load i').style.width || '0%')}). It can’t recognise anything until this finishes.</small>`;
   else if(!serverMode && !st.song && closest && performance.now()/1000 - closest.at < 20)
@@ -692,7 +693,7 @@ function frame(){
     if(dsong && ds.started_at != null && now - ds.started_at > (dsong.duration || 1e9) + 2.5) dec.stop();
     applyLocal(now);
     const s = dec.state; confNow = (s.song_id == null && now - s.conf_at < 4) ? s.conf : 0;
-    if(words) words.set(!!mstream && dec.wantWords());      // titles and lines need no song data download
+    if(words) words.set(WORDS_CLOUD && !!mstream && dec.wantWords());
   }
   // the song has run out: let it go now rather than holding the last line
   if(st.song && st.started != null && (now - st.started) > (st.song.duration || 1e9) + 2.5) release();
@@ -793,10 +794,105 @@ document.addEventListener('visibilitychange', () => { keepAwake(); reviveMic(); 
 addEventListener('pageshow', () => { keepAwake(); reviveMic(); });
 setInterval(reviveMic, 5000);              // a track can end quietly (headphones pulled, input unplugged)
 
-/* ---------------- the sung words (no Mac) ----------------
-   The last resort when the music alone can't find the song: the browser's own speech
-   recognition (words.js), searched against every song's lyrics (lyricsearch.js, the Mac's
-   search ported). decide.js wantWords() says when; decide.js words() decides what it means. */
+/* ---------------- the sung words (no Mac) ---------------- */
+// Words heard (from the on-device recogniser, or the browser's own): titles and lines through the
+// same rules. pool = the last ~9 s of words, recent = the newest of them, at = when they were heard.
+function heardWords(pool, recent, at){
+  if(!dec) return;
+  if(!LSIX) LSIX = LS.createIndex(Object.values(SONGS), PREACHED);
+  if(MN && !TIX) TIX = MN.createTitleIndex(Object.values(SONGS), TITLES || {});   // private songs too, once unlocked
+  const now = performance.now()/1000;
+  // a title said: its song goes up held at its top, waiting for the music
+  const tt = TIX ? dec.titles(pool, at, now, TIX, LSIX) : null;
+  if(tt) logEvent('heard', `Heard the title “${tt.name}”: song ready` +
+                           (SONGS[tt.song_id].title !== tt.name ? ` (${SONGS[tt.song_id].title})` : '') +
+                           (tt.how !== 'its title' ? ` (${tt.how.replace(/^its title, (and )?/, '')})` : ''));
+  const before = {id: dec.state.song_id, started: dec.state.started_at,
+                  held: dec.state.cue && dec.state.cue.song_id + '#' + dec.state.cue.cue};
+  if(!dec.words(pool, recent, at, now, LSIX)){ if(tt) applyLocal(now); return; }
+  const s = dec.state, song = SONGS[s.song_id], held = !s.song_id && s.cue && SONGS[s.cue.song_id];
+  if(held && s.cue.kind === 'line' && before.held !== s.cue.song_id + '#' + s.cue.cue)
+    logEvent('heard', `Heard a line of ${held.title}: “${(held.cues[s.cue.cue].text || '').slice(0, 60)}”. Holding it there until the singing or the music goes on`);
+  else if(song && before.id === s.song_id && before.started != null && s.started_at != null)
+    logEvent('info', `Moved ${song.title} to the line being sung (${(before.started - s.started_at >= 0 ? '+' : '')}${(before.started - s.started_at).toFixed(1)} s)`);
+  else if(song && s.last_match && s.last_match.line)
+    logEvent('info', `The words “${s.last_match.line.slice(0, 60)}” are in ${song.title}`);
+  applyLocal(now);
+}
+
+/* ---------------- listening to the words ON THIS DEVICE ----------------
+   Joel: "there shouldn't be anything like 'may need internet'". Whisper tiny.en runs in its own
+   worker (asr/asr-worker.js) on the room's own audio: every 5 s while no song is up, the last 5 s
+   at 16 kHz. Nothing leaves the device; after the first visit it works with no internet at all.
+   A device that takes over ASR_SLOW for a window hears every other window; while the fingerprint
+   looks are struggling it waits (the fingerprints always come first). */
+const ASR_EVERY = 5000, ASR_SLOW = 2500;
+let asrW = null, asrReady = false, asrBusy = false, asrMs = [], asrOdd = false, asrPool = [], asrInfo = 'starting', asrLoadMs = null;
+let cleanASR = t => String(t || '').trim();       // asrtext.js replaces it once loaded
+const asrMedian = () => { const a = asrMs.slice().sort((x, y) => x - y); return a.length ? a[a.length >> 1] : 0; };
+function startASR(){
+  if(asrW || serverMode) return;
+  import('./asrtext.js?v=' + APP_VERSION).then(m => { cleanASR = m.cleanASR; }).catch(e => console.warn('asrtext:', e));
+  try{ asrW = new Worker('asr/asr-worker.js', {type: 'module'}); }
+  catch(e){ asrW = null; asrInfo = 'not available in this browser'; return; }
+  asrW.onmessage = ev => {
+    const m = ev.data || {};
+    if(m.type === 'ready'){ asrReady = true; asrInfo = 'on'; asrLoadMs = m.ms;
+      logEvent('info', `Listening to the words on this device (ready in ${(m.ms / 1000).toFixed(1)} s)`); }
+    else if(m.type === 'heard'){ asrBusy = false; asrMs.push(m.ms); if(asrMs.length > 24) asrMs.shift(); onASR(m.text, m.at); }
+    else if(m.type === 'error'){ asrBusy = false; if(!asrReady) asrInfo = 'could not start (' + m.message + ')'; console.warn('asr:', m.message); }
+  };
+  asrW.onerror = e => { asrInfo = 'could not start'; asrW = null; console.warn('asr worker:', e && e.message); };
+  asrW.postMessage({type: 'load'});
+  setInterval(asrTick, ASR_EVERY);
+}
+function asrTick(){
+  if(!asrW || !asrReady || !dec || !actx || !mstream || document.visibilityState !== 'visible') return;
+  if(!dec.wantWords()){ asrPool = []; return; }          // a song is up and the fingerprints follow it
+  if(asrBusy) return;                                     // still on the last window: this one is skipped
+  if(asrMedian() > ASR_SLOW){ asrOdd = !asrOdd; if(asrOdd) return; }       // a slow device: every other window
+  if(costBase != null && costBase > 0.8 * EVERY) return;  // the fingerprint looks are struggling: they come first
+  if(ringLen < actx.sampleRate * 4) return;
+  const raw = new Float32Array(ringLen); let o = 0;
+  for(const c of ring){ raw.set(c, o); o += c.length; }
+  const f = to16k(raw, actx.sampleRate);
+  let e = 0; for(let i = 0; i < f.length; i++) e += f[i] * f[i];
+  if(Math.sqrt(e / f.length) < 0.002) return;             // silence: Whisper would only imagine words
+  asrBusy = true;
+  asrW.postMessage({type: 'hear', pcm: f, at: performance.now() / 1000}, [f.buffer]);
+  setTimeout(() => { asrBusy = false; }, 15000);          // never stuck
+}
+// for testing with no microphone: ?asrfile=<audio url> plays nothing aloud; it decodes the file and
+// feeds it to the on-device recogniser 5 s at a time, exactly as the microphone would be
+async function asrFeedFile(url){
+  while(!asrReady) await new Promise(r => setTimeout(r, 500));
+  const buf = await (await fetch(url)).arrayBuffer();
+  const tmp = new OfflineAudioContext(1, 16000, 16000), dec0 = await tmp.decodeAudioData(buf);
+  const oc = new OfflineAudioContext(1, Math.ceil(dec0.duration * 16000), 16000);
+  const src = oc.createBufferSource(); src.buffer = dec0; src.connect(oc.destination); src.start();
+  const pcm = (await oc.startRendering()).getChannelData(0);
+  logEvent('info', `Test: feeding ${Math.round(dec0.duration)} s of ${url} to the on-device recogniser`);
+  for(let o = 0; o + 80000 <= pcm.length; o += 80000){
+    const at = performance.now() / 1000;
+    if(dec) dec.heard(0.05, at);
+    const r = await new Promise(res => { const h = ev => { if(ev.data && (ev.data.type === 'heard' || ev.data.type === 'error')){ asrW.removeEventListener('message', h); res(ev.data); } };
+      asrW.addEventListener('message', h); asrBusy = true; asrW.postMessage({type: 'hear', pcm: pcm.slice(o, o + 80000), at}); });
+    await new Promise(r => setTimeout(r, Math.max(0, 5000 - (performance.now() / 1000 - at) * 1000)));
+  }
+}
+function onASR(text, at){
+  asrPool = asrPool.filter(x => at - x.at <= 9.5);        // the last ~9 s (two windows), as the Mac pools
+  const t = cleanASR(text);
+  if(!t) return;
+  if(!(asrPool.length && asrPool[asrPool.length - 1].t.toLowerCase() === t.toLowerCase())) asrPool.push({at, t});
+  logEvent('heard', 'Heard: “' + t.slice(0, 120) + '”');
+  heardWords(asrPool.map(x => x.t).join(' '), t, at);
+}
+
+/* ---------------- the browser's own speech recognition (an extra, only if WORDS_CLOUD) ----------------
+   Chrome sends the audio to Google, Safari to Apple: with no internet it stops. The on-device
+   recogniser above is what the app relies on; this is off unless it earns its place. */
+const WORDS_CLOUD = false;
 let words = null, LSIX = null, LS = null, MN = null, TIX = null, TITLES = null, PREACHED = [];
 const WORD_SEARCH = true;            // the browser's own speech recognition (words.js): titles and lines
 async function startWords(){
@@ -813,28 +909,7 @@ async function startWords(){
       health: () => ({frameAt: lastFrameAt, level, track: mstream && mstream.getAudioTracks()[0], actx}),
       log: (kind, text) => logEvent(kind, text),
       onMicTrouble: restoreMic,
-      onWords: (pool, recent, at) => {
-        if(!dec) return;
-        if(!LSIX) LSIX = LS.createIndex(Object.values(SONGS), PREACHED);
-        if(MN && !TIX) TIX = MN.createTitleIndex(Object.values(SONGS), TITLES || {});   // private songs too, once unlocked
-        const now = performance.now()/1000;
-        // a title said: its song goes up held at its top, waiting for the music
-        const tt = TIX ? dec.titles(pool, at, now, TIX, LSIX) : null;
-        if(tt) logEvent('heard', `Heard the title “${tt.name}”: song ready` +
-                                 (SONGS[tt.song_id].title !== tt.name ? ` (${SONGS[tt.song_id].title})` : '') +
-                                 (tt.how !== 'its title' ? ` (${tt.how.replace(/^its title, (and )?/, '')})` : ''));
-        const before = {id: dec.state.song_id, started: dec.state.started_at,
-                        held: dec.state.cue && dec.state.cue.song_id + '#' + dec.state.cue.cue};
-        if(!dec.words(pool, recent, at, now, LSIX)){ if(tt) applyLocal(now); return; }
-        const s = dec.state, song = SONGS[s.song_id], held = !s.song_id && s.cue && SONGS[s.cue.song_id];
-        if(held && s.cue.kind === 'line' && before.held !== s.cue.song_id + '#' + s.cue.cue)
-          logEvent('heard', `Heard a line of ${held.title}: “${(held.cues[s.cue.cue].text || '').slice(0, 60)}”. Holding it there until the singing or the music goes on`);
-        else if(song && before.id === s.song_id && before.started != null && s.started_at != null)
-          logEvent('info', `Moved ${song.title} to the line being sung (${(before.started - s.started_at >= 0 ? '+' : '')}${(before.started - s.started_at).toFixed(1)} s)`);
-        else if(song && s.last_match && s.last_match.line)
-          logEvent('info', `The words “${s.last_match.line.slice(0, 60)}” are in ${song.title}`);
-        applyLocal(now);
-      },
+      onWords: (pool, recent, at) => { if(WORDS_CLOUD && navigator.onLine !== false) heardWords(pool, recent, at); },
     });
     if(!words.supported) logEvent('info', 'Word search isn’t available in this browser; songs are found from the music alone');
     probeWords();                      // the microphone may already be on
@@ -843,7 +918,7 @@ async function startWords(){
 // try word search once, 3 s after the microphone starts, so any permission question comes up at
 // setup rather than mid-song, and a device where it upsets the microphone is found out now
 function probeWords(){
-  if(probeWords.done || !words || !words.supported || serverMode || !mstream) return;
+  if(probeWords.done || !WORDS_CLOUD || !words || !words.supported || serverMode || !mstream) return;
   probeWords.done = true;
   setTimeout(async () => { await words.probe(); logEvent('info', 'Word search: ' + words.describe()); }, 3000);
 }
@@ -1017,12 +1092,15 @@ if(serverMode){
   try{ dec = (await import('./decide.js?v=' + APP_VERSION)).createDecider(id => SONGS[id], {KEYS: []}); }catch(e){ console.warn('decide.js:', e); }   // KEYS: [] = key-change search OFF (30 Sep): six extra keys named wrong songs on an unknown song (Destiny)
   startEngine();
   await startWords();
+  startASR();                              // the words, heard on this device
   if('serviceWorker' in navigator) navigator.serviceWorker.register('sw.js').catch(()=>{});
   checkUpdate();
 }
 
 // for testing without audio:  ?demo=<song id>@<seconds into the song>
 const demo = new URLSearchParams(location.search).get('demo');
+const asrfile = new URLSearchParams(location.search).get('asrfile');
+if(asrfile && !serverMode){ $('#gate').classList.add('gone'); asrFeedFile(asrfile).catch(e => console.warn('asrfile:', e)); }
 if(demo){
   const [id, at] = demo.split('@');
   $('#gate').classList.add('gone'); orb.toListening();
