@@ -1,7 +1,7 @@
 /* Everything runs on this device. No server, no network after the first load. */
-import {Orb} from './orb.js?v=202609301109';
+import {Orb} from './orb.js?v=202609301118';
 // Stamped by publish_site.sh on every publish ('dev' when served straight from this Mac).
-const APP_VERSION = '202609301109';
+const APP_VERSION = '202609301118';
 
 const $ = s => document.querySelector(s);
 // the orb is decoration: if this device can't draw it (old GPU, WebGL off, a shader error), the
@@ -27,8 +27,8 @@ async function loadSongs(){
 /* ---------------- engine (runs in a worker, on device) ---------------- */
 let worker = null, engineReady = false, loadMsgT = 0;
 function startEngine(){
-  try{ worker = new Worker('engine/fp-worker.js?v=202609301109', {type:'module'}); }
-  catch(e){ try{ worker = new Worker('engine/fp-worker.js?v=202609301109'); }catch(e2){ worker = null; } }
+  try{ worker = new Worker('engine/fp-worker.js?v=202609301118', {type:'module'}); }
+  catch(e){ try{ worker = new Worker('engine/fp-worker.js?v=202609301118'); }catch(e2){ worker = null; } }
   if(!worker){ $('#load').classList.add('done'); return; }
   worker.onmessage = ev => {
     const m = ev.data || {};
@@ -392,7 +392,8 @@ function buildSong(song){
   sections.forEach((x,n) => x.end = n+1 < sections.length ? sections[n+1].t : dur);
   $('#map').innerHTML = sections.length > 1
     ? sections.map(x => `<div class="sec"><u>${esc(x.label)}</u><i></i></div>`).join('') : '';
-  $('#map').style.transform = 'translateX(0)';
+  { const strip = $('#map'), room = strip.parentElement.clientWidth;      // start centred when it all fits
+    strip.style.transform = `translateX(${Math.max(0, (room - strip.scrollWidth) / 2)}px)`; }
   // one paragraph per sung line; a new section gets a little more air above it
   const col = $('#col'); col.innerHTML = ''; lineEls = [];
   let brk = false;
@@ -517,9 +518,13 @@ function frame(){
         kids[k].lastElementChild.style.setProperty('--f', f.toFixed(3));
       }
       if(cur >= 0 && cur !== lastSec){
-        lastSec = cur; const el = kids[cur], strip = $('#map');
-        if(el){ const shift = strip.parentElement.clientWidth/2 - (el.offsetLeft + el.offsetWidth/2);
-                strip.style.transform = `translateX(${Math.min(0, shift)}px)`; }
+        lastSec = cur; const el = kids[cur], strip = $('#map'), room = strip.parentElement.clientWidth;
+        // all the sections fit: sit them centred across the bottom. They don't: slide so the one
+        // being sung stays in the middle, never past either end
+        if(el){ const fits = strip.scrollWidth <= room;
+                const shift = fits ? (room - strip.scrollWidth) / 2
+                  : Math.max(room - strip.scrollWidth, Math.min(0, room/2 - (el.offsetLeft + el.offsetWidth/2)));
+                strip.style.transform = `translateX(${shift}px)`; }
       }
     }
   }
