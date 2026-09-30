@@ -68,6 +68,14 @@ if(/iPad|iPhone|iPod/.test(navigator.userAgent)||(/Macintosh/.test(navigator.use
   .ln{margin:0 0 .36em;text-align:center;font-weight:800;line-height:1.13;letter-spacing:-.021em;
       text-wrap:balance;color:rgba(255,255,255,.5);transform:scale(.94);
       transition:color .5s,transform .7s cubic-bezier(.2,.9,.22,1)}
+  /* a long wait: three dots that fill one after another as the time passes (collapsed unless it's now) */
+  .gap{display:none;justify-content:center;gap:.42em;height:1.13em;align-items:center;margin:0 0 .36em}
+  .gap.on{display:flex}
+  .gap i{width:.34em;height:.34em;border-radius:50%;background:var(--live);
+         opacity:calc(.22 + .78 * var(--f, 0));transform:scale(calc(.8 + .35 * var(--f, 0)));
+         transition:opacity .25s linear,transform .25s linear}
+  .gap.on{animation:gapbreathe 2.4s ease-in-out infinite}
+  @keyframes gapbreathe{0%,100%{transform:scale(1)}50%{transform:scale(1.06)}}
   .ln.brk{margin-top:.75em}                      /* a new section starts */
   .ln.near{color:rgba(255,255,255,.92);transform:scale(.96)}   /* the next line: read-ahead, must be crisp */
   .ln.past{color:rgba(255,255,255,.3)}
@@ -265,6 +273,6 @@ if(/iPad|iPhone|iPod/.test(navigator.userAgent)||(/Macintosh/.test(navigator.use
   <li>Tap the Share button <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2l4.2 4.2-1.4 1.4L13 5.8V15h-2V5.8L9.2 7.6 7.8 6.2zM5 10h3v2H6v8h12v-8h-2v-2h3a1 1 0 0 1 1 1v10a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V11a1 1 0 0 1 1-1z"/></svg> <span id="shareWhere">at the bottom of the screen</span>.</li>
   <li>Choose <b style="display:inline;font-size:inherit">Add to Home Screen</b>, then Add.</li></ol></div><div class="arrow"></div></div>
 <div id="gate"><b>Tap to begin</b><small>One tap allows the microphone. After that it runs on its own.</small></div>
-<script type="module" src="app.js?v=202609301529"></script>
+<script type="module" src="app.js?v=202609301608"></script>
 </body>
 </html>

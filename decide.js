@@ -47,18 +47,20 @@ export const DEFAULTS = {
   AGREE_SEC: 0.75,       // two windows must place the song within this of each other
   CANDIDATE_TTL: 12,     // forget an unconfirmed candidate after this long
   MUSIC_LEVEL: 0.015,    // mic RMS above this means music is playing in the room
-  LOUD_MISS_SEC: 20,     // music playing, yet this song unconfirmed this long: something else is on (a new song takes over sooner, as soon as it is recognised)
+  LOUD_MISS_SEC: 10,     // (was 20; Joel: a changed song must come up fast) music playing, yet this song unconfirmed this long: something else is on (a new song takes over sooner, as soon as it is recognised)
   // ALWAYS VERIFYING. While a song is up, every look checks it is still this song at this place.
   // When that stops holding while music plays, the app is in DOUBT: the corner orb grows so the
   // stage can see it's working it out, and it hunts for the new song at once (adding up evidence).
-  DOUBT_LOOKS: 3,        // this many looks in a row off track, with music playing = doubt (about 2 s)
+  DOUBT_LOOKS: 2,        // (was 3) this many looks in a row off track, with music playing = doubt (about 2 s)
   SILENCE_SEC: 30,       // the room has been quiet this long: the music has stopped
   END_GRACE: 2.5,        // past the song's end by this much: let it go
   TRACK_TOL: 0.6,        // seconds either side of where we expect to be
   TRACK_MIN: 5,          // hashes at the expected place = still on track
   TRACK_RECENT_MIN: 1,   // ...of which at least this many from the window's last 2 s
-  CHALLENGE_N: 3,        // agreeing windows needed to move off a song that was on track
+  CHALLENGE_N: 3,        // agreeing windows needed to move to another place in THIS song (the other chorus)
   OFF_TRACK_SEC: 2.5,    // and the current place must have gone unheard this long
+  CHALLENGE_SONG_N: 2,   // a DIFFERENT song needs fewer (Joel: songs change on a whim; a minute is unacceptable)
+  OFF_TRACK_SONG_SEC: 1.5,
   CHALLENGE_GAP: 2.0,    // a challenger's windows must follow each other within this
   CHALLENGE_WITHIN: 20,  // the challenge rule applies while the song was on track this recently
   LIVE_VOTES: 18,        // a live recording needs this many votes to put its song up
@@ -94,7 +96,7 @@ export const DEFAULTS = {
   ACC_VOTES: 30,         // this much agreeing evidence...
   ACC_LOOKS: 3,          // ...from at least this many looks...
   ACC_MARGIN: 2.0,       // ...and this many times more than any other song's best pile = it's this song
-  SEARCH_AFTER: 10,      // music this long with no song up: search mode (and ask the words too)
+  SEARCH_AFTER: 4,       // (was 10) music this long with no song up: search mode (and ask the words too)
   // SUNG WORDS (words()). The same thresholds as server.py consider_words().
   WORDS_SCORE: 26,       // lyricsearch score to name a song from words alone
   WORDS_GRAMS: 2,        // ...with at least this many of its 3-grams heard
@@ -347,7 +349,8 @@ export function createDecider(songs, opts) {
       if (fresh && CHALLENGE.song_id === m.song_id && Math.abs(CHALLENGE.started - started) < C.AGREE_SEC)
         Object.assign(CHALLENGE, {n: CHALLENGE.n + 1, at: now, started: (CHALLENGE.started + started) / 2});
       else Object.assign(CHALLENGE, {song_id: m.song_id, started, n: 1, at: now});
-      if (CHALLENGE.n >= C.CHALLENGE_N && now - S.on_track_at >= C.OFF_TRACK_SEC && S.auto) {
+      const other = m.song_id !== S.song_id;
+      if (CHALLENGE.n >= (other ? C.CHALLENGE_SONG_N : C.CHALLENGE_N) && now - S.on_track_at >= (other ? C.OFF_TRACK_SONG_SEC : C.OFF_TRACK_SEC) && S.auto) {
         take(m.song_id, CHALLENGE.started, now);
         CHALLENGE.song_id = null; CHALLENGE.n = 0;
         return true;

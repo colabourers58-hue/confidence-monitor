@@ -1,7 +1,7 @@
 /* Everything runs on this device. No server, no network after the first load. */
-import {Orb} from './orb.js?v=202609301529';
+import {Orb} from './orb.js?v=202609301608';
 // Stamped by publish_site.sh on every publish ('dev' when served straight from this Mac).
-const APP_VERSION = '202609301529';
+const APP_VERSION = '202609301608';
 
 const $ = s => document.querySelector(s);
 // the orb is decoration: if this device can't draw it (old GPU, WebGL off, a shader error), the
@@ -50,8 +50,8 @@ let privateCount = 0;
 /* ---------------- engine (runs in a worker, on device) ---------------- */
 let worker = null, engineReady = false, loadMsgT = 0;
 function startEngine(){
-  try{ worker = new Worker('engine/fp-worker.js?v=202609301529', {type:'module'}); }
-  catch(e){ try{ worker = new Worker('engine/fp-worker.js?v=202609301529'); }catch(e2){ worker = null; } }
+  try{ worker = new Worker('engine/fp-worker.js?v=202609301608', {type:'module'}); }
+  catch(e){ try{ worker = new Worker('engine/fp-worker.js?v=202609301608'); }catch(e2){ worker = null; } }
   if(!worker){ $('#load').classList.add('done'); return; }
   worker.onmessage = ev => {
     const m = ev.data || {};
@@ -490,7 +490,10 @@ function sectionName(t){
   for(const [re,o] of map) s = s.replace(re, o);
   return s.replace(/\b[a-z]/g, c => c.toUpperCase());
 }
-let lineEls = [], activeCue = -2;
+let lineEls = [], activeCue = -2, gaps = [];
+// a long wait before the next line (an intro, an instrumental) shows three dots that fill as the time
+// passes, like Apple Music, so the singer sees the next line coming (Joel)
+const GAP_MIN = 6.5;              // seconds between two lines' starts before it counts as a wait
 function buildSong(song){
   cues = song.cues; lastSec = -1; activeCue = -2;
   $('#title').textContent = song.title;
@@ -503,10 +506,19 @@ function buildSong(song){
   { const strip = $('#map'), room = strip.parentElement.clientWidth;      // start centred when it all fits
     strip.style.transform = `translateX(${Math.max(0, (room - strip.scrollWidth) / 2)}px)`; }
   // one paragraph per sung line; a new section gets a little more air above it
-  const col = $('#col'); col.innerHTML = ''; lineEls = [];
-  let brk = false;
+  const col = $('#col'); col.innerHTML = ''; lineEls = []; gaps = [];
+  let brk = false, prev = null;
+  const addGap = (from, to, after) => {
+    const g = document.createElement('div'); g.className = 'gap'; g.innerHTML = '<i></i><i></i><i></i>';
+    col.appendChild(g); gaps.push({el: g, from, to, after});
+  };
   cues.forEach((c,k) => {
     if(c.s){ brk = true; return; }
+    if(c.t != null){
+      if(prev == null){ if(c.t >= 4) addGap(0, c.t, -1); }                      // the intro
+      else if(c.t - prev.t >= GAP_MIN) addGap(prev.t + Math.min(4, (c.t - prev.t)/2), c.t, prev.k);
+      prev = {t: c.t, k};
+    }
     const p = document.createElement('p'); p.className = 'ln' + (brk ? ' brk' : ''); brk = false;
     p.textContent = c.text; p.dataset.i = k; col.appendChild(p); lineEls[k] = p;
   });
@@ -517,6 +529,7 @@ function buildSong(song){
 function setActive(k, pending){
   const key = k + (pending ? 'p' : '');
   if(key === activeCue) return; activeCue = key;
+  gaps.forEach(g => g.el.classList.remove('on'));
   let order = []; lineEls.forEach((el,i) => { if(el) order.push(i); });
   const pos = order.indexOf(k);
   order.forEach((i,n) => {
@@ -525,6 +538,26 @@ function setActive(k, pending){
       + (d === 0 ? (pending ? ' pending' : ' on') : d < 0 ? ' past' : d === 1 ? ' near' : '');
   });
   scrollTo(k);
+}
+// in a wait: the dots are the line being 'sung'; everything up to it is past, the next line is next
+function setGap(n){
+  const g = gaps[n], key = 'g' + n;
+  if(key === activeCue) return; activeCue = key;
+  gaps.forEach((x,m) => x.el.classList.toggle('on', m === n));
+  let next = -1; for(let k = g.after + 1; k < cues.length; k++) if(lineEls[k]){ next = k; break; }
+  lineEls.forEach((el,i) => { if(el) el.className = 'ln' + (el.classList.contains('brk') ? ' brk' : '')
+    + (i <= g.after ? ' past' : i === next ? ' near' : ''); });
+  scrollToEl(g.el);
+}
+function gapProgress(n, look){
+  const g = gaps[n], f = Math.max(0, Math.min(1, (look - g.from) / Math.max(.001, g.to - g.from)));
+  const dots = g.el.children;
+  for(let j = 0; j < 3; j++){ const v = Math.max(0, Math.min(1, f*3 - j)); dots[j].style.setProperty('--f', v.toFixed(3)); }
+}
+function scrollToEl(el){
+  const view = $('#view'); if(!el || !view) return;
+  const y = view.clientHeight*0.5 - (el.offsetTop + el.offsetHeight/2);
+  $('#col').style.transform = `translateY(${Math.round(y)}px)`;
 }
 function scrollTo(k){
   const el = lineEls[k], view = $('#view'); if(!el || !view) return;
@@ -540,6 +573,7 @@ function refit(){
   $('#col').style.fontSize = (Math.min(innerHeight*0.12, Math.max(28, innerWidth*0.125)) * zoom).toFixed(1) + 'px';
   if(typeof activeCue === 'string' || typeof activeCue === 'number'){
     const k = parseInt(activeCue, 10); if(!isNaN(k)) requestAnimationFrame(() => scrollTo(k));
+    else if(/^g\d+$/.test(activeCue)){ const g = gaps[+activeCue.slice(1)]; if(g) requestAnimationFrame(() => scrollToEl(g.el)); }
   }
 }
 function setZoom(z){
@@ -616,7 +650,9 @@ function frame(){
     let i = -1; for(let k=0;k<cues.length;k++){ if(cues[k].t <= look) i = k; else break; }
     let ci = i; while(ci >= 0 && cues[ci].s) ci--;
     // the line being sung; before the first line, put that first line up early (dimmed)
-    if(ci >= 0) setActive(ci, false);
+    const gn = st.paused != null ? -1 : gaps.findIndex(g => look >= g.from && look < g.to);
+    if(gn >= 0){ setGap(gn); gapProgress(gn, look); }
+    else if(ci >= 0) setActive(ci, false);
     else { let f = i+1; while(f < cues.length && cues[f].s) f++; if(f < cues.length) setActive(f, true); }
     let sect = ''; for(let k=i;k>=0;k--) if(cues[k].s){ sect = cues[k].text; break; }
     const se = $('#sect'), nm = sect ? sectionName(sect) : '';
