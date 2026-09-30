@@ -1,0 +1,12 @@
+<!doctype html><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<style>html,body{margin:0;height:100%;background:#000;overflow:hidden}canvas{position:fixed;inset:0;width:100%;height:100%}</style>
+<canvas id="c"></canvas>
+<script type="module">
+import {Orb} from './orb.js';
+const o=new Orb(document.getElementById('c')); window.orb=o; o.attach(document);
+const q=new URLSearchParams(location.search);
+if(q.get('level')) o.setLevel(parseFloat(q.get('level')));
+if(q.get('rest')==='0') o.toListening();
+if(q.get('atmos')) o.setAtmos(parseFloat(q.get('atmos')));
+if(q.get('conf')) o.setConfidence(parseFloat(q.get('conf')));
+</script>
