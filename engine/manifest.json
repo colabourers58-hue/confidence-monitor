@@ -21,13 +21,13 @@
  },
  "source": {
   "file": "app/library/fingerprints.npz",
-  "postings": 31221464,
-  "bytes": 312254814,
-  "sha256": "766b74e9ac6598f7c0f31fd4b74f014de7f74bd9ad7c7bfd772a810c6c5b5eda",
+  "postings": 31372380,
+  "bytes": 313764256,
+  "sha256": "0e16dd0da1db7df82ad83c9b67262f5261c20c9c9101ea6143a7de4f245abebd",
   "refs_json": true
  },
  "nbuckets": 262657,
- "universe": 20950876,
+ "universe": 21068379,
  "sections": [
   {
    "name": "bucket_bits",
@@ -39,46 +39,46 @@
    "name": "stream",
    "type": "bits",
    "offset": 1050632,
-   "bytes": 81841001,
-   "bits": 654728004
+   "bytes": 82239895,
+   "bits": 657919157
   }
  ],
  "stats": {
-  "distinct_hashes": 2420434,
-  "postings": 31221464,
-  "stream_bits": 654728004,
-  "unary_ones": 31563463,
+  "distinct_hashes": 2423889,
+  "postings": 31372380,
+  "stream_bits": 657919157,
+  "unary_ones": 30508710,
   "max_rice_k": 24
  },
  "checksum": [
-  405014357,
-  2358853547
+  1596937766,
+  3263250980
  ],
- "total_bytes": 82891633,
+ "total_bytes": 83290527,
  "shards": [
   {
-   "file": "index/fp-00-458550c50f.bin",
+   "file": "index/fp-00-817ad50f22.bin",
    "bytes": 14000000
   },
   {
-   "file": "index/fp-01-0e88224615.bin",
+   "file": "index/fp-01-e95887d576.bin",
    "bytes": 14000000
   },
   {
-   "file": "index/fp-02-61769391a2.bin",
+   "file": "index/fp-02-f2f10c392d.bin",
    "bytes": 14000000
   },
   {
-   "file": "index/fp-03-f3d29e4245.bin",
+   "file": "index/fp-03-7e79d37645.bin",
    "bytes": 14000000
   },
   {
-   "file": "index/fp-04-e743179328.bin",
+   "file": "index/fp-04-410c8552df.bin",
    "bytes": 14000000
   },
   {
-   "file": "index/fp-05-0858e050bd.bin",
-   "bytes": 12891633
+   "file": "index/fp-05-30c46e4a6d.bin",
+   "bytes": 13290527
   }
  ],
  "refs": [
@@ -1440,8 +1440,8 @@
    "song_id": "hesavedyouhesavedme",
    "via": "instrumental",
    "live": false,
-   "shift": 0.0,
-   "aligned": false,
+   "shift": -0.7,
+   "aligned": true,
    "excluded": false,
    "duration": 305.736,
    "start": 3170379
@@ -2276,8 +2276,8 @@
    "song_id": "peterlover",
    "via": "instrumental",
    "live": false,
-   "shift": 0.0,
-   "aligned": false,
+   "shift": -0.6,
+   "aligned": true,
    "excluded": false,
    "duration": 232.752,
    "start": 5105433
@@ -10399,6 +10399,61 @@
    "excluded": false,
    "duration": 439.412,
    "start": 20924202
+  },
+  {
+   "ref_id": "awakeosleeper::ministry-music-instrumentals",
+   "song_id": "awakeosleeper",
+   "via": "release",
+   "live": false,
+   "shift": 0.0,
+   "aligned": false,
+   "excluded": false,
+   "duration": 508.918,
+   "start": 20950876
+  },
+  {
+   "ref_id": "blessedjesus::ministry-music-instrumentals",
+   "song_id": "blessedjesus",
+   "via": "release",
+   "live": false,
+   "shift": 0.0,
+   "aligned": false,
+   "excluded": false,
+   "duration": 321.288,
+   "start": 20982665
+  },
+  {
+   "ref_id": "fallinlovewithyouagain::ministry-music-instrumentals",
+   "song_id": "fallinlovewithyouagain",
+   "via": "release",
+   "live": false,
+   "shift": 0.0,
+   "aligned": false,
+   "excluded": false,
+   "duration": 436.793,
+   "start": 21002736
+  },
+  {
+   "ref_id": "iwillblessthelord::ministry-music-instrumentals",
+   "song_id": "iwillblessthelord",
+   "via": "release",
+   "live": false,
+   "shift": 0.0,
+   "aligned": false,
+   "excluded": false,
+   "duration": 350.171,
+   "start": 21029694
+  },
+  {
+   "ref_id": "howsweetthenameofjesussounds::aida-crusades",
+   "song_id": "howsweetthenameofjesussounds",
+   "via": "release",
+   "live": false,
+   "shift": 0.0,
+   "aligned": false,
+   "excluded": false,
+   "duration": 277.008,
+   "start": 21051270
   }
  ]
 }

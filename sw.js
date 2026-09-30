@@ -1,6 +1,6 @@
 /* Keeps the whole app on the device. First visit stores everything; after that it
    never needs a network. Bump VERSION to push an update the next time it is online. */
-const VERSION = 'cm-202609301828';   // stamped by publish_site.sh
+const VERSION = 'cm-202609301858';   // stamped by publish_site.sh
 // ONNX Runtime Web (runs the learned fingerprint in engine/fp-worker.js), from its CDN, kept offline
 const ORT_BASE = 'https://cdn.jsdelivr.net/npm/onnxruntime-web@1.20.1/dist/';
 const ORT_FILES = ['ort.wasm.min.js', 'ort.wasm.min.mjs', 'ort-wasm-simd-threaded.mjs', 'ort-wasm-simd-threaded.wasm'];
