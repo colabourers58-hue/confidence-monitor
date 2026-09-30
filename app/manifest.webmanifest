@@ -1,6 +1,6 @@
 {
-  "name": "Lyrics",
-  "short_name": "Lyrics",
+  "name": "Prompter",
+  "short_name": "Prompter",
   "start_url": "./",
   "scope": "./",
   "display": "fullscreen",

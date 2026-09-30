@@ -6,9 +6,9 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<meta name="apple-mobile-web-app-title" content="Lyrics">
+<meta name="apple-mobile-web-app-title" content="Prompter">
 <meta name="theme-color" content="#000000">
-<title>Lyrics</title>
+<title>Prompter</title>
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="apple-touch-icon" href="icon-512.png">
 <style>
@@ -19,6 +19,7 @@
     --label-2:rgba(235,235,245,.60); --label-3:rgba(235,235,245,.30); --label-4:rgba(235,235,245,.16);
     --fill:rgba(120,120,128,.24); --pending:rgba(255,214,10,.42);
     --ease:cubic-bezier(.32,.72,0,1);
+    --brand:#0a8cff;             /* ShemenMusic blue, the orb's own */
   }
   *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
   ::selection{background:var(--live);color:#000}
@@ -102,6 +103,30 @@
   #gate b{font-weight:600;font-size:clamp(17px,2.8vh,30px);letter-spacing:-.01em}
   #gate small{color:var(--label-3);font-weight:500;font-size:clamp(12px,1.8vh,20px)}
   #gate.gone{opacity:0;pointer-events:none}
+
+  /* ---------- the welcome sheet: shown once, the way a new iOS app says hello ---------- */
+  #welcome{position:fixed;inset:0;z-index:20;display:flex;justify-content:center;overflow-y:auto;touch-action:pan-y;
+           background:rgba(0,0,0,.62);-webkit-backdrop-filter:blur(28px) saturate(1.4);backdrop-filter:blur(28px) saturate(1.4);
+           transition:opacity .45s var(--ease),transform .45s var(--ease)}
+  #welcome[hidden]{display:none}
+  #welcome.leaving{opacity:0;transform:scale(1.03)}
+  #welcome .sheet{width:100%;max-width:600px;min-height:100%;display:flex;flex-direction:column;
+                  padding:max(56px,9vh) 24px max(28px,env(safe-area-inset-bottom))}
+  #welcome h1{font-size:clamp(34px,5.4vh,52px);line-height:1.08;font-weight:800;letter-spacing:-.025em;text-align:center}
+  #welcome h1 span{display:block;color:var(--brand)}
+  #welcome ul{list-style:none;display:flex;flex-direction:column;gap:clamp(22px,3.6vh,34px);margin:clamp(36px,6vh,60px) 0 32px}
+  #welcome li{display:grid;grid-template-columns:52px 1fr;gap:16px;align-items:start}
+  #welcome li svg{width:44px;height:44px;fill:var(--brand);margin-top:2px}
+  #welcome li b{display:block;font-size:clamp(18px,2.3vh,22px);font-weight:700;letter-spacing:-.01em;margin-bottom:3px}
+  #welcome li p{font-size:clamp(16px,2.05vh,20px);line-height:1.4;color:var(--label-2)}
+  #welcome .foot{margin-top:auto;display:flex;flex-direction:column;align-items:center;gap:14px;text-align:center}
+  #welcome .foot small{font-size:clamp(14px,1.8vh,17px);line-height:1.4;color:var(--label-2);max-width:440px}
+  #welcome button{font:inherit;font-size:19px;font-weight:700;width:100%;max-width:420px;height:58px;border:0;border-radius:15px;
+                  background:var(--brand);color:#fff;cursor:pointer;transition:transform .15s var(--ease),filter .15s}
+  #welcome button:active{transform:scale(.97);filter:brightness(.92)}
+  #welcome button:focus-visible{outline:3px solid #fff;outline-offset:3px}
+  #welcome .keep{color:var(--label-3)}
+  #cpAbout{font-size:15px;font-weight:600;padding:10px 14px;background:rgba(120,120,128,.24);color:var(--label);margin-top:10px;margin-left:8px}
   /* the control panel: what it hears, what it did, how fast */
   #cp{position:fixed;inset:0;z-index:10;background:rgba(0,0,0,.72);-webkit-backdrop-filter:blur(24px);backdrop-filter:blur(24px);
       overflow:auto;cursor:auto;-webkit-user-select:text;user-select:text}
@@ -162,7 +187,25 @@
     <div id="devlist"></div></section>
   <section class="card"><h3>Right now</h3><div class="now" id="cpNow">–</div></section>
   <section class="card"><h3>This session</h3><div class="stats" id="cpStats"></div></section>
-  <section class="card"><h3>Log</h3><div id="log"></div><button id="cpCopy">Copy log</button></section>
+  <section class="card"><h3>Log</h3><div id="log"></div><button id="cpCopy">Copy log</button><button id="cpAbout">About Prompter</button></section>
+</div></div>
+<div id="welcome" hidden role="dialog" aria-modal="true" aria-labelledby="wTitle"><div class="sheet">
+  <h1 id="wTitle">Welcome to <span>Prompter</span></h1>
+  <ul>
+    <li><svg viewBox="0 0 44 44" aria-hidden="true"><rect x="4" y="16" width="5" height="12" rx="2.5"/><rect x="12" y="9" width="5" height="26" rx="2.5"/><rect x="20" y="4" width="5" height="36" rx="2.5"/><rect x="28" y="11" width="5" height="22" rx="2.5"/><rect x="36" y="17" width="5" height="10" rx="2.5"/></svg>
+      <div><b>It listens for the song</b><p>Play the track the way you always do. Within a few seconds it knows which song it is and where you are in it.</p></div></li>
+    <li><svg viewBox="0 0 44 44" aria-hidden="true"><rect x="4" y="7" width="36" height="7" rx="3.5"/><rect x="4" y="19" width="27" height="6" rx="3" opacity=".55"/><rect x="4" y="30" width="32" height="6" rx="3" opacity=".3"/></svg>
+      <div><b>The words come up before you sing</b><p>The lyrics move with the music. The line you&rsquo;re on is bright, and the next one is already waiting.</p></div></li>
+    <li><svg viewBox="0 0 44 44" aria-hidden="true"><path d="M36 4.6v22.9a6.5 6.5 0 1 1-4-6V12.3l-15 3.4v15.8a6.5 6.5 0 1 1-4-6V8.9a2 2 0 0 1 1.56-1.95l19-4.3A2 2 0 0 1 36 4.6z"/></svg>
+      <div><b>It knows our songs</b><p>It has learned the First Love Music and Living Waters songs from the official recordings.</p></div></li>
+    <li><svg viewBox="0 0 44 44" aria-hidden="true"><path d="M22 3a19 19 0 1 1 0 38 19 19 0 0 1 0-38zm8.3 11.9a2.2 2.2 0 0 0-3.1.3l-7.4 9-3.2-3.1a2.2 2.2 0 1 0-3.1 3.1l4.9 4.8a2.2 2.2 0 0 0 3.2-.2l9-10.9a2.2 2.2 0 0 0-.3-3z"/></svg>
+      <div><b>Nobody has to run it</b><p>No slides and no clicking. Set it on the stand and sing. It works without the internet too.</p></div></li>
+  </ul>
+  <div class="foot">
+    <small>Next it will ask to use the microphone. Tap Allow. That&rsquo;s how it hears the music.</small>
+    <button id="wGo">Let&rsquo;s Go</button>
+    <small class="keep" id="wKeep"></small>
+  </div>
 </div></div>
 <div id="gate"><b>Tap to begin</b><small>One tap allows the microphone. After that it runs on its own.</small></div>
 <script type="module" src="app.js"></script>

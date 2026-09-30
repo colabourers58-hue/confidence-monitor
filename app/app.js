@@ -511,6 +511,30 @@ async function begin(){
   document.documentElement.requestFullscreen?.().catch(()=>{});
 }
 $('#gate').addEventListener('click', begin);
+
+/* the welcome sheet: once per person (and again whenever WELCOME changes, to say what's new) */
+const WELCOME = '1';
+function showWelcome(){
+  const ua = navigator.userAgent, standalone = matchMedia('(display-mode: standalone), (display-mode: fullscreen)').matches || navigator.standalone;
+  const ios = /iPad|iPhone|iPod/.test(ua) || (/Macintosh/.test(ua) && navigator.maxTouchPoints > 1);
+  $('#wKeep').textContent = standalone ? '' :
+    ios ? 'To keep it on this iPad or iPhone: tap Share, then Add to Home Screen.' :
+    /Android/.test(ua) ? 'To keep it on this phone: open the Chrome menu, then Install app.' :
+    /Macintosh/.test(ua) && /Safari/.test(ua) && !/Chrome/.test(ua) ? 'To keep it on this Mac: in the menu bar choose File, then Add to Dock.' :
+    'To keep it on this computer: click the install icon at the right of the address bar.';
+  $('#welcome').hidden = false; $('#welcome').classList.remove('leaving');
+}
+$('#wGo').addEventListener('click', e => {
+  e.stopPropagation();
+  try{ localStorage.setItem('cm.welcome', WELCOME); }catch(err){}
+  $('#welcome').classList.add('leaving');
+  setTimeout(() => { $('#welcome').hidden = true; }, 450);
+  if(!$('#gate').classList.contains('gone')) begin();        // this tap is the one that starts the microphone
+});
+$('#welcome').addEventListener('pointerdown', e => e.stopPropagation());
+$('#cpAbout').addEventListener('click', () => { $('#cp').hidden = true; showWelcome(); });
+let seen = null; try{ seen = localStorage.getItem('cm.welcome'); }catch(e){}
+if(seen !== WELCOME && !new URLSearchParams(location.search).get('demo')) showWelcome();
 $('#cpDone').addEventListener('click', () => { $('#cp').hidden = true; });
 $('#cpBtn').addEventListener('click', e => { e.stopPropagation(); openPanel(); });
 $('#cpBtn').addEventListener('pointerdown', e => e.stopPropagation());

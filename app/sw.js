@@ -1,6 +1,6 @@
 /* Keeps the whole app on the device. First visit stores everything; after that it
    never needs a network. Bump VERSION to push an update the next time it is online. */
-const VERSION = 'cm-v8';
+const VERSION = 'cm-v9';
 const SHELL = ['./', 'index.html', 'app.js', 'orb.js', 'manifest.webmanifest', 'icon-512.png',
                'data/songs.json', 'fonts/inter-600.woff2', 'fonts/inter-800.woff2', 'awake.mp4'];
 self.addEventListener('install', e => {
