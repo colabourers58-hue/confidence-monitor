@@ -47,7 +47,11 @@ export const DEFAULTS = {
   AGREE_SEC: 0.75,       // two windows must place the song within this of each other
   CANDIDATE_TTL: 12,     // forget an unconfirmed candidate after this long
   MUSIC_LEVEL: 0.015,    // mic RMS above this means music is playing in the room
-  LOUD_MISS_SEC: 20,     // music playing, yet this song unconfirmed this long: something else is on
+  LOUD_MISS_SEC: 20,     // music playing, yet this song unconfirmed this long: something else is on (a new song takes over sooner, as soon as it is recognised)
+  // ALWAYS VERIFYING. While a song is up, every look checks it is still this song at this place.
+  // When that stops holding while music plays, the app is in DOUBT: the corner orb grows so the
+  // stage can see it's working it out, and it hunts for the new song at once (adding up evidence).
+  DOUBT_LOOKS: 3,        // this many looks in a row off track, with music playing = doubt (about 2 s)
   SILENCE_SEC: 30,       // the room has been quiet this long: the music has stopped
   END_GRACE: 2.5,        // past the song's end by this much: let it go
   TRACK_TOL: 0.6,        // seconds either side of where we expect to be
@@ -91,6 +95,7 @@ export const DEFAULTS = {
   // SUNG WORDS (words()). The same thresholds as server.py consider_words().
   WORDS_SCORE: 26,       // lyricsearch score to name a song from words alone
   WORDS_GRAMS: 2,        // ...with at least this many of its 3-grams heard
+  WORDS_GRAMS_ALONE: 3,  // ...3 when no fingerprint evidence agrees ('I wish you were the best' x2 put I Wish up)
   WORDS_ANCHOR: 12,      // a line of the song already up must score this to move its clock
   WORDS_OUT: 1.5,        // move the clock only if it is further than this outside the heard line
   WORDS_RECENT: 4,       // the heard line was sung within this long before the words arrived
@@ -437,6 +442,7 @@ export function createDecider(songs, opts) {
     const P = piles(r.song_id);
     const agrees = !!(P && P.looks >= 2 && P.votes >= 2 * C.ACC_FLOOR &&
       copies(s, r.cue).some(j => outside(s, j, at - P.start, C.WORDS_POOL) <= C.WORDS_OUT));
+    if (!agrees && r.grams < C.WORDS_GRAMS_ALONE) return false;   // two common 3-grams ('I wish you were') prove nothing
     // words alone: they must name this song twice, a moment apart
     if (!agrees) {
       const again = WORDS1.song_id === r.song_id && at - WORDS1.at <= C.WORDS_CONFIRM_SEC;
@@ -491,9 +497,21 @@ export function createDecider(songs, opts) {
     if (S.driver === 'words' && S.started_at != null && r && r.cands)
       for (const c of r.cands) if (c.song_id === S.song_id && !c.live && c.votes >= C.ACC_FLOOR &&
                                    Math.abs(heardAt - win - c.offset_sec - S.started_at) <= C.WORDS_AGREE) { S.last_confirm = now; break; }
-    // weak evidence keeps adding up while nothing is up, or while the clock is only an estimate
+    // always verifying: count looks off track while music plays; three in a row is doubt
+    if (S.song_id != null && S.driver === 'ear' && r && r.track_votes != null) {
+      const loud = now - S.last_loud < 1.5;
+      if (onTrack) { S.off_looks = 0; S.doubt = false; }
+      else if (loud) { S.off_looks = (S.off_looks || 0) + 1; if (S.off_looks >= C.DOUBT_LOOKS) S.doubt = true; }
+    } else if (S.song_id == null) { S.off_looks = 0; S.doubt = false; }
+    // weak evidence keeps adding up while nothing is up, while the clock is only an estimate,
+    // and while in doubt (so a changed song is found as fast as a new one)
     const estimated = S.driver === 'words' || S.driver === 'live';
-    if (!changed && (S.song_id == null || estimated)) changed = accumulate(r, heardAt, win, now);
+    if (!changed && (S.song_id == null || estimated || S.doubt)) {
+      const was = S.song_id;
+      changed = accumulate(r, heardAt, win, now);
+      if (changed && was != null && S.song_id !== was) { S.doubt = false; S.off_looks = 0; }
+      if (changed && S.song_id === was) { S.doubt = false; S.off_looks = 0; }
+    }
     else if (S.song_id != null && !estimated) EVIDENCE = [];
     bump();
     return changed;

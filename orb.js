@@ -271,6 +271,9 @@ export class Orb {
     this.jigDir = [0, 1]; this.jigV -= 7.0 * k;
   }
   setConfidence(v){ this.confTarget = Math.max(0, Math.min(1, v)); }
+  // doubt: the song on screen stopped matching. In the corner the orb swells 30%, calmly (no
+  // flashing: people preach over music), and settles back when the song is confirmed again
+  setDoubt(on){ this.doubtTarget = on ? 1 : 0; }
   setAmbient(v){ this.ambTarget = Math.max(0, Math.min(1, v)); }
   setTint(t){ if(t && t.length === 3) this.tintTarget = t.map(c => c.slice(0, 3)); }
   setAtmos(v){ this.atmosTarget = Math.max(0, Math.min(1, v)); }
@@ -289,6 +292,7 @@ export class Orb {
     this.center[0] += (this.target.center[0] - this.center[0]) * k;
     this.center[1] += (this.target.center[1] - this.center[1]) * k;
     this.size += (this.target.size - this.size) * k;
+    this.doubt = (this.doubt || 0) + ((this.doubtTarget || 0) - (this.doubt || 0)) * Math.min(1, dt * 3.0);
     this.rest += (this.target.rest - this.rest) * (1 - Math.pow(0.02, dt));
     // underdamped springs: it overshoots and wobbles, like jelly
     const dTarget = this.pressed ? 1.0 : 0.0;
@@ -310,7 +314,8 @@ export class Orb {
     gl.uniform1f(this.u.uCatch, this.catchV);
     gl.uniform1f(this.u.uRest, this.rest);
     gl.uniform2f(this.u.uCenter, this.center[0], this.center[1]);
-    gl.uniform1f(this.u.uSize, this.size * (1 - Math.max(0, this.dent) * 0.035));
+    const swell = this.target.size < 0.5 ? 1 + 0.3 * (this.doubt || 0) : 1;     // only in the corner
+    gl.uniform1f(this.u.uSize, this.size * swell * (1 - Math.max(0, this.dent) * 0.035));
     gl.uniform2f(this.u.uPokeDir, this.pokeDir[0], this.pokeDir[1]);
     gl.uniform1f(this.u.uDent, this.dent);
     gl.uniform1f(this.u.uJig, this.jig);

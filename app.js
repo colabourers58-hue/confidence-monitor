@@ -1,7 +1,7 @@
 /* Everything runs on this device. No server, no network after the first load. */
-import {Orb} from './orb.js?v=202609301128';
+import {Orb} from './orb.js?v=202609301135';
 // Stamped by publish_site.sh on every publish ('dev' when served straight from this Mac).
-const APP_VERSION = '202609301128';
+const APP_VERSION = '202609301135';
 
 const $ = s => document.querySelector(s);
 // the orb is decoration: if this device can't draw it (old GPU, WebGL off, a shader error), the
@@ -27,8 +27,8 @@ async function loadSongs(){
 /* ---------------- engine (runs in a worker, on device) ---------------- */
 let worker = null, engineReady = false, loadMsgT = 0;
 function startEngine(){
-  try{ worker = new Worker('engine/fp-worker.js?v=202609301128', {type:'module'}); }
-  catch(e){ try{ worker = new Worker('engine/fp-worker.js?v=202609301128'); }catch(e2){ worker = null; } }
+  try{ worker = new Worker('engine/fp-worker.js?v=202609301135', {type:'module'}); }
+  catch(e){ try{ worker = new Worker('engine/fp-worker.js?v=202609301135'); }catch(e2){ worker = null; } }
   if(!worker){ $('#load').classList.add('done'); return; }
   worker.onmessage = ev => {
     const m = ev.data || {};
@@ -43,7 +43,7 @@ function startEngine(){
   worker.postMessage({type:'load', base: new URL('engine/', location.href).href});
 }
 
-let closest = null;                  // the best guess of the last 30 s, for the log when nothing locks
+let closest = null, lastDoubt = false;   // lastDoubt: the Mac server's doubt flag (server mode)                  // the best guess of the last 30 s, for the log when nothing locks
 function onResult(m){
   if(!dec) return;
   const now = performance.now()/1000;
@@ -239,6 +239,7 @@ async function pollServer(){
     const s = await (await fetch('state', {cache:'no-store'})).json();
     skew = s.server_now + (performance.now()-t0)/2000 - Date.now()/1000;
     const l = s.listen || {};
+    lastDoubt = !!s.doubt;                  // the Mac says the song on screen stopped matching
     confNow = (l.conf_at && s.server_now - l.conf_at < 4) ? (l.conf || 0) : 0;
     if(l.last_match) lastMatchInfo = l.last_match;
     if(l.heard && l.heard_at && l.heard_at !== pollServer.heardAt && l.heard.trim().length > 3){
@@ -480,6 +481,7 @@ function frame(){
   // in sight stays calm; a song being found lights the room as it gets closer
   orb.setAtmos(st.song ? 0 : Math.min(1, confNow * 1.1));
   orb.setConfidence(st.song ? 0 : confNow);
+  orb.setDoubt(!!(st.song && (serverMode ? lastDoubt : (dec && dec.state.doubt))));
   // silence is not evidence against the song: only sustained unmatched MUSIC, or a long
   // quiet (the music has stopped), lets it go
   if(loud) lastLoud = now;
