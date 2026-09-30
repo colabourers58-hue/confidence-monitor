@@ -1,7 +1,7 @@
 /* Everything runs on this device. No server, no network after the first load. */
-import {Orb} from './orb.js?v=202609301415';
+import {Orb} from './orb.js?v=202609301424';
 // Stamped by publish_site.sh on every publish ('dev' when served straight from this Mac).
-const APP_VERSION = '202609301415';
+const APP_VERSION = '202609301424';
 
 const $ = s => document.querySelector(s);
 // the orb is decoration: if this device can't draw it (old GPU, WebGL off, a shader error), the
@@ -50,8 +50,8 @@ let privateCount = 0;
 /* ---------------- engine (runs in a worker, on device) ---------------- */
 let worker = null, engineReady = false, loadMsgT = 0;
 function startEngine(){
-  try{ worker = new Worker('engine/fp-worker.js?v=202609301415', {type:'module'}); }
-  catch(e){ try{ worker = new Worker('engine/fp-worker.js?v=202609301415'); }catch(e2){ worker = null; } }
+  try{ worker = new Worker('engine/fp-worker.js?v=202609301424', {type:'module'}); }
+  catch(e){ try{ worker = new Worker('engine/fp-worker.js?v=202609301424'); }catch(e2){ worker = null; } }
   if(!worker){ $('#load').classList.add('done'); return; }
   worker.onmessage = ev => {
     const m = ev.data || {};
@@ -336,6 +336,7 @@ function logIdentified(song, how){
   attemptStart = null;
 }
 function catchSong(song, started, how){
+  orbHome = '';
   const fresh = !st.song || st.song.id !== song.id || st.words;
   // a correction while a song is up (another song, or the clock moved): the corner orb swells once
   // so the stage can see it just re-checked and moved
@@ -353,15 +354,40 @@ function catchSong(song, started, how){
     document.body.classList.remove('caught'); void document.body.offsetWidth;
     document.body.classList.add('caught');
     setTimeout(() => document.body.classList.remove('caught'), 1600);
-    setTimeout(() => { if(st.song === song){ const [x,y] = dotUV(); orb.toStatus(x, y); } }, 380);
+    setTimeout(() => { if(st.song === song){ const [x,y] = dotUV(); orb.toStatus(x, y); orbCorner = [x, y]; } }, 380);
   }
+}
+/* Where the orb lives when no song is up. Before the first song: the middle. After that it never
+   takes over the screen again: it waits in its corner, listening. Only when it is NOT listening
+   (microphone off, waiting for a tap) does it come back to the middle. */
+let orbCorner = null, orbHome = '';
+function placeOrb(){
+  if(st.song) return;
+  const listening = $('#gate').classList.contains('gone');
+  const home = (!listening || !orbCorner) ? 'middle' : 'corner';
+  if(home === orbHome) return;
+  orbHome = home;
+  if(home === 'corner') orb.toCorner(orbCorner[0], orbCorner[1], cornerSize()); else orb.toListening();
+}
+// in its corner the orb shows it's working: bigger while it hears music and hunts for the song,
+// biggest as it closes in, calm and small when the room is quiet
+function cornerSize(){
+  const hunting = !serverMode && dec && dec.state.searching ? 1 : 0;
+  const loud = Math.min(1, level * 3.2 / 0.12);
+  const act = Math.max(confNow || 0, hunting * 0.7, loud * 0.45);
+  return 0.1 + 0.2 * act;             // 0.10 resting .. 0.30 working hard
+}
+let cornerAt = 0;
+function breatheCorner(now){          // refresh the corner size a few times a second, smoothly
+  if(st.song || orbHome !== 'corner' || now - cornerAt < 0.25) return;
+  cornerAt = now; orb.toCorner(orbCorner[0], orbCorner[1], cornerSize());
 }
 function release(){
   if(st.song) logEvent('release', `Let go of ${st.song.title}`);
   st.song = null; st.started = null; st.pending = null; st.words = null;
   document.body.classList.remove('song', 'words');
   orb.setAmbient(0);
-  orb.toListening();
+  orbHome = ''; placeOrb();
 }
 function showWords(song, anchor){
   const key = song.id + '#' + anchor;
@@ -375,7 +401,7 @@ function showWords(song, anchor){
   orb.setAmbient(1);
   if(fresh){ orb.explode(); document.body.classList.remove('caught'); void document.body.offsetWidth;
              document.body.classList.add('caught'); setTimeout(() => document.body.classList.remove('caught'), 1600);
-             setTimeout(() => { if(st.song === song){ const [x,y] = dotUV(); orb.toStatus(x, y); } }, 380); }
+             setTimeout(() => { if(st.song === song){ const [x,y] = dotUV(); orb.toStatus(x, y); orbCorner = [x, y]; } }, 380); }
 }
 // the section that holds the sung line, whole; what was sung softens, the next section waits below
 function renderBlock(song, anchor){
@@ -487,6 +513,8 @@ let soundSince = null, quietSince = null, lastLoud = 0, confNow = 0;
 let deadSince = null;
 function frame(){
   const now = performance.now()/1000;
+  placeOrb();                         // cheap: only acts when where it should be has changed
+  breatheCorner(now);
   orb.setLevel(Math.min(1, level*3.2));
   // A real microphone is never EXACTLY silent: even a quiet room has some hiss. Pure zeros for
   // a few seconds means the browser has cut the microphone off (Safari does this when its window
@@ -589,7 +617,8 @@ addEventListener('keydown', e => {
   if(e.key === '-') setZoom(zoom/1.1);
   if(e.key === '0') setZoom(1);
 });
-addEventListener('resize', () => { refit(); if(st.words) fitBlock(); if(st.song){ const [x,y] = dotUV(); orb.toStatus(x,y); } });
+addEventListener('resize', () => { refit(); if(st.words) fitBlock(); if(st.song){ const [x,y] = dotUV(); orb.toStatus(x,y); orbCorner = [x, y]; }
+  else if(orbCorner){ const [x,y] = dotUV(); if(isFinite(x) && isFinite(y)) orbCorner = [x, y]; orbHome = ''; } });
 
 /* ---------------- stay awake, stay listening ----------------
    On a music stand the screen must never dim or sleep, and after a phone call, a lock or a
@@ -700,7 +729,7 @@ async function begin(){
   unlockAudio();
   keepAwake();
   $('#gate').classList.add('gone');
-  try{ await startMic(inputId, {reuse:true}); orb.toListening();
+  try{ await startMic(inputId, {reuse:true}); orbHome = ''; placeOrb();
        const tr = mstream && mstream.getAudioTracks()[0]; logEvent('start', 'Started, listening from ' + ((tr && tr.label) || 'the default input'));
        try{ localStorage.setItem('cm.micok', '1'); }catch(e){}             // next time: start without a tap
        probeWords();

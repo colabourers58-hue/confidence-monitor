@@ -283,6 +283,8 @@ export class Orb {
   toRest(){ this.target = {center:[0,0], size:1, rest:1}; }
   toListening(){ this.target = {center:[0,0], size:1, rest:0}; }
   toStatus(cx, cy){ this.target = {center:[cx, cy], size:0.06, rest:0}; }
+  // between songs, once a song has been shown: stays in its corner, a little bigger, still listening
+  toCorner(cx, cy, size){ this.target = {center:[cx, cy], size: size || 0.1, rest:0}; }
   draw(){
     if(this.dead) return;
     const gl = this.gl, now = performance.now();

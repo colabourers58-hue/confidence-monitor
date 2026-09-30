@@ -1,6 +1,6 @@
 /* Keeps the whole app on the device. First visit stores everything; after that it
    never needs a network. Bump VERSION to push an update the next time it is online. */
-const VERSION = 'cm-202609301415';   // stamped by publish_site.sh
+const VERSION = 'cm-202609301424';   // stamped by publish_site.sh
 const SHELL = ['./', 'index.html', 'app.js', 'orb.js', 'manifest.webmanifest', 'manifest-ios.webmanifest', 'icon-512.png', 'icon-192.png',
                'data/songs.json', 'fonts/inter-600.woff2', 'fonts/inter-800.woff2', 'awake.mp4'];
 self.addEventListener('install', e => {

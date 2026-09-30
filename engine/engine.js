@@ -369,10 +369,16 @@
    *    is never learned, and its learned postings are not used when it repeats in a query;
    *  - one hash holds at most HASH_CAP learned postings;
    *  - a hash the index already has at this place (shipped or learned, +-1 frame) is not added;
-   *  - bounded: SONG_CAP per song (its oldest learning goes first), TOTAL_CAP in all (the song
-   *    learnt longest ago goes first). */
-  var ROOM = { TOTAL_CAP: 1500000, SONG_CAP: 60000, HASH_CAP: 6, REPEAT_MAX: 2, NEAR: 1,
-               REFINE: 4, REFINE_MIN: 3, HIST: 48, BACKFILL_MIN: 4, BACKFILL_SEC: 40 };
+   *    a learned one heard there again is marked as heard in this hearing (it has proved itself);
+   *  - bounded: SONG_CAP per song, TOTAL_CAP in all. A posting's age is the HEARING it was last
+   *    heard in (a hearing = one play of the song; a new one starts after NEW_HEARING s without
+   *    learning that song). A song over its cap loses the postings its older hearings had and its
+   *    newer ones never heard again (one-off noise); if this hearing alone fills it, it stops
+   *    learning more (the start of a song is what matters most, and that is learnt first).
+   *    Over TOTAL_CAP, the songs learnt longest ago go first. */
+  var ROOM = { TOTAL_CAP: 1500000, SONG_CAP: 80000, HASH_CAP: 6, REPEAT_MAX: 2, NEAR: 1,
+               REFINE: 4, REFINE_MIN: 3, HIST: 64, BACKFILL_MIN: 4, BACKFILL_SEC: 48,
+               STRIDE: 0, BACKFILL_PER_CALL: 2, NEW_HEARING: 120 };
   var FRAME_BITS = 18, FRAME_MASK = (1 << FRAME_BITS) - 1, REF_LIMIT = 1 << (32 - FRAME_BITS);
 
   function roomOf(idx) {
@@ -402,18 +408,24 @@
     for (i = 0; i < L.n; i++) { var s = songOfVal(idx, L.vals[i]); c[s] = (c[s] || 0) + 1; }
     for (var s2 in L.songs) { if (!c[s2]) { delete L.songs[s2]; L.dirty[s2] = true; } else if (L.songs[s2].n !== c[s2]) { L.songs[s2].n = c[s2]; L.dirty[s2] = true; } }
   }
-  /** SONG_CAP: drop this song's oldest learning. TOTAL_CAP: drop the songs learnt longest ago. */
-  function enforceCaps(idx, songId) {
-    var L = roomOf(idx), S = L.songs[songId], g, i;
-    if (S && S.n > ROOM.SONG_CAP) {
-      g = idx.refGroup[idx.refs.findIndex(function (r) { return r.song_id === songId; })];
-      var ages = [];
-      for (i = 0; i < L.n; i++) if (idx.refGroup[L.vals[i] >>> FRAME_BITS] === g) ages.push(L.ages[i]);
-      ages.sort(function (a, b) { return a - b; });
-      var cut = ages[ages.length - Math.floor(0.85 * ROOM.SONG_CAP)];   // keep the newest 85%
-      filterRoom(L, function (v, a) { return idx.refGroup[v >>> FRAME_BITS] !== g || a >= cut; });
+  /** Make room in one song for `need` more postings: drop the hearings before `hearing`, oldest
+   *  first (what they learnt and no later hearing heard again). Returns how many now fit. */
+  function makeRoom(idx, songId, need, hearing) {
+    var L = roomOf(idx), S = L.songs[songId], i;
+    if (!S || S.n + need <= ROOM.SONG_CAP) return need;
+    var g = idx.refGroup[idx.refs.findIndex(function (r) { return r.song_id === songId; })], per = Object.create(null);
+    for (i = 0; i < L.n; i++) if (idx.refGroup[L.vals[i] >>> FRAME_BITS] === g && L.ages[i] < hearing) per[L.ages[i]] = (per[L.ages[i]] || 0) + 1;
+    var old = Object.keys(per).map(Number).sort(function (a, b) { return a - b; }), cut = -1, n = S.n;
+    for (i = 0; i < old.length && n + need > ROOM.SONG_CAP; i++) { cut = old[i]; n -= per[old[i]]; }
+    if (cut >= 0) {
+      filterRoom(L, function (v, a) { return idx.refGroup[v >>> FRAME_BITS] !== g || a > cut; });
       recount(idx);
     }
+    return Math.max(0, Math.min(need, ROOM.SONG_CAP - ((L.songs[songId] || { n: 0 }).n)));
+  }
+  /** TOTAL_CAP: drop the songs learnt longest ago (never the one being learnt). */
+  function enforceCaps(idx, songId) {
+    var L = roomOf(idx), i;
     if (L.n > ROOM.TOTAL_CAP) {
       var order = Object.keys(L.songs).filter(function (s) { return s !== songId; })
         .sort(function (a, b) { return L.songs[a].last - L.songs[b].last; });
@@ -457,6 +469,7 @@
     if (idx.excluded && idx.excluded[refIdx]) return out;
     var nq = q.h.length, mult = multiplicity(q.h), cur = new Cursor(idx), j, e;
     var r0 = idx.refStart[refIdx], r1 = idx.refStart[refIdx + 1], near = new Array(nq), dcount = Object.create(null);
+    var mine = [], mineD = [];                        // learned postings near this place: (index, deviation)
     // what the index already has for these hashes, near where this look should be in this recording
     for (j = 0; j < nq; j++) {
       var exp = frameOffset + q.t[j], ds = null;
@@ -472,7 +485,7 @@
         for (e = lo; e < hi; e++) {
           if ((L.vals[e] >>> FRAME_BITS) !== refIdx) continue;
           var d2 = (L.vals[e] & FRAME_MASK) - exp;
-          if (d2 >= -ROOM.REFINE && d2 <= ROOM.REFINE) (ds = ds || []).push(d2);
+          if (d2 >= -ROOM.REFINE && d2 <= ROOM.REFINE) { (ds = ds || []).push(d2); mine.push(e); mineD.push(d2); }
         }
       }
       near[j] = ds;
@@ -488,7 +501,15 @@
     if (opts.verify && best < opts.verify) return out;
     var delta = best >= ROOM.REFINE_MIN ? bestD : 0;
     out.delta = delta;
-    var bk = [], bv = [], ba = [], age = L.seq++, batch = Object.create(null);
+    // this hearing of the song: its postings (new, or heard here again) carry its number as their age
+    var sid = idx.refs[refIdx].song_id, S = L.songs[sid] || (L.songs[sid] = { n: 0, last: 0, hearing: 0 });
+    var tnow = opts.now != null ? opts.now : Date.now();
+    if (!S.hearing || tnow - S.last > ROOM.NEW_HEARING * 1000) S.hearing = L.seq++;
+    var age = S.hearing;
+    for (e = 0; e < mine.length; e++) if (Math.abs(mineD[e] - delta) <= ROOM.NEAR && L.ages[mine[e]] !== age) { L.ages[mine[e]] = age; out.refreshed = (out.refreshed || 0) + 1; }
+    if (out.refreshed) L.dirty[sid] = true;
+    S.last = tnow;
+    var bk = [], bv = [], ba = [], batch = Object.create(null);
     for (j = 0; j < nq; j++) {
       if (mult[j] > ROOM.REPEAT_MAX) continue;                     // a hum or tone, not the song
       var fr = frameOffset + delta + q.t[j];
@@ -503,13 +524,16 @@
       batch[bkey] = 1;
       bk.push(h); bv.push(((refIdx << FRAME_BITS) | fr) >>> 0); ba.push(age);
     }
+    var fit = makeRoom(idx, sid, bk.length, age);   // over SONG_CAP: older hearings go; this one keeps its start
+    if (fit < bk.length) { bk.length = fit; bv.length = fit; ba.length = fit; }
     mergeBatch(L, bk, bv, ba);
     out.added = bk.length;
+    S = L.songs[sid] || (L.songs[sid] = { n: 0, last: tnow, hearing: age });
     if (bk.length) {
-      var sid = idx.refs[refIdx].song_id, S = L.songs[sid] || (L.songs[sid] = { n: 0, last: 0 });
-      S.n += bk.length; S.last = opts.now != null ? opts.now : Date.now(); L.dirty[sid] = true;
+      S.n += bk.length; L.dirty[sid] = true;
       enforceCaps(idx, sid);
     }
+    if (!S.n) delete L.songs[sid];
     return out;
   }
 
@@ -553,7 +577,7 @@
         if (A[n] > maxAge) maxAge = A[n];
         n++; got++;
       }
-      if (got) { var S = L.songs[x.song_id] || (L.songs[x.song_id] = { n: 0, last: 0 }); S.last = Math.max(S.last, x.last || 0); out.songs++; out.postings += got; }
+      if (got) { var S = L.songs[x.song_id] || (L.songs[x.song_id] = { n: 0, last: 0, hearing: 0 }); S.last = Math.max(S.last, x.last || 0); out.songs++; out.postings += got; }
     });
     // radix sort by hash (keys < 2^26): two passes of 13 bits, stable
     var K2 = new Uint32Array(n), V2 = new Uint32Array(n), A2 = new Uint32Array(n);
@@ -569,7 +593,7 @@
     L.keys = K; L.vals = V; L.ages = A; L.n = n; L.seq = maxAge + 1;
     recount(idx);
     L.dirty = Object.create(null);
-    Object.keys(L.songs).forEach(function (s) { enforceCaps(idx, s); });
+    enforceCaps(idx, null);
     return out;
   }
 
@@ -627,16 +651,29 @@
         } else off = m.offset_sec;
         if (ref < 0 || off == null || !isFinite(off)) return res;
         res.ref_id = idx.refs[ref].ref_id;
-        var H = hist[cur], start = H.at - H.win;
-        for (i = cur; i >= 0; i--) {
-          var h = hist[i];
-          if (h.learned === ref) continue;
-          if (H.at - h.at > ROOM.BACKFILL_SEC) break;
-          var o = off + (h.at - h.win - start);          // this look's window start, same clock
-          if (o + h.win <= 0) break;                       // wholly before the recording starts
-          var got = learn(idx, h.q, ref, Math.round(o / SEC_PER_FRAME), { now: now, verify: i === cur ? 0 : ROOM.BACKFILL_MIN });
+        // windows overlap (5 s every 0.75 s): one look in STRIDE seconds covers all of the audio
+        var H = hist[cur], start = H.at - H.win, lastAt = -1e9, budget = ROOM.BACKFILL_PER_CALL;
+        for (i = cur; i >= 0; i--) if (hist[i].learned === ref) { lastAt = Math.max(lastAt, hist[i].at); }
+        var todo = [];
+        if (H.at - lastAt >= ROOM.STRIDE) todo.push(cur);
+        // fill in the looks before (the intro, heard before the lock), a few per call, OLDEST first
+        // (they are the next to leave the history), each STRIDE apart, and only where the index
+        // already agrees with this clock
+        var prev = -1e9;
+        for (i = 0; i < cur && budget > 0; i++) {
+          var h0 = hist[i];
+          if (H.at - h0.at > ROOM.BACKFILL_SEC) continue;
+          if (off + (h0.at - h0.win - start) + h0.win <= 0) continue;   // wholly before the recording starts
+          if (h0.learned === ref) { prev = h0.at; continue; }
+          if (h0.at - prev < ROOM.STRIDE) continue;
+          todo.push(i); budget--; prev = h0.at;
+        }
+        for (var k = 0; k < todo.length; k++) {
+          var h = hist[todo[k]], isCur = todo[k] === cur;
+          var o = off + (h.at - h.win - start);            // this look's window start, same clock
+          var got = learn(idx, h.q, ref, Math.round(o / SEC_PER_FRAME), { now: now, verify: isCur ? 0 : ROOM.BACKFILL_MIN });
           h.learned = ref;                                 // tried: never re-examined for this recording
-          if (i === cur || got.support >= ROOM.BACKFILL_MIN) { res.looks++; res.added += got.added; }
+          if (isCur || got.support >= ROOM.BACKFILL_MIN) { res.looks++; res.added += got.added; }
         }
         return res;
       },
