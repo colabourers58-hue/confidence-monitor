@@ -21,13 +21,13 @@
  },
  "source": {
   "file": "app/library/fingerprints.npz",
-  "postings": 30170320,
-  "bytes": 301741946,
-  "sha256": "1d7b0359e7be6c6521b99025c89ad727f3b39d6abb646f0cf294f8a1378d2855",
+  "postings": 31221464,
+  "bytes": 312254814,
+  "sha256": "766b74e9ac6598f7c0f31fd4b74f014de7f74bd9ad7c7bfd772a810c6c5b5eda",
   "refs_json": true
  },
  "nbuckets": 262657,
- "universe": 20233771,
+ "universe": 20950876,
  "sections": [
   {
    "name": "bucket_bits",
@@ -39,46 +39,46 @@
    "name": "stream",
    "type": "bits",
    "offset": 1050632,
-   "bytes": 79095728,
-   "bits": 632765818
+   "bytes": 81841001,
+   "bits": 654728004
   }
  ],
  "stats": {
-  "distinct_hashes": 2383164,
-  "postings": 30170320,
-  "stream_bits": 632765818,
-  "unary_ones": 29904839,
+  "distinct_hashes": 2420434,
+  "postings": 31221464,
+  "stream_bits": 654728004,
+  "unary_ones": 31563463,
   "max_rice_k": 24
  },
  "checksum": [
-  3853225116,
-  1334350265
+  405014357,
+  2358853547
  ],
- "total_bytes": 80146360,
+ "total_bytes": 82891633,
  "shards": [
   {
-   "file": "index/fp-00-e12ea5ea0c.bin",
+   "file": "index/fp-00-458550c50f.bin",
    "bytes": 14000000
   },
   {
-   "file": "index/fp-01-3a8d7839e5.bin",
+   "file": "index/fp-01-0e88224615.bin",
    "bytes": 14000000
   },
   {
-   "file": "index/fp-02-087e617ad9.bin",
+   "file": "index/fp-02-61769391a2.bin",
    "bytes": 14000000
   },
   {
-   "file": "index/fp-03-009a38ca99.bin",
+   "file": "index/fp-03-f3d29e4245.bin",
    "bytes": 14000000
   },
   {
-   "file": "index/fp-04-70186ef3a1.bin",
+   "file": "index/fp-04-e743179328.bin",
    "bytes": 14000000
   },
   {
-   "file": "index/fp-05-d0ed81a6aa.bin",
-   "bytes": 10146360
+   "file": "index/fp-05-0858e050bd.bin",
+   "bytes": 12891633
   }
  ],
  "refs": [
@@ -131,8 +131,8 @@
    "song_id": "whenamanlovesthelord",
    "via": "instrumental",
    "live": false,
-   "shift": -0.5,
-   "aligned": true,
+   "shift": 0.0,
+   "aligned": false,
    "excluded": false,
    "duration": 450.096,
    "start": 97904
@@ -7623,7 +7623,7 @@
    "via": "release",
    "live": false,
    "shift": 0.0,
-   "aligned": null,
+   "aligned": false,
    "excluded": false,
    "duration": 267.086,
    "start": 15648033
@@ -7634,7 +7634,7 @@
    "via": "release",
    "live": false,
    "shift": 0.0,
-   "aligned": null,
+   "aligned": false,
    "excluded": false,
    "duration": 439.425,
    "start": 15664062
@@ -8795,28 +8795,6 @@
    "start": 17766984
   },
   {
-   "ref_id": "memboa",
-   "song_id": "memboa",
-   "via": "instrumental",
-   "live": false,
-   "shift": 0.0,
-   "aligned": null,
-   "excluded": false,
-   "duration": 267.083,
-   "start": 17783834
-  },
-  {
-   "ref_id": "meteasea",
-   "song_id": "meteasea",
-   "via": "instrumental",
-   "live": false,
-   "shift": 0.0,
-   "aligned": null,
-   "excluded": false,
-   "duration": 439.412,
-   "start": 17799870
-  },
-  {
    "ref_id": "multiplythem::sunglow-collection",
    "song_id": "multiplythem",
    "via": "release",
@@ -8825,7 +8803,7 @@
    "aligned": true,
    "excluded": false,
    "duration": 213.812,
-   "start": 17826544
+   "start": 17783834
   },
   {
    "ref_id": "nononoyoudontlovethelord::misty-rose-reggae-collection",
@@ -8836,7 +8814,7 @@
    "aligned": true,
    "excluded": false,
    "duration": 542.903,
-   "start": 17839792
+   "start": 17797082
   },
   {
    "ref_id": "nononoyoudontlovethelord::aida-live-in-gaborone",
@@ -8847,7 +8825,7 @@
    "aligned": false,
    "excluded": false,
    "duration": 560.091,
-   "start": 17873432
+   "start": 17830722
   },
   {
    "ref_id": "peopleneedthelord",
@@ -8858,7 +8836,7 @@
    "aligned": true,
    "excluded": false,
    "duration": 273.6,
-   "start": 17908278
+   "start": 17865568
   },
   {
    "ref_id": "prayerchangesthings",
@@ -8869,7 +8847,7 @@
    "aligned": true,
    "excluded": false,
    "duration": 250.56,
-   "start": 17925044
+   "start": 17882334
   },
   {
    "ref_id": "solidrock",
@@ -8880,7 +8858,7 @@
    "aligned": true,
    "excluded": false,
    "duration": 211.63,
-   "start": 17940436
+   "start": 17897726
   },
   {
    "ref_id": "teachme",
@@ -8891,7 +8869,7 @@
    "aligned": true,
    "excluded": false,
    "duration": 338.568,
-   "start": 17953236
+   "start": 17910526
   },
   {
    "ref_id": "wewillstand",
@@ -8902,7 +8880,7 @@
    "aligned": true,
    "excluded": false,
    "duration": 270.677,
-   "start": 17973431
+   "start": 17930721
   },
   {
    "ref_id": "yieldnottotemptation",
@@ -8913,7 +8891,7 @@
    "aligned": true,
    "excluded": false,
    "duration": 307.846,
-   "start": 17989903
+   "start": 17947193
   },
   {
    "ref_id": "awakeosleeper::doing-business-in-great-waters",
@@ -8924,7 +8902,7 @@
    "aligned": true,
    "excluded": false,
    "duration": 369.107,
-   "start": 18008106
+   "start": 17965396
   },
   {
    "ref_id": "nobodyelselikeyou::love-concert",
@@ -8935,7 +8913,7 @@
    "aligned": true,
    "excluded": true,
    "duration": 352.56,
-   "start": 18030966
+   "start": 17988256
   },
   {
    "ref_id": "nobodyelselikeyou::aida-live-in-soweto-south-africa",
@@ -8946,7 +8924,7 @@
    "aligned": false,
    "excluded": true,
    "duration": 359.857,
-   "start": 18052918
+   "start": 18010208
   },
   {
    "ref_id": "nobodyelselikeyou",
@@ -8957,7 +8935,7 @@
    "aligned": true,
    "excluded": false,
    "duration": 545.332,
-   "start": 18075135
+   "start": 18032425
   },
   {
    "ref_id": "lifeissoshort::aida-live-at-adelaide-chapel",
@@ -8968,7 +8946,7 @@
    "aligned": true,
    "excluded": true,
    "duration": 238.447,
-   "start": 18109208
+   "start": 18066498
   },
   {
    "ref_id": "morethanafriend::aida-live-at-adelaide-chapel",
@@ -8979,7 +8957,7 @@
    "aligned": true,
    "excluded": true,
    "duration": 268.07,
-   "start": 18123750
+   "start": 18081040
   },
   {
    "ref_id": "morethanafriend",
@@ -8990,7 +8968,7 @@
    "aligned": false,
    "excluded": false,
    "duration": 277.29,
-   "start": 18140203
+   "start": 18097493
   },
   {
    "ref_id": "neverletmego::aida-live-at-adelaide-chapel",
@@ -9001,7 +8979,7 @@
    "aligned": true,
    "excluded": true,
    "duration": 290.065,
-   "start": 18157152
+   "start": 18114442
   },
   {
    "ref_id": "comeclosertome::aida-live-in-soweto",
@@ -9009,21 +8987,10 @@
    "via": "release",
    "live": true,
    "shift": 0.0,
-   "aligned": null,
+   "aligned": false,
    "excluded": true,
    "duration": 260.809,
-   "start": 18175155
-  },
-  {
-   "ref_id": "comeclosertome",
-   "song_id": "comeclosertome",
-   "via": "instrumental",
-   "live": false,
-   "shift": 0.0,
-   "aligned": null,
-   "excluded": false,
-   "duration": 305.92,
-   "start": 18190880
+   "start": 18132445
   },
   {
    "ref_id": "comehome::aida-live-in-soweto",
@@ -9034,7 +9001,7 @@
    "aligned": null,
    "excluded": true,
    "duration": 380.473,
-   "start": 18209876
+   "start": 18148170
   },
   {
    "ref_id": "comehome",
@@ -9045,29 +9012,7 @@
    "aligned": null,
    "excluded": false,
    "duration": 342.096,
-   "start": 18232995
-  },
-  {
-   "ref_id": "freshoil::aida-live-in-kingston",
-   "song_id": "freshoil",
-   "via": "release",
-   "live": true,
-   "shift": 0.0,
-   "aligned": null,
-   "excluded": true,
-   "duration": 224.712,
-   "start": 18254362
-  },
-  {
-   "ref_id": "freshoil",
-   "song_id": "freshoil",
-   "via": "instrumental",
-   "live": false,
-   "shift": 0.0,
-   "aligned": null,
-   "excluded": false,
-   "duration": 224.078,
-   "start": 18267973
+   "start": 18171289
   },
   {
    "ref_id": "heavensong::aida-live-at-adelaide-chapel",
@@ -9078,7 +9023,7 @@
    "aligned": null,
    "excluded": true,
    "duration": 266.058,
-   "start": 18281639
+   "start": 18192656
   },
   {
    "ref_id": "heavensong",
@@ -9089,7 +9034,7 @@
    "aligned": null,
    "excluded": false,
    "duration": 221.518,
-   "start": 18298123
+   "start": 18209140
   },
   {
    "ref_id": "heedthecall::aida-live-at-taita-hills",
@@ -9100,29 +9045,7 @@
    "aligned": null,
    "excluded": true,
    "duration": 216.947,
-   "start": 18311518
-  },
-  {
-   "ref_id": "icantkeepittomyself::aida-live-at-you-can-depend-on-me",
-   "song_id": "icantkeepittomyself",
-   "via": "release",
-   "live": true,
-   "shift": 0.0,
-   "aligned": null,
-   "excluded": true,
-   "duration": 252.057,
-   "start": 18325054
-  },
-  {
-   "ref_id": "icantkeepittomyself",
-   "song_id": "icantkeepittomyself",
-   "via": "instrumental",
-   "live": false,
-   "shift": 0.0,
-   "aligned": null,
-   "excluded": false,
-   "duration": 340.976,
-   "start": 18340727
+   "start": 18222535
   },
   {
    "ref_id": "keepingmyeyesonyou::aida-live-in-port-elizabeth",
@@ -9133,7 +9056,7 @@
    "aligned": null,
    "excluded": true,
    "duration": 194.509,
-   "start": 18360817
+   "start": 18236071
   },
   {
    "ref_id": "jesusprayed::love-concert",
@@ -9144,7 +9067,7 @@
    "aligned": false,
    "excluded": false,
    "duration": 250.032,
-   "start": 18372967
+   "start": 18248221
   },
   {
    "ref_id": "jesusprayed::aida-live-in-soweto-south-africa",
@@ -9155,7 +9078,7 @@
    "aligned": false,
    "excluded": false,
    "duration": 258.913,
-   "start": 18388397
+   "start": 18263651
   },
   {
    "ref_id": "jesusprayed::aida-live-in-leysin",
@@ -9166,7 +9089,7 @@
    "aligned": false,
    "excluded": false,
    "duration": 266.607,
-   "start": 18404429
+   "start": 18279683
   },
   {
    "ref_id": "jesusprayed::aida-live-in-gaborone",
@@ -9177,7 +9100,7 @@
    "aligned": false,
    "excluded": false,
    "duration": 280.425,
-   "start": 18420922
+   "start": 18296176
   },
   {
    "ref_id": "jesusprayed::propose-to-me-concert",
@@ -9188,7 +9111,7 @@
    "aligned": false,
    "excluded": false,
    "duration": 258.038,
-   "start": 18438258
+   "start": 18313512
   },
   {
    "ref_id": "iguessyouremember::aida-live-at-hard-follower-camp",
@@ -9199,7 +9122,7 @@
    "aligned": false,
    "excluded": true,
    "duration": 397.14,
-   "start": 18454042
+   "start": 18329296
   },
   {
    "ref_id": "readyattwenty::aida-live-at-hard-follower-camp",
@@ -9210,7 +9133,7 @@
    "aligned": false,
    "excluded": true,
    "duration": 456.072,
-   "start": 18478596
+   "start": 18353850
   },
   {
    "ref_id": "iwannabeavirtuouswoman::aida-live-at-hard-follower-camp",
@@ -9221,7 +9144,7 @@
    "aligned": false,
    "excluded": true,
    "duration": 304.065,
-   "start": 18506921
+   "start": 18382175
   },
   {
    "ref_id": "thedayifoundjesus::aida-live-at-hard-follower-camp",
@@ -9232,7 +9155,7 @@
    "aligned": false,
    "excluded": true,
    "duration": 272.17,
-   "start": 18525647
+   "start": 18400901
   },
   {
    "ref_id": "readyattwenty::aida-live-at-niagara-falls",
@@ -9243,7 +9166,7 @@
    "aligned": false,
    "excluded": true,
    "duration": 388.232,
-   "start": 18542278
+   "start": 18417532
   },
   {
    "ref_id": "stirupthegiftofgod::aida-live-at-niagara-falls",
@@ -9254,7 +9177,7 @@
    "aligned": false,
    "excluded": true,
    "duration": 245.891,
-   "start": 18566261
+   "start": 18441515
   },
   {
    "ref_id": "nowthatiknow::aida-live-at-niagara-falls",
@@ -9265,7 +9188,7 @@
    "aligned": false,
    "excluded": true,
    "duration": 282.697,
-   "start": 18581225
+   "start": 18456479
   },
   {
    "ref_id": "iwillbuildyourchurch::aida-live-at-twenty-five-to-fifty",
@@ -9276,7 +9199,7 @@
    "aligned": false,
    "excluded": true,
    "duration": 422.06,
-   "start": 18598731
+   "start": 18473985
   },
   {
    "ref_id": "iwannabeavirtuouswoman::aida-live-at-twenty-five-to-fifty",
@@ -9287,7 +9210,7 @@
    "aligned": false,
    "excluded": true,
    "duration": 398.054,
-   "start": 18624891
+   "start": 18500145
   },
   {
    "ref_id": "missionarysong::aida-live-at-twenty-five-to-fifty",
@@ -9298,7 +9221,7 @@
    "aligned": false,
    "excluded": true,
    "duration": 382.067,
-   "start": 18649448
+   "start": 18524702
   },
   {
    "ref_id": "hijames::aida-live-in-gaborone",
@@ -9309,7 +9232,7 @@
    "aligned": false,
    "excluded": true,
    "duration": 527.778,
-   "start": 18672951
+   "start": 18548205
   },
   {
    "ref_id": "amegachurch::aida-live-in-gaborone",
@@ -9320,7 +9243,7 @@
    "aligned": false,
    "excluded": true,
    "duration": 440.947,
-   "start": 18705767
+   "start": 18581021
   },
   {
    "ref_id": "amegachurch::aida-live-in-kingston",
@@ -9331,7 +9254,7 @@
    "aligned": false,
    "excluded": true,
    "duration": 429.048,
-   "start": 18733187
+   "start": 18608441
   },
   {
    "ref_id": "obligations::aida-live-in-kingston",
@@ -9342,7 +9265,7 @@
    "aligned": false,
    "excluded": true,
    "duration": 547.752,
-   "start": 18759851
+   "start": 18635105
   },
   {
    "ref_id": "ifyouneedsomeonetosend::aida-live-in-kingston",
@@ -9353,7 +9276,7 @@
    "aligned": false,
    "excluded": true,
    "duration": 267.768,
-   "start": 18793807
+   "start": 18669061
   },
   {
    "ref_id": "nononoyoudontlovethelord::aida-live-in-leysin",
@@ -9364,7 +9287,7 @@
    "aligned": false,
    "excluded": true,
    "duration": 542.93,
-   "start": 18810329
+   "start": 18685583
   },
   {
    "ref_id": "amegachurch::aida-live-in-leysin",
@@ -9375,7 +9298,7 @@
    "aligned": false,
    "excluded": true,
    "duration": 433.007,
-   "start": 18843966
+   "start": 18719220
   },
   {
    "ref_id": "stirupthegiftofgod::aida-live-in-leysin",
@@ -9386,7 +9309,7 @@
    "aligned": false,
    "excluded": true,
    "duration": 492.122,
-   "start": 18870735
+   "start": 18745989
   },
   {
    "ref_id": "readyattwenty::aida-live-in-leysin",
@@ -9397,7 +9320,7 @@
    "aligned": false,
    "excluded": true,
    "duration": 447.844,
-   "start": 18901424
+   "start": 18776678
   },
   {
    "ref_id": "obligations::aida-live-in-munich",
@@ -9408,7 +9331,7 @@
    "aligned": false,
    "excluded": true,
    "duration": 736.224,
-   "start": 18929121
+   "start": 18804375
   },
   {
    "ref_id": "thewinnertakesthecrown::aida-live-in-munich",
@@ -9419,7 +9342,7 @@
    "aligned": false,
    "excluded": true,
    "duration": 300.384,
-   "start": 18974818
+   "start": 18850072
   },
   {
    "ref_id": "hijames::aida-live-in-munich",
@@ -9430,7 +9353,7 @@
    "aligned": false,
    "excluded": true,
    "duration": 508.896,
-   "start": 18993273
+   "start": 18868527
   },
   {
    "ref_id": "iwannabeavirtuouswoman::aida-live-in-orlando",
@@ -9441,7 +9364,7 @@
    "aligned": false,
    "excluded": true,
    "duration": 369.345,
-   "start": 19024683
+   "start": 18899937
   },
   {
    "ref_id": "mydearjesus::cerulean-collection",
@@ -9452,7 +9375,7 @@
    "aligned": true,
    "excluded": true,
    "duration": 285.728,
-   "start": 19047398
+   "start": 18922652
   },
   {
    "ref_id": "mydearjesus::eunuchs-in-the-palace-concert",
@@ -9463,7 +9386,7 @@
    "aligned": false,
    "excluded": true,
    "duration": 285.728,
-   "start": 19064628
+   "start": 18939882
   },
   {
    "ref_id": "obligations::misty-rose-reggae-collection",
@@ -9474,7 +9397,7 @@
    "aligned": true,
    "excluded": true,
    "duration": 615.393,
-   "start": 19081858
+   "start": 18957112
   },
   {
    "ref_id": "readyattwenty::misty-rose-reggae-collection",
@@ -9485,7 +9408,7 @@
    "aligned": true,
    "excluded": true,
    "duration": 467.017,
-   "start": 19119803
+   "start": 18995057
   },
   {
    "ref_id": "youllneverfindajob::periwinkle-collection",
@@ -9496,7 +9419,7 @@
    "aligned": false,
    "excluded": true,
    "duration": 377.913,
-   "start": 19148756
+   "start": 19024010
   },
   {
    "ref_id": "shiellastrangewoman::propose-to-me-concert",
@@ -9507,7 +9430,7 @@
    "aligned": false,
    "excluded": true,
    "duration": 354.377,
-   "start": 19172167
+   "start": 19047421
   },
   {
    "ref_id": "thisismyday::rouge-collection",
@@ -9518,7 +9441,7 @@
    "aligned": false,
    "excluded": true,
    "duration": 466.651,
-   "start": 19193905
+   "start": 19069159
   },
   {
    "ref_id": "icantloveyoumorethanilovegod::scarlet-collection",
@@ -9529,7 +9452,7 @@
    "aligned": true,
    "excluded": true,
    "duration": 450.403,
-   "start": 19222692
+   "start": 19097946
   },
   {
    "ref_id": "sistermarryme::scarlet-collection",
@@ -9540,7 +9463,7 @@
    "aligned": true,
    "excluded": true,
    "duration": 402.416,
-   "start": 19250691
+   "start": 19125945
   },
   {
    "ref_id": "proposal::scarlet-collection",
@@ -9551,7 +9474,7 @@
    "aligned": true,
    "excluded": true,
    "duration": 310.7,
-   "start": 19275508
+   "start": 19150762
   },
   {
    "ref_id": "whatexactlydoyoumean::scarlet-collection",
@@ -9562,7 +9485,7 @@
    "aligned": true,
    "excluded": true,
    "duration": 275.424,
-   "start": 19294728
+   "start": 19169982
   },
   {
    "ref_id": "icantloveyoumorethanilovegod::sunglow-collection",
@@ -9573,7 +9496,7 @@
    "aligned": true,
    "excluded": true,
    "duration": 454.557,
-   "start": 19311879
+   "start": 19187133
   },
   {
    "ref_id": "youaremygod::sunglow-collection",
@@ -9584,7 +9507,7 @@
    "aligned": true,
    "excluded": true,
    "duration": 347.899,
-   "start": 19339926
+   "start": 19215180
   },
   {
    "ref_id": "loyaltyanddisloyalty::audio-fetched",
@@ -9595,7 +9518,7 @@
    "aligned": true,
    "excluded": true,
    "duration": 533.372,
-   "start": 19361476
+   "start": 19236730
   },
   {
    "ref_id": "loyaltyanddisloyalty::misty-rose-reggae-collection",
@@ -9606,7 +9529,7 @@
    "aligned": true,
    "excluded": true,
    "duration": 533.362,
-   "start": 19394776
+   "start": 19270030
   },
   {
    "ref_id": "iftherewereneveranyheaven::aida-live-at-adelaide-chapel",
@@ -9617,7 +9540,7 @@
    "aligned": false,
    "excluded": true,
    "duration": 371.201,
-   "start": 19428078
+   "start": 19303332
   },
   {
    "ref_id": "seaofforgetfulness::aida-live-at-adelaide-chapel",
@@ -9628,18 +9551,7 @@
    "aligned": true,
    "excluded": true,
    "duration": 270.055,
-   "start": 19450759
-  },
-  {
-   "ref_id": "whenamanlovesthelord::aida-live-at-niagara-falls",
-   "song_id": "whenamanlovesthelord",
-   "via": "release",
-   "live": true,
-   "shift": 0.0,
-   "aligned": false,
-   "excluded": true,
-   "duration": 344.398,
-   "start": 19467422
+   "start": 19326013
   },
   {
    "ref_id": "awakeosleeper::aida-live-in-gaborone",
@@ -9650,7 +9562,7 @@
    "aligned": false,
    "excluded": true,
    "duration": 444.336,
-   "start": 19488754
+   "start": 19342676
   },
   {
    "ref_id": "jesusreallyneedstoknow::aida-live-in-gaborone",
@@ -9661,7 +9573,7 @@
    "aligned": false,
    "excluded": true,
    "duration": 291.422,
-   "start": 19516413
+   "start": 19370335
   },
   {
    "ref_id": "letmetellyounow::aida-live-in-leysin",
@@ -9672,7 +9584,7 @@
    "aligned": false,
    "excluded": true,
    "duration": 352.341,
-   "start": 19534291
+   "start": 19388213
   },
   {
    "ref_id": "letmetellyounow::aida-live-in-gaborone",
@@ -9683,7 +9595,7 @@
    "aligned": false,
    "excluded": true,
    "duration": 348.474,
-   "start": 19556003
+   "start": 19409925
   },
   {
    "ref_id": "herewestand::aida-live-in-munich",
@@ -9694,7 +9606,7 @@
    "aligned": false,
    "excluded": true,
    "duration": 370.08,
-   "start": 19577183
+   "start": 19431105
   },
   {
    "ref_id": "nowthatiknow::propose-to-me-concert",
@@ -9705,7 +9617,7 @@
    "aligned": false,
    "excluded": true,
    "duration": 281.887,
-   "start": 19600082
+   "start": 19454004
   },
   {
    "ref_id": "nowthatiknow::aida-live-in-kingston",
@@ -9716,7 +9628,7 @@
    "aligned": false,
    "excluded": true,
    "duration": 284.64,
-   "start": 19617324
+   "start": 19471246
   },
   {
    "ref_id": "nowthatiknow::aida-live-in-gaborone",
@@ -9727,7 +9639,7 @@
    "aligned": false,
    "excluded": true,
    "duration": 285.231,
-   "start": 19634969
+   "start": 19488891
   },
   {
    "ref_id": "nowthatiknow::aida-live-in-munich",
@@ -9738,7 +9650,7 @@
    "aligned": false,
    "excluded": true,
    "duration": 313.896,
-   "start": 19652515
+   "start": 19506437
   },
   {
    "ref_id": "isoughthim::aida-live-in-port-elizabeth",
@@ -9749,7 +9661,7 @@
    "aligned": false,
    "excluded": true,
    "duration": 263.524,
-   "start": 19671850
+   "start": 19525772
   },
   {
    "ref_id": "godsbanquet::aida-live-at-taita-hills-version-1",
@@ -9760,7 +9672,7 @@
    "aligned": false,
    "excluded": true,
    "duration": 303.073,
-   "start": 19688315
+   "start": 19542237
   },
   {
    "ref_id": "godsbanquet::aida-live-at-taita-hills-version-2",
@@ -9771,7 +9683,7 @@
    "aligned": false,
    "excluded": true,
    "duration": 405.447,
-   "start": 19707208
+   "start": 19561130
   },
   {
    "ref_id": "godsbanquet::aida-live-at-taita-hills-version-3",
@@ -9782,7 +9694,7 @@
    "aligned": false,
    "excluded": true,
    "duration": 613.329,
-   "start": 19732527
+   "start": 19586449
   },
   {
    "ref_id": "whenigettoheaven::jazzberry-collection",
@@ -9793,7 +9705,7 @@
    "aligned": false,
    "excluded": true,
    "duration": 360.594,
-   "start": 19770844
+   "start": 19624766
   },
   {
    "ref_id": "takeupyourcross::love-concert",
@@ -9804,7 +9716,7 @@
    "aligned": false,
    "excluded": true,
    "duration": 306.552,
-   "start": 19793192
+   "start": 19647114
   },
   {
    "ref_id": "ifyouneedsomeonetosend::aida-live-in-munich",
@@ -9815,7 +9727,7 @@
    "aligned": false,
    "excluded": true,
    "duration": 277.44,
-   "start": 19812149
+   "start": 19666071
   },
   {
    "ref_id": "soonandverysoon::aida-live-at-taita-hills",
@@ -9826,7 +9738,7 @@
    "aligned": null,
    "excluded": true,
    "duration": 256.94,
-   "start": 19829184
+   "start": 19683106
   },
   {
    "ref_id": "welcomebacktojesus::aida-live-at-adelaide-chapel",
@@ -9837,7 +9749,7 @@
    "aligned": null,
    "excluded": true,
    "duration": 315.822,
-   "start": 19845230
+   "start": 19699152
   },
   {
    "ref_id": "welcomebacktojesus",
@@ -9848,7 +9760,7 @@
    "aligned": null,
    "excluded": false,
    "duration": 200.124,
-   "start": 19864645
+   "start": 19718567
   },
   {
    "ref_id": "sayido::aida-live-at-adelaide-chapel",
@@ -9859,7 +9771,7 @@
    "aligned": null,
    "excluded": true,
    "duration": 204.488,
-   "start": 19876861
+   "start": 19730783
   },
   {
    "ref_id": "sayido",
@@ -9870,7 +9782,7 @@
    "aligned": null,
    "excluded": false,
    "duration": 256.104,
-   "start": 19889364
+   "start": 19743286
   },
   {
    "ref_id": "quiettimes::aida-live-at-taita-hills",
@@ -9881,7 +9793,7 @@
    "aligned": null,
    "excluded": true,
    "duration": 306.939,
-   "start": 19905010
+   "start": 19758932
   },
   {
    "ref_id": "thelordismylight::aida-live-in-soweto-south-africa",
@@ -9892,7 +9804,7 @@
    "aligned": null,
    "excluded": true,
    "duration": 369.337,
-   "start": 19924062
+   "start": 19777984
   },
   {
    "ref_id": "thelordismylight",
@@ -9903,7 +9815,7 @@
    "aligned": null,
    "excluded": false,
    "duration": 309.812,
-   "start": 19946531
+   "start": 19800453
   },
   {
    "ref_id": "firstlovelovefirst",
@@ -9914,7 +9826,7 @@
    "aligned": true,
    "excluded": false,
    "duration": 257.184,
-   "start": 19964920
+   "start": 19818842
   },
   {
    "ref_id": "gochurch",
@@ -9925,7 +9837,7 @@
    "aligned": true,
    "excluded": false,
    "duration": 371.28,
-   "start": 19980399
+   "start": 19834321
   },
   {
    "ref_id": "jesusisthedoor",
@@ -9936,7 +9848,7 @@
    "aligned": true,
    "excluded": false,
    "duration": 300.816,
-   "start": 20003234
+   "start": 19857156
   },
   {
    "ref_id": "jesusyouresocool",
@@ -9947,7 +9859,7 @@
    "aligned": true,
    "excluded": false,
    "duration": 328.056,
-   "start": 20021769
+   "start": 19875691
   },
   {
    "ref_id": "livingwaters",
@@ -9958,7 +9870,7 @@
    "aligned": true,
    "excluded": false,
    "duration": 299.304,
-   "start": 20041639
+   "start": 19895561
   },
   {
    "ref_id": "noordinarywater",
@@ -9969,7 +9881,7 @@
    "aligned": true,
    "excluded": false,
    "duration": 434.808,
-   "start": 20059647
+   "start": 19913569
   },
   {
    "ref_id": "roseofsharon",
@@ -9980,7 +9892,7 @@
    "aligned": true,
    "excluded": false,
    "duration": 351.048,
-   "start": 20086090
+   "start": 19940012
   },
   {
    "ref_id": "icantloveyoumorethanilovegod",
@@ -9991,7 +9903,7 @@
    "aligned": true,
    "excluded": false,
    "duration": 462.707,
-   "start": 20107656
+   "start": 19961578
   },
   {
    "ref_id": "loyaltyanddisloyalty",
@@ -10002,7 +9914,7 @@
    "aligned": false,
    "excluded": false,
    "duration": 634.944,
-   "start": 20136530
+   "start": 19990452
   },
   {
    "ref_id": "seaofforgetfulness",
@@ -10013,7 +9925,7 @@
    "aligned": false,
    "excluded": false,
    "duration": 251.794,
-   "start": 20176084
+   "start": 20030006
   },
   {
    "ref_id": "neverletmego",
@@ -10024,7 +9936,7 @@
    "aligned": false,
    "excluded": false,
    "duration": 306.782,
-   "start": 20191686
+   "start": 20045608
   },
   {
    "ref_id": "lifeissoshort",
@@ -10035,7 +9947,458 @@
    "aligned": false,
    "excluded": false,
    "duration": 377.574,
-   "start": 20210429
+   "start": 20064351
+  },
+  {
+   "ref_id": "comeclosertome",
+   "song_id": "comeclosertome",
+   "via": "instrumental",
+   "live": false,
+   "shift": 0.0,
+   "aligned": false,
+   "excluded": false,
+   "duration": 305.92,
+   "start": 20087693
+  },
+  {
+   "ref_id": "comeclosertome::aida-live-in-soweto-south-africa",
+   "song_id": "comeclosertome",
+   "via": "release",
+   "live": true,
+   "shift": 0.0,
+   "aligned": true,
+   "excluded": true,
+   "duration": 260.809,
+   "start": 20106689
+  },
+  {
+   "ref_id": "freshoil",
+   "song_id": "freshoil",
+   "via": "instrumental",
+   "live": false,
+   "shift": 0.0,
+   "aligned": false,
+   "excluded": false,
+   "duration": 224.078,
+   "start": 20122414
+  },
+  {
+   "ref_id": "freshoil::aida-live-in-kingston",
+   "song_id": "freshoil",
+   "via": "release",
+   "live": true,
+   "shift": 0.0,
+   "aligned": true,
+   "excluded": true,
+   "duration": 224.712,
+   "start": 20136080
+  },
+  {
+   "ref_id": "icantkeepittomyself",
+   "song_id": "icantkeepittomyself",
+   "via": "instrumental",
+   "live": false,
+   "shift": 0.0,
+   "aligned": false,
+   "excluded": false,
+   "duration": 340.976,
+   "start": 20149691
+  },
+  {
+   "ref_id": "icantkeepittomyself::aida-live-at-you-can-depend-on-me",
+   "song_id": "icantkeepittomyself",
+   "via": "release",
+   "live": true,
+   "shift": 0.0,
+   "aligned": true,
+   "excluded": true,
+   "duration": 252.057,
+   "start": 20169781
+  },
+  {
+   "ref_id": "security",
+   "song_id": "security",
+   "via": "instrumental",
+   "live": false,
+   "shift": 0.0,
+   "aligned": false,
+   "excluded": false,
+   "duration": 311.808,
+   "start": 20185454
+  },
+  {
+   "ref_id": "security::love-concert",
+   "song_id": "security",
+   "via": "release",
+   "live": true,
+   "shift": 0.0,
+   "aligned": true,
+   "excluded": true,
+   "duration": 240.408,
+   "start": 20204933
+  },
+  {
+   "ref_id": "tellthem",
+   "song_id": "tellthem",
+   "via": "instrumental",
+   "live": false,
+   "shift": 0.0,
+   "aligned": false,
+   "excluded": false,
+   "duration": 297.247,
+   "start": 20219605
+  },
+  {
+   "ref_id": "tellthem::aida-live-in-soweto-south-africa",
+   "song_id": "tellthem",
+   "via": "release",
+   "live": true,
+   "shift": 0.0,
+   "aligned": true,
+   "excluded": true,
+   "duration": 216.241,
+   "start": 20238103
+  },
+  {
+   "ref_id": "tellthem::aida-live-at-you-can-depend-on-me",
+   "song_id": "tellthem",
+   "via": "release",
+   "live": true,
+   "shift": 0.0,
+   "aligned": false,
+   "excluded": true,
+   "duration": 358.558,
+   "start": 20251191
+  },
+  {
+   "ref_id": "theresnobodylikejesus",
+   "song_id": "theresnobodylikejesus",
+   "via": "instrumental",
+   "live": false,
+   "shift": 0.0,
+   "aligned": false,
+   "excluded": false,
+   "duration": 1082.904,
+   "start": 20273496
+  },
+  {
+   "ref_id": "theresnobodylikejesus::aida-live-in-leysin",
+   "song_id": "theresnobodylikejesus",
+   "via": "release",
+   "live": true,
+   "shift": 0.0,
+   "aligned": true,
+   "excluded": true,
+   "duration": 531.802,
+   "start": 20341163
+  },
+  {
+   "ref_id": "wisdomistheprincipalthing",
+   "song_id": "wisdomistheprincipalthing",
+   "via": "instrumental",
+   "live": false,
+   "shift": 0.848,
+   "aligned": true,
+   "excluded": false,
+   "duration": 483.37,
+   "start": 20374232
+  },
+  {
+   "ref_id": "wisdomistheprincipalthing::sunglow-collection",
+   "song_id": "wisdomistheprincipalthing",
+   "via": "release",
+   "live": false,
+   "shift": 0.0,
+   "aligned": true,
+   "excluded": true,
+   "duration": 403.8,
+   "start": 20404434
+  },
+  {
+   "ref_id": "pastorswives",
+   "song_id": "pastorswives",
+   "via": "instrumental",
+   "live": false,
+   "shift": 0.0,
+   "aligned": false,
+   "excluded": false,
+   "duration": 598.57,
+   "start": 20429492
+  },
+  {
+   "ref_id": "pastorswives::scarlet-collection",
+   "song_id": "pastorswives",
+   "via": "release",
+   "live": false,
+   "shift": 0.0,
+   "aligned": true,
+   "excluded": true,
+   "duration": 469.995,
+   "start": 20466898
+  },
+  {
+   "ref_id": "pastorswives::sunglow-collection",
+   "song_id": "pastorswives",
+   "via": "release",
+   "live": false,
+   "shift": -0.024,
+   "aligned": true,
+   "excluded": true,
+   "duration": 472.425,
+   "start": 20495977
+  },
+  {
+   "ref_id": "pastorswives::aida-live-at-i-want-my-love-to-last-conc",
+   "song_id": "pastorswives",
+   "via": "release",
+   "live": true,
+   "shift": 0.0,
+   "aligned": false,
+   "excluded": true,
+   "duration": 472.477,
+   "start": 20525216
+  },
+  {
+   "ref_id": "allaboutyou",
+   "song_id": "allaboutyou",
+   "via": "instrumental",
+   "live": false,
+   "shift": 0.0,
+   "aligned": false,
+   "excluded": false,
+   "duration": 363.755,
+   "start": 20554454
+  },
+  {
+   "ref_id": "allaboutyou::aida-live-in-munich",
+   "song_id": "allaboutyou",
+   "via": "release",
+   "live": true,
+   "shift": 0.0,
+   "aligned": true,
+   "excluded": true,
+   "duration": 267.096,
+   "start": 20577003
+  },
+  {
+   "ref_id": "itsourtime",
+   "song_id": "itsourtime",
+   "via": "instrumental",
+   "live": false,
+   "shift": 0.0,
+   "aligned": false,
+   "excluded": false,
+   "duration": 259.161,
+   "start": 20593383
+  },
+  {
+   "ref_id": "itsourtime::aida-live-in-gaborone",
+   "song_id": "itsourtime",
+   "via": "release",
+   "live": true,
+   "shift": 0.0,
+   "aligned": true,
+   "excluded": true,
+   "duration": 288.522,
+   "start": 20609453
+  },
+  {
+   "ref_id": "lordletmehaveadream",
+   "song_id": "lordletmehaveadream",
+   "via": "instrumental",
+   "live": false,
+   "shift": 0.0,
+   "aligned": false,
+   "excluded": false,
+   "duration": 220.752,
+   "start": 20627041
+  },
+  {
+   "ref_id": "lordletmehaveadream::aida-live-at-taita-hills",
+   "song_id": "lordletmehaveadream",
+   "via": "release",
+   "live": true,
+   "shift": 0.0,
+   "aligned": true,
+   "excluded": true,
+   "duration": 224.94,
+   "start": 20640595
+  },
+  {
+   "ref_id": "playitagain",
+   "song_id": "playitagain",
+   "via": "instrumental",
+   "live": false,
+   "shift": 0.0,
+   "aligned": false,
+   "excluded": false,
+   "duration": 200.176,
+   "start": 20654643
+  },
+  {
+   "ref_id": "playitagain::love-concert",
+   "song_id": "playitagain",
+   "via": "release",
+   "live": true,
+   "shift": 0.0,
+   "aligned": true,
+   "excluded": true,
+   "duration": 199.584,
+   "start": 20666681
+  },
+  {
+   "ref_id": "earlyinthemorning",
+   "song_id": "earlyinthemorning",
+   "via": "instrumental",
+   "live": false,
+   "shift": 0.0,
+   "aligned": false,
+   "excluded": false,
+   "duration": 329.874,
+   "start": 20679060
+  },
+  {
+   "ref_id": "earlyinthemorning::aida-live-in-soweto-south-africa",
+   "song_id": "earlyinthemorning",
+   "via": "release",
+   "live": true,
+   "shift": 0.0,
+   "aligned": true,
+   "excluded": true,
+   "duration": 321.961,
+   "start": 20697885
+  },
+  {
+   "ref_id": "earlyinthemorning::aida-live-in-gaborone",
+   "song_id": "earlyinthemorning",
+   "via": "release",
+   "live": true,
+   "shift": 0.0,
+   "aligned": false,
+   "excluded": true,
+   "duration": 286.407,
+   "start": 20717645
+  },
+  {
+   "ref_id": "illberightthere::aida-live-at-you-can-depend-on-me",
+   "song_id": "illberightthere",
+   "via": "release",
+   "live": true,
+   "shift": 0.0,
+   "aligned": true,
+   "excluded": true,
+   "duration": 374.493,
+   "start": 20735230
+  },
+  {
+   "ref_id": "ilovewalkingwithyou::aida-live-in-soweto-south-africa",
+   "song_id": "ilovewalkingwithyou",
+   "via": "release",
+   "live": true,
+   "shift": 0.0,
+   "aligned": true,
+   "excluded": true,
+   "duration": 248.329,
+   "start": 20758216
+  },
+  {
+   "ref_id": "itsnotastorykobby::love-concert",
+   "song_id": "itsnotastorykobby",
+   "via": "release",
+   "live": true,
+   "shift": 0.0,
+   "aligned": true,
+   "excluded": true,
+   "duration": 180.0,
+   "start": 20772921
+  },
+  {
+   "ref_id": "thatswhatheslookingfor::aida-live-at-you-can-depend-on-me",
+   "song_id": "thatswhatheslookingfor",
+   "via": "release",
+   "live": true,
+   "shift": 0.0,
+   "aligned": true,
+   "excluded": true,
+   "duration": 314.019,
+   "start": 20783937
+  },
+  {
+   "ref_id": "thefeast::aida-live-at-taita-hills",
+   "song_id": "thefeast",
+   "via": "release",
+   "live": true,
+   "shift": 0.0,
+   "aligned": true,
+   "excluded": true,
+   "duration": 324.937,
+   "start": 20803556
+  },
+  {
+   "ref_id": "weallneedeachother::aida-live-at-taita-hills",
+   "song_id": "weallneedeachother",
+   "via": "release",
+   "live": true,
+   "shift": 0.0,
+   "aligned": true,
+   "excluded": true,
+   "duration": 342.935,
+   "start": 20823855
+  },
+  {
+   "ref_id": "fortressbds::love-concert",
+   "song_id": "fortressbds",
+   "via": "release",
+   "live": true,
+   "shift": 0.0,
+   "aligned": true,
+   "excluded": true,
+   "duration": 371.76,
+   "start": 20845279
+  },
+  {
+   "ref_id": "comeclosertome::aida-live-in-port-elizabeth",
+   "song_id": "comeclosertome",
+   "via": "release",
+   "live": true,
+   "shift": 0.0,
+   "aligned": false,
+   "excluded": true,
+   "duration": 295.263,
+   "start": 20868385
+  },
+  {
+   "ref_id": "whenamanlovesthelord::aida-live-at-niagara-falls",
+   "song_id": "whenamanlovesthelord",
+   "via": "release",
+   "live": true,
+   "shift": 0.0,
+   "aligned": false,
+   "excluded": true,
+   "duration": 344.398,
+   "start": 20886834
+  },
+  {
+   "ref_id": "memboa",
+   "song_id": "memboa",
+   "via": "instrumental",
+   "live": false,
+   "shift": 0.0,
+   "aligned": true,
+   "excluded": false,
+   "duration": 267.083,
+   "start": 20908166
+  },
+  {
+   "ref_id": "meteasea",
+   "song_id": "meteasea",
+   "via": "instrumental",
+   "live": false,
+   "shift": 0.0,
+   "aligned": true,
+   "excluded": false,
+   "duration": 439.412,
+   "start": 20924202
   }
  ]
 }
