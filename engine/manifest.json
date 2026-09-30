@@ -21,13 +21,13 @@
  },
  "source": {
   "file": "app/library/fingerprints.npz",
-  "postings": 27467775,
-  "bytes": 274712900,
-  "sha256": "3a0f3efeabdc36fd633823f9072deb198d3e545f6187a915ffd5d531e261008e",
+  "postings": 28869636,
+  "bytes": 288733367,
+  "sha256": "8c8f6dd5dc6c63120f9a2d99700f84bba72b2cd0cabf9f704b8128a486f8a94f",
   "refs_json": true
  },
  "nbuckets": 262657,
- "universe": 18454042,
+ "universe": 19361476,
  "sections": [
   {
    "name": "bucket_bits",
@@ -39,46 +39,46 @@
    "name": "stream",
    "type": "bits",
    "offset": 1050632,
-   "bytes": 71999244,
-   "bits": 575993950
+   "bytes": 75665258,
+   "bits": 605322061
   }
  ],
  "stats": {
-  "distinct_hashes": 2283702,
-  "postings": 27467775,
-  "stream_bits": 575993950,
-  "unary_ones": 26836231,
+  "distinct_hashes": 2327190,
+  "postings": 28869636,
+  "stream_bits": 605322061,
+  "unary_ones": 28399065,
   "max_rice_k": 24
  },
  "checksum": [
-  168524532,
-  127224221
+  1175809813,
+  3190870156
  ],
- "total_bytes": 73049876,
+ "total_bytes": 76715890,
  "shards": [
   {
-   "file": "index/fp-00-e574d606b3.bin",
+   "file": "index/fp-00-87dbfca3ab.bin",
    "bytes": 14000000
   },
   {
-   "file": "index/fp-01-625c0e3ffd.bin",
+   "file": "index/fp-01-747ef79132.bin",
    "bytes": 14000000
   },
   {
-   "file": "index/fp-02-986aebdaca.bin",
+   "file": "index/fp-02-e83cb5c2cd.bin",
    "bytes": 14000000
   },
   {
-   "file": "index/fp-03-273cdd60b2.bin",
+   "file": "index/fp-03-9b285d93ee.bin",
    "bytes": 14000000
   },
   {
-   "file": "index/fp-04-d88e10f9ab.bin",
+   "file": "index/fp-04-c87c5eaf53.bin",
    "bytes": 14000000
   },
   {
-   "file": "index/fp-05-d514d24507.bin",
-   "bytes": 3049876
+   "file": "index/fp-05-933cc34952.bin",
+   "bytes": 6715890
   }
  ],
  "refs": [
@@ -2475,7 +2475,7 @@
    "via": "instrumental",
    "live": false,
    "shift": 0.0,
-   "aligned": true,
+   "aligned": false,
    "excluded": false,
    "duration": 346.776,
    "start": 5519697
@@ -4069,7 +4069,7 @@
    "song_id": "thewinnertakesthecrown",
    "via": "release",
    "live": false,
-   "shift": 0.0,
+   "shift": -0.008,
    "aligned": true,
    "excluded": true,
    "duration": 286.354,
@@ -4125,7 +4125,7 @@
    "via": "release",
    "live": false,
    "shift": 0.0,
-   "aligned": false,
+   "aligned": true,
    "excluded": false,
    "duration": 347.899,
    "start": 8903700
@@ -9189,6 +9189,402 @@
    "excluded": false,
    "duration": 258.038,
    "start": 18438258
+  },
+  {
+   "ref_id": "iguessyouremember::aida-live-at-hard-follower-camp",
+   "song_id": "iguessyouremember",
+   "via": "release",
+   "live": true,
+   "shift": 0.0,
+   "aligned": false,
+   "excluded": true,
+   "duration": 397.14,
+   "start": 18454042
+  },
+  {
+   "ref_id": "readyattwenty::aida-live-at-hard-follower-camp",
+   "song_id": "readyattwenty",
+   "via": "release",
+   "live": true,
+   "shift": 0.0,
+   "aligned": false,
+   "excluded": true,
+   "duration": 456.072,
+   "start": 18478596
+  },
+  {
+   "ref_id": "iwannabeavirtuouswoman::aida-live-at-hard-follower-camp",
+   "song_id": "iwannabeavirtuouswoman",
+   "via": "release",
+   "live": true,
+   "shift": 0.0,
+   "aligned": false,
+   "excluded": true,
+   "duration": 304.065,
+   "start": 18506921
+  },
+  {
+   "ref_id": "thedayifoundjesus::aida-live-at-hard-follower-camp",
+   "song_id": "thedayifoundjesus",
+   "via": "release",
+   "live": true,
+   "shift": 0.0,
+   "aligned": false,
+   "excluded": true,
+   "duration": 272.17,
+   "start": 18525647
+  },
+  {
+   "ref_id": "readyattwenty::aida-live-at-niagara-falls",
+   "song_id": "readyattwenty",
+   "via": "release",
+   "live": true,
+   "shift": 0.0,
+   "aligned": false,
+   "excluded": true,
+   "duration": 388.232,
+   "start": 18542278
+  },
+  {
+   "ref_id": "stirupthegiftofgod::aida-live-at-niagara-falls",
+   "song_id": "stirupthegiftofgod",
+   "via": "release",
+   "live": true,
+   "shift": 0.0,
+   "aligned": false,
+   "excluded": true,
+   "duration": 245.891,
+   "start": 18566261
+  },
+  {
+   "ref_id": "nowthatiknow::aida-live-at-niagara-falls",
+   "song_id": "nowthatiknow",
+   "via": "release",
+   "live": true,
+   "shift": 0.0,
+   "aligned": false,
+   "excluded": true,
+   "duration": 282.697,
+   "start": 18581225
+  },
+  {
+   "ref_id": "iwillbuildyourchurch::aida-live-at-twenty-five-to-fifty",
+   "song_id": "iwillbuildyourchurch",
+   "via": "release",
+   "live": true,
+   "shift": 0.0,
+   "aligned": false,
+   "excluded": true,
+   "duration": 422.06,
+   "start": 18598731
+  },
+  {
+   "ref_id": "iwannabeavirtuouswoman::aida-live-at-twenty-five-to-fifty",
+   "song_id": "iwannabeavirtuouswoman",
+   "via": "release",
+   "live": true,
+   "shift": 0.0,
+   "aligned": false,
+   "excluded": true,
+   "duration": 398.054,
+   "start": 18624891
+  },
+  {
+   "ref_id": "missionarysong::aida-live-at-twenty-five-to-fifty",
+   "song_id": "missionarysong",
+   "via": "release",
+   "live": true,
+   "shift": 0.0,
+   "aligned": false,
+   "excluded": true,
+   "duration": 382.067,
+   "start": 18649448
+  },
+  {
+   "ref_id": "hijames::aida-live-in-gaborone",
+   "song_id": "hijames",
+   "via": "release",
+   "live": true,
+   "shift": 0.0,
+   "aligned": false,
+   "excluded": true,
+   "duration": 527.778,
+   "start": 18672951
+  },
+  {
+   "ref_id": "amegachurch::aida-live-in-gaborone",
+   "song_id": "amegachurch",
+   "via": "release",
+   "live": true,
+   "shift": 0.0,
+   "aligned": false,
+   "excluded": true,
+   "duration": 440.947,
+   "start": 18705767
+  },
+  {
+   "ref_id": "amegachurch::aida-live-in-kingston",
+   "song_id": "amegachurch",
+   "via": "release",
+   "live": true,
+   "shift": 0.0,
+   "aligned": false,
+   "excluded": true,
+   "duration": 429.048,
+   "start": 18733187
+  },
+  {
+   "ref_id": "obligations::aida-live-in-kingston",
+   "song_id": "obligations",
+   "via": "release",
+   "live": true,
+   "shift": 0.0,
+   "aligned": false,
+   "excluded": true,
+   "duration": 547.752,
+   "start": 18759851
+  },
+  {
+   "ref_id": "ifyouneedsomeonetosend::aida-live-in-kingston",
+   "song_id": "ifyouneedsomeonetosend",
+   "via": "release",
+   "live": true,
+   "shift": 0.0,
+   "aligned": false,
+   "excluded": true,
+   "duration": 267.768,
+   "start": 18793807
+  },
+  {
+   "ref_id": "nononoyoudontlovethelord::aida-live-in-leysin",
+   "song_id": "nononoyoudontlovethelord",
+   "via": "release",
+   "live": true,
+   "shift": 0.0,
+   "aligned": false,
+   "excluded": true,
+   "duration": 542.93,
+   "start": 18810329
+  },
+  {
+   "ref_id": "amegachurch::aida-live-in-leysin",
+   "song_id": "amegachurch",
+   "via": "release",
+   "live": true,
+   "shift": 0.0,
+   "aligned": false,
+   "excluded": true,
+   "duration": 433.007,
+   "start": 18843966
+  },
+  {
+   "ref_id": "stirupthegiftofgod::aida-live-in-leysin",
+   "song_id": "stirupthegiftofgod",
+   "via": "release",
+   "live": true,
+   "shift": 0.0,
+   "aligned": false,
+   "excluded": true,
+   "duration": 492.122,
+   "start": 18870735
+  },
+  {
+   "ref_id": "readyattwenty::aida-live-in-leysin",
+   "song_id": "readyattwenty",
+   "via": "release",
+   "live": true,
+   "shift": 0.0,
+   "aligned": false,
+   "excluded": true,
+   "duration": 447.844,
+   "start": 18901424
+  },
+  {
+   "ref_id": "obligations::aida-live-in-munich",
+   "song_id": "obligations",
+   "via": "release",
+   "live": true,
+   "shift": 0.0,
+   "aligned": false,
+   "excluded": true,
+   "duration": 736.224,
+   "start": 18929121
+  },
+  {
+   "ref_id": "thewinnertakesthecrown::aida-live-in-munich",
+   "song_id": "thewinnertakesthecrown",
+   "via": "release",
+   "live": true,
+   "shift": 0.0,
+   "aligned": false,
+   "excluded": true,
+   "duration": 300.384,
+   "start": 18974818
+  },
+  {
+   "ref_id": "hijames::aida-live-in-munich",
+   "song_id": "hijames",
+   "via": "release",
+   "live": true,
+   "shift": 0.0,
+   "aligned": false,
+   "excluded": true,
+   "duration": 508.896,
+   "start": 18993273
+  },
+  {
+   "ref_id": "iwannabeavirtuouswoman::aida-live-in-orlando",
+   "song_id": "iwannabeavirtuouswoman",
+   "via": "release",
+   "live": true,
+   "shift": 0.0,
+   "aligned": false,
+   "excluded": true,
+   "duration": 369.345,
+   "start": 19024683
+  },
+  {
+   "ref_id": "mydearjesus::cerulean-collection",
+   "song_id": "mydearjesus",
+   "via": "release",
+   "live": false,
+   "shift": -0.072,
+   "aligned": true,
+   "excluded": true,
+   "duration": 285.728,
+   "start": 19047398
+  },
+  {
+   "ref_id": "mydearjesus::eunuchs-in-the-palace-concert",
+   "song_id": "mydearjesus",
+   "via": "release",
+   "live": true,
+   "shift": 0.0,
+   "aligned": false,
+   "excluded": true,
+   "duration": 285.728,
+   "start": 19064628
+  },
+  {
+   "ref_id": "obligations::misty-rose-reggae-collection",
+   "song_id": "obligations",
+   "via": "release",
+   "live": false,
+   "shift": -0.056,
+   "aligned": true,
+   "excluded": true,
+   "duration": 615.393,
+   "start": 19081858
+  },
+  {
+   "ref_id": "readyattwenty::misty-rose-reggae-collection",
+   "song_id": "readyattwenty",
+   "via": "release",
+   "live": false,
+   "shift": -1.136,
+   "aligned": true,
+   "excluded": true,
+   "duration": 467.017,
+   "start": 19119803
+  },
+  {
+   "ref_id": "youllneverfindajob::periwinkle-collection",
+   "song_id": "youllneverfindajob",
+   "via": "release",
+   "live": false,
+   "shift": 0.0,
+   "aligned": false,
+   "excluded": true,
+   "duration": 377.913,
+   "start": 19148756
+  },
+  {
+   "ref_id": "shiellastrangewoman::propose-to-me-concert",
+   "song_id": "shiellastrangewoman",
+   "via": "release",
+   "live": true,
+   "shift": 0.0,
+   "aligned": false,
+   "excluded": true,
+   "duration": 354.377,
+   "start": 19172167
+  },
+  {
+   "ref_id": "thisismyday::rouge-collection",
+   "song_id": "thisismyday",
+   "via": "release",
+   "live": false,
+   "shift": 0.0,
+   "aligned": false,
+   "excluded": true,
+   "duration": 466.651,
+   "start": 19193905
+  },
+  {
+   "ref_id": "icantloveyoumorethanilovegod::scarlet-collection",
+   "song_id": "icantloveyoumorethanilovegod",
+   "via": "release",
+   "live": false,
+   "shift": 0.02,
+   "aligned": true,
+   "excluded": true,
+   "duration": 450.403,
+   "start": 19222692
+  },
+  {
+   "ref_id": "sistermarryme::scarlet-collection",
+   "song_id": "sistermarryme",
+   "via": "release",
+   "live": false,
+   "shift": 0.0,
+   "aligned": true,
+   "excluded": true,
+   "duration": 402.416,
+   "start": 19250691
+  },
+  {
+   "ref_id": "proposal::scarlet-collection",
+   "song_id": "proposal",
+   "via": "release",
+   "live": false,
+   "shift": 0.0,
+   "aligned": true,
+   "excluded": true,
+   "duration": 310.7,
+   "start": 19275508
+  },
+  {
+   "ref_id": "whatexactlydoyoumean::scarlet-collection",
+   "song_id": "whatexactlydoyoumean",
+   "via": "release",
+   "live": false,
+   "shift": 0.692,
+   "aligned": true,
+   "excluded": true,
+   "duration": 275.424,
+   "start": 19294728
+  },
+  {
+   "ref_id": "icantloveyoumorethanilovegod::sunglow-collection",
+   "song_id": "icantloveyoumorethanilovegod",
+   "via": "release",
+   "live": false,
+   "shift": 0.004,
+   "aligned": true,
+   "excluded": true,
+   "duration": 454.557,
+   "start": 19311879
+  },
+  {
+   "ref_id": "youaremygod::sunglow-collection",
+   "song_id": "youaremygod",
+   "via": "release",
+   "live": false,
+   "shift": -0.008,
+   "aligned": true,
+   "excluded": true,
+   "duration": 347.899,
+   "start": 19339926
   }
  ]
 }
