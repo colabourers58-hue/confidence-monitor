@@ -4,8 +4,11 @@
  * Works as a classic worker or a module worker (app.js tries {type:'module'} first).
  *
  * In:  {type:'load', base}            base = URL of this folder (ending in '/')
- *      {type:'match', pcm, win, at, track, top}
+ *      {type:'match', pcm, win, at, track, top, key, keys}
  *          pcm = Float32Array, mono, 16 kHz; at = caller's clock when the window ended (echoed);
+ *          key (optional) = semitones the room is from the recording (a transposed track): the
+ *            main answer and track/top are asked at this key; keys (optional) = other keys to
+ *            try in the same look (same peaks, re-hashed): their answers come back in `alts`
  *          track (optional) = {song_id, at, tol}: is the window where it should start in this
  *            song (s, lyric timeline)? top (optional) = {at, tol}: the same question for
  *            whichever song wins this window (is it the top of that song?)
@@ -13,7 +16,8 @@
  *      {type:'ready', refs, bytes, ms, format, decide}
  *          decide = manifest.decide: threshold overrides for decide.js (null = server defaults)
  *      {type:'result', song_id, ref_id, via, live, duration, offset_sec, rec_offset_sec, votes,
- *                      runner_up, margin, hits, track_votes, track_offset, top_votes, top_offset,
+ *                      runner_up, margin, hits, track_votes, track_offset, track_ref, top_votes,
+ *                      top_offset, cands, key, alts: [{key, song_id, ... the same, no track_*}],
  *                      ms, win, at}
  *          song_id is the base song id (other recordings report their song), or null.
  *          offset_sec = where the window STARTS, on the song's lyric timeline.
@@ -213,9 +217,10 @@ self.onmessage = function (ev) {
     if (!IDX) { self.postMessage(result({ error: 'not ready' }, m, win, t0)); return; }
     var out;
     try {
-      out = E.match(IDX, pcm, { track: m.track || null, top: m.top || null }); delete out.hashes;
-      if (ROOM && out.query && m.at != null) ROOM.saw(m.at, win, out.query);   // room memory may learn from it
-      delete out.query;
+      out = E.match(IDX, pcm, { track: m.track || null, top: m.top || null, key: m.key || 0, keys: m.keys || null });
+      delete out.hashes;
+      if (ROOM && out.peaks && m.at != null) ROOM.saw(m.at, win, out.peaks);   // room memory may learn from it
+      delete out.peaks;
     }
     catch (err) { out = { error: String(err && err.message || err) }; }
     self.postMessage(result(out, m, win, t0));

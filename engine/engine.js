@@ -186,6 +186,20 @@
     return hashes(peaks(sp.S, sp.n, density || DENSITY), fan || FAN);
   }
 
+  /** KEY CHANGES. A band that plays the backing track transposed moves every peak's frequency by
+   *  the same ratio (tempo kept), so almost no hash survives. key = how many semitones the room is
+   *  above the recording (-2 = two lower): the query's peak bins are scaled back by 2^(-key/12)
+   *  (same peaks, same order, re-hashed). Peaks pushed off the spectrum are dropped. */
+  function keyPeaks(pk, key) {
+    if (!key) return pk;
+    var r = Math.pow(2, -key / 12), f = [], t = [];
+    for (var j = 0; j < pk.f.length; j++) {
+      var nf = Math.floor(pk.f[j] * r + 0.5);          // round half up (fingerprint.py does the same)
+      if (nf >= 0 && nf < NBIN) { f.push(nf); t.push(pk.t[j]); }
+    }
+    return { f: Int32Array.from(f), t: Int32Array.from(t) };
+  }
+
   // ---------------------------------------------------------------- index (fp-index/2)
   /** manifest: parsed manifest.json; blob: Uint8Array holding all shards concatenated. */
   function createIndex(manifest, blob) {
@@ -378,8 +392,12 @@
    *    Over TOTAL_CAP, the songs learnt longest ago go first. */
   var ROOM = { TOTAL_CAP: 1500000, SONG_CAP: 80000, HASH_CAP: 6, REPEAT_MAX: 2, NEAR: 1,
                REFINE: 4, REFINE_MIN: 3, HIST: 64, BACKFILL_MIN: 4, BACKFILL_SEC: 48,
-               STRIDE: 0, BACKFILL_PER_CALL: 2, NEW_HEARING: 120 };
+               STRIDE: 0, BACKFILL_MS: 25, NEW_HEARING: 120 };
   var FRAME_BITS = 18, FRAME_MASK = (1 << FRAME_BITS) - 1, REF_LIMIT = 1 << (32 - FRAME_BITS);
+  // ages[i] = hearing << 4 | (key + 8): the hearing it was last heard in, and the key the room was
+  // in then (its hashes are stored as heard, so they vote only for a match asked at that key)
+  var ageKey = function (a) { return (a & 15) - 8; }, ageHearing = function (a) { return a >>> 4; };
+  var packAge = function (hearing, key) { return ((hearing << 4) | ((key + 8) & 15)) >>> 0; };
 
   function roomOf(idx) {
     if (!idx.learned) idx.learned = { keys: new Uint32Array(0), vals: new Uint32Array(0), ages: new Uint32Array(0),
@@ -414,11 +432,11 @@
     var L = roomOf(idx), S = L.songs[songId], i;
     if (!S || S.n + need <= ROOM.SONG_CAP) return need;
     var g = idx.refGroup[idx.refs.findIndex(function (r) { return r.song_id === songId; })], per = Object.create(null);
-    for (i = 0; i < L.n; i++) if (idx.refGroup[L.vals[i] >>> FRAME_BITS] === g && L.ages[i] < hearing) per[L.ages[i]] = (per[L.ages[i]] || 0) + 1;
+    for (i = 0; i < L.n; i++) if (idx.refGroup[L.vals[i] >>> FRAME_BITS] === g && ageHearing(L.ages[i]) < hearing) { var hg = ageHearing(L.ages[i]); per[hg] = (per[hg] || 0) + 1; }
     var old = Object.keys(per).map(Number).sort(function (a, b) { return a - b; }), cut = -1, n = S.n;
     for (i = 0; i < old.length && n + need > ROOM.SONG_CAP; i++) { cut = old[i]; n -= per[old[i]]; }
     if (cut >= 0) {
-      filterRoom(L, function (v, a) { return idx.refGroup[v >>> FRAME_BITS] !== g || a > cut; });
+      filterRoom(L, function (v, a) { return idx.refGroup[v >>> FRAME_BITS] !== g || ageHearing(a) > cut; });
       recount(idx);
     }
     return Math.max(0, Math.min(need, ROOM.SONG_CAP - ((L.songs[songId] || { n: 0 }).n)));
@@ -460,52 +478,73 @@
   /** Learn one look: q = its hashes {h, t} (t = anchor frame in the window), refIdx = the recording
    *  it covers, frameOffset = where the window starts in that recording (frames). The place is
    *  first refined to the frame from the postings the index already has near it.
-   *  opts.verify = n: only learn if at least n of the look's hashes are already at this place
-   *  (used to fill in looks from before the decision to learn). Returns {added, support, delta}. */
+   *  opts.verify = n: only learn if at least n of the look's hashes are already at this place in
+   *  the SHIPPED index (learned postings can't vouch: a look overlapping one just learnt would
+   *  always agree with it). Used to fill in looks from before the decision to learn.
+   *  Returns {added, support (all), shipped (shipped only), delta, refreshed}. */
   function learn(idx, q, refIdx, frameOffset, opts) {
     opts = opts || {};
-    var L = roomOf(idx), out = { added: 0, support: 0, delta: 0 };
+    var L = roomOf(idx), out = { added: 0, support: 0, delta: 0 }, key = opts.key || 0;
+    // qs: the look's hashes at the key the song was locked in (what the SHIPPED index can vouch for);
+    // q itself (as heard) is what is stored, tagged with that key
+    var qs = key ? (opts.keyed || q) : q;
     if (!q || !q.h || !q.h.length || refIdx < 0 || refIdx >= idx.nref || refIdx >= REF_LIMIT) return out;
     if (idx.excluded && idx.excluded[refIdx]) return out;
     var nq = q.h.length, mult = multiplicity(q.h), cur = new Cursor(idx), j, e;
-    var r0 = idx.refStart[refIdx], r1 = idx.refStart[refIdx + 1], near = new Array(nq), dcount = Object.create(null);
+    var r0 = idx.refStart[refIdx], r1 = idx.refStart[refIdx + 1], near = new Array(nq), dcount = Object.create(null), scount = Object.create(null);
     var mine = [], mineD = [];                        // learned postings near this place: (index, deviation)
     // what the index already has for these hashes, near where this look should be in this recording
-    for (j = 0; j < nq; j++) {
-      var exp = frameOffset + q.t[j], ds = null;
-      var len = seek(idx, cur, q.h[j]), g = -1;
-      for (e = 0; e < len; e++) {
-        g += cur.next() + 1;
-        if (g < r0 || g >= r1) continue;
-        var d = g - r0 - exp;
-        if (d >= -ROOM.REFINE && d <= ROOM.REFINE) (ds = ds || []).push(d);
+    for (j = 0; j < qs.h.length; j++) {
+      var exps = frameOffset + qs.t[j], sd = null, gg = -1, lens2 = seek(idx, cur, qs.h[j]);
+      for (e = 0; e < lens2; e++) {
+        gg += cur.next() + 1;                         // postings ascend: past this recording, stop
+        if (gg < r0) continue;
+        if (gg >= r1) break;
+        var d0 = gg - r0 - exps;
+        if (d0 >= -ROOM.REFINE && d0 <= ROOM.REFINE) (sd = sd || []).push(d0);
       }
+      if (sd) {
+        var seen0 = Object.create(null);
+        for (e = 0; e < sd.length; e++) if (!seen0[sd[e]]) { seen0[sd[e]] = 1; scount[sd[e]] = (scount[sd[e]] || 0) + 1; dcount[sd[e]] = (dcount[sd[e]] || 0) + 1; }
+        if (qs === q) near[j] = sd.slice();           // the same hashes: already in the shipped index here
+      }
+    }
+    for (j = 0; j < nq; j++) {
+      var exp = frameOffset + q.t[j], ds = near[j] || null;
+      var ld = null;
       if (L.n) {
         var lo = lowerBound(L.keys, L.n, q.h[j] >>> 0), hi = upperBound(L.keys, L.n, q.h[j] >>> 0);
         for (e = lo; e < hi; e++) {
-          if ((L.vals[e] >>> FRAME_BITS) !== refIdx) continue;
+          if ((L.vals[e] >>> FRAME_BITS) !== refIdx || ageKey(L.ages[e]) !== key) continue;
           var d2 = (L.vals[e] & FRAME_MASK) - exp;
-          if (d2 >= -ROOM.REFINE && d2 <= ROOM.REFINE) { (ds = ds || []).push(d2); mine.push(e); mineD.push(d2); }
+          if (d2 >= -ROOM.REFINE && d2 <= ROOM.REFINE) { (ds = ds || []).push(d2); (ld = ld || []).push(d2); mine.push(e); mineD.push(d2); }
         }
       }
       near[j] = ds;
-      if (ds) { var seen = Object.create(null); for (e = 0; e < ds.length; e++) if (!seen[ds[e]]) { seen[ds[e]] = 1; dcount[ds[e]] = (dcount[ds[e]] || 0) + 1; } }
+      if (ld) { var seen = Object.create(null); for (e = 0; e < ld.length; e++) if (!seen[ld[e]]) { seen[ld[e]] = 1; dcount[ld[e]] = (dcount[ld[e]] || 0) + 1; } }
     }
-    // the exact place: the frame deviation most hashes agree on (with its neighbours; ties -> nearest 0)
+    // the exact place: the 3-frame stretch most hashes agree on (ties -> nearest 0), then the
+    // single frame inside it most of them sit on
     var best = 0, bestD = 0;
     for (var dd = -ROOM.REFINE + 1; dd <= ROOM.REFINE - 1; dd++) {
       var c = (dcount[dd - 1] || 0) + (dcount[dd] || 0) + (dcount[dd + 1] || 0);
       if (c > best || (c === best && Math.abs(dd) < Math.abs(bestD))) { best = c; bestD = dd; }
     }
+    var mid = bestD;
+    for (dd = mid - 1; dd <= mid + 1; dd++)
+      if ((dcount[dd] || 0) > (dcount[bestD] || 0) || ((dcount[dd] || 0) === (dcount[bestD] || 0) && Math.abs(dd) < Math.abs(bestD))) bestD = dd;
     out.support = best;
-    if (opts.verify && best < opts.verify) return out;
+    var sbest = 0;
+    for (dd = -ROOM.REFINE + 1; dd <= ROOM.REFINE - 1; dd++) sbest = Math.max(sbest, (scount[dd - 1] || 0) + (scount[dd] || 0) + (scount[dd + 1] || 0));
+    out.shipped = sbest;
+    if (opts.verify && sbest < opts.verify) return out;
     var delta = best >= ROOM.REFINE_MIN ? bestD : 0;
     out.delta = delta;
     // this hearing of the song: its postings (new, or heard here again) carry its number as their age
     var sid = idx.refs[refIdx].song_id, S = L.songs[sid] || (L.songs[sid] = { n: 0, last: 0, hearing: 0 });
     var tnow = opts.now != null ? opts.now : Date.now();
     if (!S.hearing || tnow - S.last > ROOM.NEW_HEARING * 1000) S.hearing = L.seq++;
-    var age = S.hearing;
+    var age = packAge(S.hearing, key);
     for (e = 0; e < mine.length; e++) if (Math.abs(mineD[e] - delta) <= ROOM.NEAR && L.ages[mine[e]] !== age) { L.ages[mine[e]] = age; out.refreshed = (out.refreshed || 0) + 1; }
     if (out.refreshed) L.dirty[sid] = true;
     S.last = tnow;
@@ -524,7 +563,7 @@
       batch[bkey] = 1;
       bk.push(h); bv.push(((refIdx << FRAME_BITS) | fr) >>> 0); ba.push(age);
     }
-    var fit = makeRoom(idx, sid, bk.length, age);   // over SONG_CAP: older hearings go; this one keeps its start
+    var fit = makeRoom(idx, sid, bk.length, S.hearing);   // over SONG_CAP: older hearings go; this one keeps its start
     if (fit < bk.length) { bk.length = fit; bv.length = fit; ba.length = fit; }
     mergeBatch(L, bk, bv, ba);
     out.added = bk.length;
@@ -573,8 +612,8 @@
       for (var j = 0; j < x.h.length; j++) {
         var gr = map[x.v[j] >>> FRAME_BITS];
         if (gr == null || gr < 0) continue;
-        K[n] = x.h[j]; V[n] = ((gr << FRAME_BITS) | (x.v[j] & FRAME_MASK)) >>> 0; A[n] = x.a ? x.a[j] : 0;
-        if (A[n] > maxAge) maxAge = A[n];
+        K[n] = x.h[j]; V[n] = ((gr << FRAME_BITS) | (x.v[j] & FRAME_MASK)) >>> 0; A[n] = x.a ? x.a[j] : packAge(0, 0);
+        if (ageHearing(A[n]) > maxAge) maxAge = ageHearing(A[n]);
         n++; got++;
       }
       if (got) { var S = L.songs[x.song_id] || (L.songs[x.song_id] = { n: 0, last: 0, hearing: 0 }); S.last = Math.max(S.last, x.last || 0); out.songs++; out.postings += got; }
@@ -629,14 +668,17 @@
       return best;
     }
     return {
-      /** After each match: keep this look's hashes (q = {h, t}); at = when the window ended. */
-      saw: function (at, win, q) {
-        if (!q) return;
-        hist.push({ at: at, win: win, q: q, learned: null });
+      /** After each match: keep this look's peaks (match()'s res.peaks); at = when the window ended. */
+      saw: function (at, win, pk) {
+        if (!pk) return;
+        hist.push({ at: at, win: win, pk: pk, learned: null });
         if (hist.length > ROOM.HIST) hist.shift();
       },
-      /** m = {at, song_id, lyric_offset, ref_id?} (lyric_offset = window start on the lyric
-       *  timeline) or {at, ref_id, offset_sec} (window start in that recording). */
+      /** m = {at, song_id, lyric_offset, ref_id?, from_top?, key?} (lyric_offset = window start on
+       *  the lyric timeline; key = semitones the room is from the recording) or {at, ref_id,
+       *  offset_sec} (window start in that recording).
+       *  from_top: the song began at its top when the music started, so every look since then is
+       *  this song: they are filled in without needing the shipped index to vouch for each one. */
       learn: function (m, now) {
         var res = { added: 0, looks: 0, ref_id: null };
         var cur = null;
@@ -652,7 +694,7 @@
         if (ref < 0 || off == null || !isFinite(off)) return res;
         res.ref_id = idx.refs[ref].ref_id;
         // windows overlap (5 s every 0.75 s): one look in STRIDE seconds covers all of the audio
-        var H = hist[cur], start = H.at - H.win, lastAt = -1e9, budget = ROOM.BACKFILL_PER_CALL;
+        var H = hist[cur], start = H.at - H.win, lastAt = -1e9, t0 = Date.now();
         for (i = cur; i >= 0; i--) if (hist[i].learned === ref) { lastAt = Math.max(lastAt, hist[i].at); }
         var todo = [];
         if (H.at - lastAt >= ROOM.STRIDE) todo.push(cur);
@@ -660,20 +702,26 @@
         // (they are the next to leave the history), each STRIDE apart, and only where the index
         // already agrees with this clock
         var prev = -1e9;
-        for (i = 0; i < cur && budget > 0; i++) {
+        for (i = 0; i < cur; i++) {
           var h0 = hist[i];
           if (H.at - h0.at > ROOM.BACKFILL_SEC) continue;
           if (off + (h0.at - h0.win - start) + h0.win <= 0) continue;   // wholly before the recording starts
           if (h0.learned === ref) { prev = h0.at; continue; }
           if (h0.at - prev < ROOM.STRIDE) continue;
-          todo.push(i); budget--; prev = h0.at;
+          todo.push(i); prev = h0.at;
         }
+        if (todo[0] === cur) todo.push(todo.shift());    // the look itself last: the fill-ins are older
+        var key = m.key || 0, fan = (idx.params && idx.params.fan) || FAN;
         for (var k = 0; k < todo.length; k++) {
           var h = hist[todo[k]], isCur = todo[k] === cur;
+          if (!isCur && k > 0 && Date.now() - t0 > ROOM.BACKFILL_MS) continue;   // the rest next time
           var o = off + (h.at - h.win - start);            // this look's window start, same clock
-          var got = learn(idx, h.q, ref, Math.round(o / SEC_PER_FRAME), { now: now, verify: isCur ? 0 : ROOM.BACKFILL_MIN });
+          var q0 = hashes(h.pk, fan);                      // stored as heard...
+          var got = learn(idx, q0, ref, Math.round(o / SEC_PER_FRAME), { now: now, key: key,
+                          keyed: key ? hashes(keyPeaks(h.pk, key), fan) : null,   // ...checked at the song's key
+                          verify: isCur || m.from_top ? 0 : ROOM.BACKFILL_MIN });
           h.learned = ref;                                 // tried: never re-examined for this recording
-          if (isCur || got.support >= ROOM.BACKFILL_MIN) { res.looks++; res.added += got.added; }
+          if (isCur || m.from_top || got.shipped >= ROOM.BACKFILL_MIN) { res.looks++; res.added += got.added; }
         }
         return res;
       },
@@ -694,25 +742,45 @@
    *    top_offset (server.py place_from_top(), without a second pass over the audio). */
   function match(idx, pcm, opts) {
     opts = opts || {};
+    var p = idx.params, fan = p.fan || FAN, key = opts.key || 0;
+    var sp = spectro(pcm), pk = peaks(sp.S, sp.n, p.density || DENSITY);
+    var q0 = hashes(pk, fan);                         // as heard (learned postings are stored as heard)
+    var res = matchKey(idx, key ? hashes(keyPeaks(pk, key), fan) : q0, q0, key, opts);
+    res.peaks = pk;                                   // the worker keeps them: room memory learns from them
+    // other keys, from the same peaks (a band playing the track transposed)
+    if (opts.keys && opts.keys.length) {
+      res.alts = [];
+      for (var a = 0; a < opts.keys.length; a++) {
+        var k = opts.keys[a];
+        if (k === key || res.alts.some(function (x) { return x.key === k; })) continue;
+        var ra = matchKey(idx, hashes(keyPeaks(pk, k), fan), q0, k, { top: opts.top, minVotes: opts.minVotes });
+        delete ra.track_votes; delete ra.track_offset; delete ra.track_recent; delete ra.track_ref;
+        res.alts.push(ra);
+      }
+    }
+    return res;
+  }
+
+  /** match() at one key: q = the query's hashes at that key (for the shipped index), q0 = as heard
+   *  (for learned postings, which only vote when they were learnt at this same key). */
+  function matchKey(idx, q, q0, key, opts) {
     var p = idx.params, minVotes = opts.minVotes || p.min_votes || 12, maxHits = p.max_hits || 8000000;
-    var q = fingerprint(pcm, p.density, p.fan);
     var res = { song_id: null, ref_id: null, via: null, offset_sec: null, rec_offset_sec: null, votes: 0,
-                runner_up: 0, margin: 0, hits: 0, hashes: q.h.length, live: false, duration: null, cands: [],
+                runner_up: 0, margin: 0, hits: 0, hashes: q.h.length, live: false, duration: null, cands: [], key: key,
                 track_votes: opts.track ? 0 : null, track_offset: null, track_recent: opts.track ? 0 : null, track_ref: null,
                 top_votes: opts.top ? 0 : null, top_offset: null };
-    if (q.h.length === 0) return res;
-    res.query = q;                                    // the worker keeps it: room memory learns from it
+    if (q.h.length === 0 && q0.h.length === 0) return res;
     var cur = new Cursor(idx), nq = q.h.length, lens = new Int32Array(nq), pos = new Float64Array(nq), total = 0, j;
     for (j = 0; j < nq; j++) { lens[j] = seek(idx, cur, q.h[j]); pos[j] = cur.pos; total += lens[j]; }
     // learned postings (room memory): counted exactly like shipped ones. A hash repeating within
     // this look (a hum) doesn't use them.
-    var L = idx.learned, llo = null, lhi = null;
+    var L = idx.learned, llo = null, lhi = null, n0 = q0.h.length;
     if (L && L.n) {
-      var mult = multiplicity(q.h);
-      llo = new Int32Array(nq); lhi = new Int32Array(nq);
-      for (j = 0; j < nq; j++) {
+      var mult = multiplicity(q0.h);
+      llo = new Int32Array(n0); lhi = new Int32Array(n0);
+      for (j = 0; j < n0; j++) {
         if (mult[j] > ROOM.REPEAT_MAX) continue;
-        var hu = q.h[j] >>> 0;
+        var hu = q0.h[j] >>> 0;
         llo[j] = lowerBound(L.keys, L.n, hu); lhi[j] = upperBound(L.keys, L.n, hu); total += lhi[j] - llo[j];
       }
     }
@@ -734,11 +802,11 @@
         keys[n++] = r * 100000 + (off >> 1) + 40000;   // >>1 floors, like //
       }
     }
-    if (llo) for (j = 0; j < nq; j++) {
-      var qt2 = q.t[j];
+    if (llo) for (j = 0; j < n0; j++) {
+      var qt2 = q0.t[j];
       for (var e2 = llo[j]; e2 < lhi[j]; e2++) {
         var lv = L.vals[e2], lr = lv >>> FRAME_BITS;
-        if (excl && excl[lr]) continue;
+        if ((excl && excl[lr]) || ageKey(L.ages[e2]) !== key) continue;
         var loff = (lv & FRAME_MASK) - qt2;
         hr[n] = lr; ho[n] = loff; hq[n] = qt2; if (qt2 > qmax) qmax = qt2;
         keys[n++] = lr * 100000 + (loff >> 1) + 40000;
@@ -806,7 +874,7 @@
   return {
     SR: SR, NFFT: NFFT, HOP: HOP, NBIN: NBIN, DENSITY: DENSITY, FAN: FAN,
     rfftMag: rfftMag, spectro: spectro, maxFilter: maxFilter, percentile: percentile, peaks: peaks,
-    hashes: hashes, fingerprint: fingerprint, createIndex: createIndex, lookup: lookup, verify: verify,
+    hashes: hashes, fingerprint: fingerprint, keyPeaks: keyPeaks, createIndex: createIndex, lookup: lookup, verify: verify,
     match: match, trackRefs: trackRefs,
     ROOM: ROOM, learn: learn, createRoom: createRoom, roomExport: roomExport, roomImport: roomImport,
     roomClear: roomClear, roomStats: roomStats, roomDirty: roomDirty, recipe: recipe

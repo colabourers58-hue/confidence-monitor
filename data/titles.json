@@ -1,0 +1,157 @@
+{
+ "about": "Title matcher data (app/build_titles.py). aliases: other names a song goes by. preached: normalised titles that are ordinary preaching phrases (need a cue like \"let's sing\" or a second sign before they pull a song up).",
+ "aliases": {
+  "amegachurch": [
+   "Waiting in Vain"
+  ],
+  "awakeosleeper": [
+   "Awake"
+  ],
+  "blessedarethouohlord": [
+   "Béni Sois-tu Seigneur"
+  ],
+  "callmeifyouloveme": [
+   "Inro: Call Me If You Love Me"
+  ],
+  "everybodyneedsalittlehelp": [
+   "Intro: Everybody Needs a Little Help"
+  ],
+  "herewestand": [
+   "Fight the Good Fight"
+  ],
+  "hewillcarryme": [
+   "IL Me Portera"
+  ],
+  "hijames": [
+   "Let's Quit and Say Goodbye"
+  ],
+  "iandthechildren": [
+   "Intro: I and the Children"
+  ],
+  "ifellinlovewithgod": [
+   "Intro: I Fell in Love with God"
+  ],
+  "iftherewereneveranyheaven": [
+   "If Heaven Was Never Promised"
+  ],
+  "ifyouneedsomeonetosend": [
+   "I'll Be There"
+  ],
+  "iguessyouremember": [
+   "Remember The Time"
+  ],
+  "iwaitedpatiently": [
+   "J'ai Mis Tout Mon Espoir"
+  ],
+  "iwannabeavirtuouswoman": [
+   "Virtuous Woman"
+  ],
+  "jesusreallyneedstoknow": [
+   "How Deep Is Your Love"
+  ],
+  "kobbygee": [
+   "Kobby G"
+  ],
+  "nononoyoudontlovethelord": [],
+  "nowthatiknow": [
+   "You Gave Your Son",
+   "Oh Lord and My God"
+  ],
+  "obligations": [
+   "Obligations of a Christian"
+  ],
+  "readyattwenty": [
+   "Ready at 20"
+  ],
+  "stirupthegiftofgod": [
+   "Stir It Up (LIVE in Niagara)",
+   "Stir it Up"
+  ],
+  "takeupyourcross": [
+   "Take Up Your Cross - The BDs"
+  ],
+  "theresananointingcoming": [
+   "There's an Anointing"
+  ],
+  "thisismyday": [
+   "This is The Day (Rouge Collection recording)"
+  ],
+  "wewanttobask": [
+   "Dans Ta Présence"
+  ],
+  "whatexactlydoyoumean": [
+   "What Exactly Do You Mean When You Say 'I Love You'"
+  ],
+  "worshiphim": [
+   "Venons Le Louer (French - skipped anyway)"
+  ],
+  "youaremygod": [
+   "You Are My God I Call You My Saviour"
+  ]
+ },
+ "preached": [
+  "all have sinned",
+  "all things work together",
+  "awake oh sleeper",
+  "be strong in lord",
+  "be zealously affected",
+  "bear much fruit",
+  "behold my servant",
+  "build your house on rock",
+  "come unto me",
+  "doing business in great waters",
+  "ends of world",
+  "fight good fight",
+  "fulfill your ministry",
+  "give him your life",
+  "give thyself wholly",
+  "go into world",
+  "have mercy on us",
+  "he must increase",
+  "he that hath my commandments",
+  "he wanted me",
+  "i know thy works",
+  "i must work",
+  "i press toward mark",
+  "i sought him",
+  "i will be there",
+  "i will pay thee all",
+  "jesus saviour of world",
+  "let my people go",
+  "lord thy god in midst of thee",
+  "loyalty and disloyalty",
+  "mountain of lords house",
+  "no no no",
+  "occupy till i come",
+  "only one talent",
+  "people need lord",
+  "prayer changes things",
+  "preparation of gospel",
+  "ready at twenty",
+  "remember your creator",
+  "seek ye first",
+  "seven great principles",
+  "so send i you",
+  "soul is soul",
+  "speak in tongues",
+  "spirit of humility",
+  "stir it up",
+  "stir up gift of god",
+  "sun of righteousness",
+  "take my life",
+  "take up your cross",
+  "thank you lord",
+  "there is anointing",
+  "tithes and offerings",
+  "vengeance is mine",
+  "walk by faith",
+  "war good warfare",
+  "watch and pray",
+  "who is jesus",
+  "whom shall i send",
+  "wise as serpents",
+  "ye shall receive power",
+  "you are invited"
+ ],
+ "preached_from": "3,259,957 words of the preacher's books"
+}

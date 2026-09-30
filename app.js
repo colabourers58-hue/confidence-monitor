@@ -1,7 +1,7 @@
 /* Everything runs on this device. No server, no network after the first load. */
-import {Orb} from './orb.js?v=202609301425';
+import {Orb} from './orb.js?v=202609301436';
 // Stamped by publish_site.sh on every publish ('dev' when served straight from this Mac).
-const APP_VERSION = '202609301425';
+const APP_VERSION = '202609301436';
 
 const $ = s => document.querySelector(s);
 // the orb is decoration: if this device can't draw it (old GPU, WebGL off, a shader error), the
@@ -50,8 +50,8 @@ let privateCount = 0;
 /* ---------------- engine (runs in a worker, on device) ---------------- */
 let worker = null, engineReady = false, loadMsgT = 0;
 function startEngine(){
-  try{ worker = new Worker('engine/fp-worker.js?v=202609301425', {type:'module'}); }
-  catch(e){ try{ worker = new Worker('engine/fp-worker.js?v=202609301425'); }catch(e2){ worker = null; } }
+  try{ worker = new Worker('engine/fp-worker.js?v=202609301436', {type:'module'}); }
+  catch(e){ try{ worker = new Worker('engine/fp-worker.js?v=202609301436'); }catch(e2){ worker = null; } }
   if(!worker){ $('#load').classList.add('done'); return; }
   worker.onmessage = ev => {
     const m = ev.data || {};
@@ -93,7 +93,7 @@ function applyLocal(now){
 }
 
 /* ---------------- microphone ---------------- */
-const SR = 16000, WIN = 5*SR, EVERY = 750;     // a fresh look every 0.75 s
+const SR = 16000, WIN = 5*SR, EVERY = 500;     // a fresh look every 0.5 s (measured: faster locks; a look costs ~60 ms on a Mac)
 let actx, ring = [], ringLen = 0, level = 0, busy = false;
 let mstream = null, analyser = null, fbuf = null, inputId = null;
 let srcNode = null, procNode = null, lastFrameAt = 0;   // lastFrameAt: when sound last arrived (word search watches it)
@@ -865,7 +865,7 @@ refreshInstall();
 try{ const r = await fetch('fpstatus', {cache:'no-store'}); if(r.ok) serverMode = !!(await r.json()).ready; }catch(e){}
 if(serverMode){
   $('#load').classList.add('done');
-  setInterval(pollServer, 500);
+  setInterval(pollServer, 150);            // the Mac says what it heard: check often, it is on this network
 }else{
   try{ dec = (await import('./decide.js?v=' + APP_VERSION)).createDecider(id => SONGS[id]); }catch(e){ console.warn('decide.js:', e); }
   startEngine();

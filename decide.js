@@ -573,7 +573,9 @@ export function createDecider(songs, opts) {
     if (r.track_votes == null || r.track_votes < need || r.track_offset == null) return null;
     if (r.track_recent != null && r.track_recent < C.TRACK_RECENT_MIN) return null;
     if (Math.abs(r.track_offset - (heardAt - win - S.started_at)) > C.TRACK_TOL) return null;   // asked about another place
-    return {at: heardAt, song_id: S.song_id, lyric_offset: r.track_offset, ref_id: r.track_ref || null};
+    // the song began at its top when the music started: every look since then was this song
+    const from_top = S.music_since != null && Math.abs(S.started_at - S.music_since) <= C.TOP_TOL;
+    return {at: heardAt, song_id: S.song_id, lyric_offset: r.track_offset, ref_id: r.track_ref || null, from_top};
   }
 
   const wantWords = () => S.song_id == null ? !!S.searching : (S.driver === 'words' || S.driver === 'live');
