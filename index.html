@@ -87,10 +87,13 @@
   /* where we are in the song, readable from the stage: the bottom eighth of the screen, the
      song's sections as tinted pills (the look of a variable in Apple's Shortcuts). The one
      being sung is solid blue and fills as it goes; the strip slides to keep it in view. */
+  /* both ends melt away gradually (an eased fade, not a straight ramp), and the strip keeps
+     clear of the corner button so nothing ever sits on top of a pill */
   #mapWrap{flex:0 0 auto;overflow:hidden;height:12.5vh;min-height:64px;display:flex;align-items:center;
-    padding:0 0 max(1.2vh,env(safe-area-inset-bottom));
-    -webkit-mask-image:linear-gradient(90deg,transparent,#000 7%,#000 93%,transparent);
-            mask-image:linear-gradient(90deg,transparent,#000 7%,#000 93%,transparent)}
+    margin:0 max(60px,4vw);padding:0 0 max(1.2vh,env(safe-area-inset-bottom));
+    --fade:linear-gradient(90deg,transparent 0,rgba(0,0,0,.12) 3%,rgba(0,0,0,.4) 7%,rgba(0,0,0,.78) 11%,#000 15%,
+                           #000 85%,rgba(0,0,0,.78) 89%,rgba(0,0,0,.4) 93%,rgba(0,0,0,.12) 97%,transparent 100%);
+    -webkit-mask-image:var(--fade);mask-image:var(--fade)}
   #map{flex:0 0 auto;display:flex;align-items:center;gap:clamp(10px,1.3vw,22px);white-space:nowrap;padding:0 4vw;
        font-size:clamp(17px,3.7vh,44px);line-height:1;will-change:transform;transition:transform .6s var(--ease)}
   #map .sec{position:relative;flex:0 0 auto;border-radius:.4em;padding:.46em .82em .5em;overflow:hidden;
@@ -239,6 +242,6 @@
   </div>
 </div></div>
 <div id="gate"><b>Tap to begin</b><small>One tap allows the microphone. After that it runs on its own.</small></div>
-<script type="module" src="app.js?v=202609301124"></script>
+<script type="module" src="app.js?v=202609301128"></script>
 </body>
 </html>
