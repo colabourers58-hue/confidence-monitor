@@ -49,10 +49,10 @@ var now = function () { return (self.performance && performance.now) ? performan
 function getEngine(base) {
   if (self.FPEngine) return Promise.resolve(self.FPEngine);
   try {                                             // classic worker
-    importScripts(base + 'engine.js');
+    importScripts(base + 'engine.js' + (self.location.search || ''));   // ?v=<publish stamp>: this worker's own engine
     if (self.FPEngine) return Promise.resolve(self.FPEngine);
   } catch (e) { /* module worker: importScripts is not allowed */ }
-  return fetch(base + 'engine.js').then(function (r) {
+  return fetch(base + 'engine.js' + (self.location.search || '')).then(function (r) {
     if (!r.ok) throw new Error('engine.js: HTTP ' + r.status);
     return r.text();
   }).then(function (src) {

@@ -391,8 +391,8 @@
    *    learning more (the start of a song is what matters most, and that is learnt first).
    *    Over TOTAL_CAP, the songs learnt longest ago go first. */
   var ROOM = { TOTAL_CAP: 1500000, SONG_CAP: 80000, HASH_CAP: 6, REPEAT_MAX: 2, NEAR: 1,
-               REFINE: 4, REFINE_MIN: 3, HIST: 64, BACKFILL_MIN: 4, BACKFILL_SEC: 48,
-               STRIDE: 0, BACKFILL_MS: 25, NEW_HEARING: 120 };
+               REFINE: 4, REFINE_MIN: 3, HIST: 128, BACKFILL_MIN: 4, BACKFILL_SEC: 48,
+               STRIDE: 0.7, BACKFILL_MS: 25, NEW_HEARING: 120 };
   var FRAME_BITS = 18, FRAME_MASK = (1 << FRAME_BITS) - 1, REF_LIMIT = 1 << (32 - FRAME_BITS);
   // ages[i] = hearing << 4 | (key + 8): the hearing it was last heard in, and the key the room was
   // in then (its hashes are stored as heard, so they vote only for a match asked at that key)
@@ -672,7 +672,7 @@
       saw: function (at, win, pk) {
         if (!pk) return;
         hist.push({ at: at, win: win, pk: pk, learned: null });
-        if (hist.length > ROOM.HIST) hist.shift();
+        while (hist.length > ROOM.HIST || (hist.length && at - hist[0].at > ROOM.BACKFILL_SEC + 2)) hist.shift();
       },
       /** m = {at, song_id, lyric_offset, ref_id?, from_top?, key?} (lyric_offset = window start on
        *  the lyric timeline; key = semitones the room is from the recording) or {at, ref_id,

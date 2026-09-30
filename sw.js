@@ -1,6 +1,6 @@
 /* Keeps the whole app on the device. First visit stores everything; after that it
    never needs a network. Bump VERSION to push an update the next time it is online. */
-const VERSION = 'cm-202609301436';   // stamped by publish_site.sh
+const VERSION = 'cm-202609301437';   // stamped by publish_site.sh
 const SHELL = ['./', 'index.html', 'app.js', 'orb.js', 'manifest.webmanifest', 'manifest-ios.webmanifest', 'icon-512.png', 'icon-192.png',
                'data/songs.json', 'fonts/inter-600.woff2', 'fonts/inter-800.woff2', 'awake.mp4'];
 self.addEventListener('install', e => {
@@ -15,7 +15,8 @@ self.addEventListener('install', e => {
       const m = await (await fetch('engine/manifest.json', {cache:'no-store'})).json();
       const files = ['engine/manifest.json', 'engine/fp-worker.js', 'engine/engine.js',
                      ...(m.shards || []).map(s => 'engine/' + (s.file || s))];
-      for(const f of files){ try{ await c.add(f); }catch(err){} }
+      // the engine's code straight from the server (a copy minutes old would pair an old engine with a new app)
+      for(const f of files){ try{ await c.add(f.endsWith('.js') ? new Request(f, {cache:'reload'}) : f); }catch(err){} }
     }catch(err){}
     self.skipWaiting();
   })());
