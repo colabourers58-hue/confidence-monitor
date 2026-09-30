@@ -21,13 +21,13 @@
  },
  "source": {
   "file": "app/library/fingerprints.npz",
-  "postings": 28869636,
-  "bytes": 288733367,
-  "sha256": "8c8f6dd5dc6c63120f9a2d99700f84bba72b2cd0cabf9f704b8128a486f8a94f",
+  "postings": 29585362,
+  "bytes": 295891709,
+  "sha256": "87f2a8662ca4370786946300208283beb44dc4c13b71cd9e19440456bb7f3913",
   "refs_json": true
  },
  "nbuckets": 262657,
- "universe": 19361476,
+ "universe": 19829184,
  "sections": [
   {
    "name": "bucket_bits",
@@ -39,46 +39,46 @@
    "name": "stream",
    "type": "bits",
    "offset": 1050632,
-   "bytes": 75665258,
-   "bits": 605322061
+   "bytes": 77590974,
+   "bits": 620727786
   }
  ],
  "stats": {
-  "distinct_hashes": 2327190,
-  "postings": 28869636,
-  "stream_bits": 605322061,
-  "unary_ones": 28399065,
+  "distinct_hashes": 2364712,
+  "postings": 29585362,
+  "stream_bits": 620727786,
+  "unary_ones": 29409953,
   "max_rice_k": 24
  },
  "checksum": [
-  1175809813,
-  3190870156
+  3616115675,
+  3229278770
  ],
- "total_bytes": 76715890,
+ "total_bytes": 78641606,
  "shards": [
   {
-   "file": "index/fp-00-87dbfca3ab.bin",
+   "file": "index/fp-00-0c83525fcf.bin",
    "bytes": 14000000
   },
   {
-   "file": "index/fp-01-747ef79132.bin",
+   "file": "index/fp-01-a049d05543.bin",
    "bytes": 14000000
   },
   {
-   "file": "index/fp-02-e83cb5c2cd.bin",
+   "file": "index/fp-02-67d186e49e.bin",
    "bytes": 14000000
   },
   {
-   "file": "index/fp-03-9b285d93ee.bin",
+   "file": "index/fp-03-2bb2590048.bin",
    "bytes": 14000000
   },
   {
-   "file": "index/fp-04-c87c5eaf53.bin",
+   "file": "index/fp-04-d1c67d201c.bin",
    "bytes": 14000000
   },
   {
-   "file": "index/fp-05-933cc34952.bin",
-   "bytes": 6715890
+   "file": "index/fp-05-d0893635ef.bin",
+   "bytes": 8641606
   }
  ],
  "refs": [
@@ -9585,6 +9585,237 @@
    "excluded": true,
    "duration": 347.899,
    "start": 19339926
+  },
+  {
+   "ref_id": "loyaltyanddisloyalty::audio-fetched",
+   "song_id": "loyaltyanddisloyalty",
+   "via": "release",
+   "live": false,
+   "shift": 0.0,
+   "aligned": true,
+   "excluded": true,
+   "duration": 533.372,
+   "start": 19361476
+  },
+  {
+   "ref_id": "loyaltyanddisloyalty::misty-rose-reggae-collection",
+   "song_id": "loyaltyanddisloyalty",
+   "via": "release",
+   "live": false,
+   "shift": -0.012,
+   "aligned": true,
+   "excluded": true,
+   "duration": 533.362,
+   "start": 19394776
+  },
+  {
+   "ref_id": "iftherewereneveranyheaven::aida-live-at-adelaide-chapel",
+   "song_id": "iftherewereneveranyheaven",
+   "via": "release",
+   "live": true,
+   "shift": 0.0,
+   "aligned": false,
+   "excluded": true,
+   "duration": 371.201,
+   "start": 19428078
+  },
+  {
+   "ref_id": "seaofforgetfulness::aida-live-at-adelaide-chapel",
+   "song_id": "seaofforgetfulness",
+   "via": "release",
+   "live": true,
+   "shift": 0.0,
+   "aligned": true,
+   "excluded": true,
+   "duration": 270.055,
+   "start": 19450759
+  },
+  {
+   "ref_id": "whenamanlovesthelord::aida-live-at-niagara-falls",
+   "song_id": "whenamanlovesthelord",
+   "via": "release",
+   "live": true,
+   "shift": 0.0,
+   "aligned": false,
+   "excluded": true,
+   "duration": 344.398,
+   "start": 19467422
+  },
+  {
+   "ref_id": "awakeosleeper::aida-live-in-gaborone",
+   "song_id": "awakeosleeper",
+   "via": "release",
+   "live": true,
+   "shift": 0.0,
+   "aligned": false,
+   "excluded": true,
+   "duration": 444.336,
+   "start": 19488754
+  },
+  {
+   "ref_id": "jesusreallyneedstoknow::aida-live-in-gaborone",
+   "song_id": "jesusreallyneedstoknow",
+   "via": "release",
+   "live": true,
+   "shift": 0.0,
+   "aligned": false,
+   "excluded": true,
+   "duration": 291.422,
+   "start": 19516413
+  },
+  {
+   "ref_id": "letmetellyounow::aida-live-in-leysin",
+   "song_id": "letmetellyounow",
+   "via": "release",
+   "live": true,
+   "shift": 0.0,
+   "aligned": false,
+   "excluded": true,
+   "duration": 352.341,
+   "start": 19534291
+  },
+  {
+   "ref_id": "letmetellyounow::aida-live-in-gaborone",
+   "song_id": "letmetellyounow",
+   "via": "release",
+   "live": true,
+   "shift": 0.0,
+   "aligned": false,
+   "excluded": true,
+   "duration": 348.474,
+   "start": 19556003
+  },
+  {
+   "ref_id": "herewestand::aida-live-in-munich",
+   "song_id": "herewestand",
+   "via": "release",
+   "live": true,
+   "shift": 0.0,
+   "aligned": false,
+   "excluded": true,
+   "duration": 370.08,
+   "start": 19577183
+  },
+  {
+   "ref_id": "nowthatiknow::propose-to-me-concert",
+   "song_id": "nowthatiknow",
+   "via": "release",
+   "live": true,
+   "shift": 0.0,
+   "aligned": false,
+   "excluded": true,
+   "duration": 281.887,
+   "start": 19600082
+  },
+  {
+   "ref_id": "nowthatiknow::aida-live-in-kingston",
+   "song_id": "nowthatiknow",
+   "via": "release",
+   "live": true,
+   "shift": 0.0,
+   "aligned": false,
+   "excluded": true,
+   "duration": 284.64,
+   "start": 19617324
+  },
+  {
+   "ref_id": "nowthatiknow::aida-live-in-gaborone",
+   "song_id": "nowthatiknow",
+   "via": "release",
+   "live": true,
+   "shift": 0.0,
+   "aligned": false,
+   "excluded": true,
+   "duration": 285.231,
+   "start": 19634969
+  },
+  {
+   "ref_id": "nowthatiknow::aida-live-in-munich",
+   "song_id": "nowthatiknow",
+   "via": "release",
+   "live": true,
+   "shift": 0.0,
+   "aligned": false,
+   "excluded": true,
+   "duration": 313.896,
+   "start": 19652515
+  },
+  {
+   "ref_id": "isoughthim::aida-live-in-port-elizabeth",
+   "song_id": "isoughthim",
+   "via": "release",
+   "live": true,
+   "shift": 0.0,
+   "aligned": false,
+   "excluded": true,
+   "duration": 263.524,
+   "start": 19671850
+  },
+  {
+   "ref_id": "godsbanquet::aida-live-at-taita-hills-version-1",
+   "song_id": "godsbanquet",
+   "via": "release",
+   "live": true,
+   "shift": 0.0,
+   "aligned": false,
+   "excluded": true,
+   "duration": 303.073,
+   "start": 19688315
+  },
+  {
+   "ref_id": "godsbanquet::aida-live-at-taita-hills-version-2",
+   "song_id": "godsbanquet",
+   "via": "release",
+   "live": true,
+   "shift": 0.0,
+   "aligned": false,
+   "excluded": true,
+   "duration": 405.447,
+   "start": 19707208
+  },
+  {
+   "ref_id": "godsbanquet::aida-live-at-taita-hills-version-3",
+   "song_id": "godsbanquet",
+   "via": "release",
+   "live": true,
+   "shift": 0.0,
+   "aligned": false,
+   "excluded": true,
+   "duration": 613.329,
+   "start": 19732527
+  },
+  {
+   "ref_id": "whenigettoheaven::jazzberry-collection",
+   "song_id": "whenigettoheaven",
+   "via": "release",
+   "live": false,
+   "shift": 0.0,
+   "aligned": false,
+   "excluded": true,
+   "duration": 360.594,
+   "start": 19770844
+  },
+  {
+   "ref_id": "takeupyourcross::love-concert",
+   "song_id": "takeupyourcross",
+   "via": "release",
+   "live": true,
+   "shift": 0.0,
+   "aligned": false,
+   "excluded": true,
+   "duration": 306.552,
+   "start": 19793192
+  },
+  {
+   "ref_id": "ifyouneedsomeonetosend::aida-live-in-munich",
+   "song_id": "ifyouneedsomeonetosend",
+   "via": "release",
+   "live": true,
+   "shift": 0.0,
+   "aligned": false,
+   "excluded": true,
+   "duration": 277.44,
+   "start": 19812149
   }
  ]
 }

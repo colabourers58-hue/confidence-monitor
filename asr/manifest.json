@@ -1,0 +1,43 @@
+{
+ "model": "onnx-community/whisper-tiny.en",
+ "revision": "2575352d61be1bf7225cf8f8b268a4678025fc58",
+ "dtype": "q8",
+ "files": [
+  {
+   "file": "models/onnx-community/whisper-tiny.en/config.json",
+   "bytes": 2197
+  },
+  {
+   "file": "models/onnx-community/whisper-tiny.en/generation_config.json",
+   "bytes": 1646
+  },
+  {
+   "file": "models/onnx-community/whisper-tiny.en/preprocessor_config.json",
+   "bytes": 339
+  },
+  {
+   "file": "models/onnx-community/whisper-tiny.en/tokenizer.json",
+   "bytes": 2405679
+  },
+  {
+   "file": "models/onnx-community/whisper-tiny.en/tokenizer_config.json",
+   "bytes": 282662
+  },
+  {
+   "file": "models/onnx-community/whisper-tiny.en/onnx/encoder_model_quantized.onnx",
+   "bytes": 10124993
+  },
+  {
+   "file": "models/onnx-community/whisper-tiny.en/onnx/decoder_model_merged_quantized.onnx",
+   "bytes": 30718858
+  }
+ ],
+ "runtime": {
+  "base": "https://cdn.jsdelivr.net/npm/@huggingface/transformers@3.8.1/dist/",
+  "files": [
+   "transformers.min.js",
+   "ort-wasm-simd-threaded.jsep.mjs",
+   "ort-wasm-simd-threaded.jsep.wasm"
+  ]
+ }
+}
