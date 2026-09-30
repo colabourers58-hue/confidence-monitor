@@ -3061,7 +3061,7 @@
   },
   {
    "ref_id": "firstthingido::aurelian-collection",
-   "song_id": "firstthingido",
+   "song_id": "thefirstthingido",
    "via": "release",
    "live": false,
    "shift": 0.0,
@@ -3226,7 +3226,7 @@
   },
   {
    "ref_id": "donotstirupmylove::aida-live-at-i-want-my-love-to-last-conc",
-   "song_id": "donotstirupmylove",
+   "song_id": "donotstirup",
    "via": "release",
    "live": true,
    "shift": 0.0,
@@ -3556,7 +3556,7 @@
   },
   {
    "ref_id": "gotochurchalways::eunuchs-in-the-palace-concert",
-   "song_id": "gotochurchalways",
+   "song_id": "gotochurch",
    "via": "release",
    "live": true,
    "shift": 0.0,
@@ -3644,7 +3644,7 @@
   },
   {
    "ref_id": "icantgetenoughofyou::eunuchs-in-the-palace-concert",
-   "song_id": "icantgetenoughofyou",
+   "song_id": "icantgetenough",
    "via": "release",
    "live": true,
    "shift": 0.0,
@@ -3655,7 +3655,7 @@
   },
   {
    "ref_id": "firstthingido::eunuchs-in-the-palace-concert",
-   "song_id": "firstthingido",
+   "song_id": "thefirstthingido",
    "via": "release",
    "live": true,
    "shift": 0.0,
@@ -3919,7 +3919,7 @@
   },
   {
    "ref_id": "bornagainstars::love-concert",
-   "song_id": "bornagainstars",
+   "song_id": "bornagain",
    "via": "release",
    "live": true,
    "shift": 0.0,
@@ -4062,7 +4062,7 @@
   },
   {
    "ref_id": "winnertakesthecrown::mulberry-collection",
-   "song_id": "winnertakesthecrown",
+   "song_id": "thewinnertakesthecrown",
    "via": "release",
    "live": false,
    "shift": 0.0,
@@ -4458,7 +4458,7 @@
   },
   {
    "ref_id": "gosomewherepreachsomewhere::aida-live-at-twenty-five-to-fifty",
-   "song_id": "gosomewherepreachsomewhere",
+   "song_id": "gosomewhere",
    "via": "release",
    "live": true,
    "shift": 0.0,
@@ -4645,7 +4645,7 @@
   },
   {
    "ref_id": "gosomewherepreachsomewhere::misty-rose-reggae-collection",
-   "song_id": "gosomewherepreachsomewhere",
+   "song_id": "gosomewhere",
    "via": "release",
    "live": false,
    "shift": 0.0,
@@ -4788,7 +4788,7 @@
   },
   {
    "ref_id": "donotstirupmylove::misty-rose-reggae-collection",
-   "song_id": "donotstirupmylove",
+   "song_id": "donotstirup",
    "via": "release",
    "live": false,
    "shift": 0.032,
@@ -4953,7 +4953,7 @@
   },
   {
    "ref_id": "gotochurchalways::cerulean-collection",
-   "song_id": "gotochurchalways",
+   "song_id": "gotochurch",
    "via": "release",
    "live": false,
    "shift": 0.0,
@@ -5525,7 +5525,7 @@
   },
   {
    "ref_id": "gosomewherepreachsomewhere::aida-live-in-orlando",
-   "song_id": "gosomewherepreachsomewhere",
+   "song_id": "gosomewhere",
    "via": "release",
    "live": true,
    "shift": 0.0,
@@ -5921,7 +5921,7 @@
   },
   {
    "ref_id": "gosomewherepreachsomewhere::aida-live-in-leysin",
-   "song_id": "gosomewherepreachsomewhere",
+   "song_id": "gosomewhere",
    "via": "release",
    "live": true,
    "shift": 0.0,
@@ -6097,7 +6097,7 @@
   },
   {
    "ref_id": "jesusyouresobeautiful::rouge-collection",
-   "song_id": "jesusyouresobeautiful",
+   "song_id": "jesusyourebeautiful",
    "via": "release",
    "live": false,
    "shift": 0.0,
@@ -6119,7 +6119,7 @@
   },
   {
    "ref_id": "icantgetenoughofyou::rouge-collection",
-   "song_id": "icantgetenoughofyou",
+   "song_id": "icantgetenough",
    "via": "release",
    "live": false,
    "shift": 0.0,
@@ -6812,7 +6812,7 @@
   },
   {
    "ref_id": "donotstirupmylove::crimson-collection",
-   "song_id": "donotstirupmylove",
+   "song_id": "donotstirup",
    "via": "release",
    "live": false,
    "shift": 0.0,
@@ -7087,7 +7087,7 @@
   },
   {
    "ref_id": "winnertakesthecrown::periwinkle-collection",
-   "song_id": "winnertakesthecrown",
+   "song_id": "thewinnertakesthecrown",
    "via": "release",
    "live": false,
    "shift": -0.008,
