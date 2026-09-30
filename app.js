@@ -1,7 +1,7 @@
 /* Everything runs on this device. No server, no network after the first load. */
-import {Orb} from './orb.js?v=202609301329';
+import {Orb} from './orb.js?v=202609301334';
 // Stamped by publish_site.sh on every publish ('dev' when served straight from this Mac).
-const APP_VERSION = '202609301329';
+const APP_VERSION = '202609301334';
 
 const $ = s => document.querySelector(s);
 // the orb is decoration: if this device can't draw it (old GPU, WebGL off, a shader error), the
@@ -27,8 +27,8 @@ async function loadSongs(){
 /* ---------------- engine (runs in a worker, on device) ---------------- */
 let worker = null, engineReady = false, loadMsgT = 0;
 function startEngine(){
-  try{ worker = new Worker('engine/fp-worker.js?v=202609301329', {type:'module'}); }
-  catch(e){ try{ worker = new Worker('engine/fp-worker.js?v=202609301329'); }catch(e2){ worker = null; } }
+  try{ worker = new Worker('engine/fp-worker.js?v=202609301334', {type:'module'}); }
+  catch(e){ try{ worker = new Worker('engine/fp-worker.js?v=202609301334'); }catch(e2){ worker = null; } }
   if(!worker){ $('#load').classList.add('done'); return; }
   worker.onmessage = ev => {
     const m = ev.data || {};
@@ -80,12 +80,21 @@ async function startMic(deviceId, opts){
   // without a tap (a new audio graph on iPhone/iPad needs one)
   const keep = !!(opts && opts.keepContext && actx && actx.state === 'running' && procNode);
   if(mstream){ mstream.getTracks().forEach(t => t.stop()); mstream = null; }
-  if(actx && !keep){ try{ await actx.close(); }catch(e){} actx = null; }
+  // reuse: the audio graph was just made INSIDE the user's tap (begin -> unlockAudio). iPhone only
+  // lets sound start inside a tap, and waiting for the microphone prompt first uses the tap up
+  const reuse = !!(opts && opts.reuse && actx && actx.state !== 'closed');
+  if(actx && !keep && !reuse){ try{ await actx.close(); }catch(e){} actx = null; }
+  if(reuse){ try{ srcNode && srcNode.disconnect(); procNode && procNode.disconnect(); }catch(e){} }
   const audio = {echoCancellation:false, noiseSuppression:false, autoGainControl:false};
   if(deviceId) audio.deviceId = {exact: deviceId};
   let stream;
   try{ stream = await navigator.mediaDevices.getUserMedia({audio}); }
-  catch(e){ if(!deviceId) throw e; stream = await navigator.mediaDevices.getUserMedia({audio:{echoCancellation:false,noiseSuppression:false,autoGainControl:false}}); }
+  catch(e){
+    if(e && e.name === 'NotAllowedError') throw e;                       // the person said no: don't ask again
+    // anything else (a remembered input that's gone, a setting the device can't do): the plainest request
+    try{ stream = await navigator.mediaDevices.getUserMedia({audio:{echoCancellation:false,noiseSuppression:false,autoGainControl:false}}); }
+    catch(e2){ if(e2 && e2.name === 'NotAllowedError') throw e2; stream = await navigator.mediaDevices.getUserMedia({audio:true}); }
+  }
   // nobody chose an input and the browser handed us a phone over Continuity (or another
   // borrowed mic): prefer this device's own built-in microphone
   if(!deviceId){
@@ -110,8 +119,11 @@ async function startMic(deviceId, opts){
   }
   // the device's own rate. Asking for 16 kHz here works in Chrome but gives SILENCE in Safari,
   // so the audio is converted to 16 kHz by us (to16k) or by the Mac server (X-Rate), never by the browser
-  actx = new (window.AudioContext || window.webkitAudioContext)();
-  if(actx.state === 'suspended') await actx.resume();
+  if(!reuse) actx = new (window.AudioContext || window.webkitAudioContext)();
+  if(actx.state !== 'running'){
+    try{ await Promise.race([actx.resume(), new Promise(r => setTimeout(r, 1500))]); }catch(e){}
+  }
+  if(actx.state !== 'running'){ const err = new Error('sound not started'); err.name = 'AudioNotStarted'; throw err; }
   const src = srcNode = actx.createMediaStreamSource(stream);
   const node = procNode = actx.createScriptProcessor(4096, 1, 1);
   node.onaudioprocess = e => {
@@ -202,7 +214,7 @@ async function renderDevices(){
     const b = document.createElement('button');
     b.className = 'dev' + (d.deviceId === current ? ' on' : '');
     b.textContent = (d.label || 'Input ' + (d.deviceId || '').slice(0, 6)) + (d.deviceId === current ? '  ·  in use' : '');
-    b.onclick = async () => { try{ await startMic(d.deviceId); inputId = d.deviceId; localStorage.setItem('cm.input', d.deviceId);
+    b.onclick = async () => { unlockAudio(); try{ await startMic(d.deviceId, {reuse:true}); inputId = d.deviceId; localStorage.setItem('cm.input', d.deviceId);
                                    logEvent('input', 'Listening from ' + (d.label || 'another input')); }catch(e){} renderDevices(); };
     list.appendChild(b);
   });
@@ -653,13 +665,33 @@ async function restoreMic(){
 }
 
 /* ---------------- boot ---------------- */
+/* iPhone/iPad only let sound start during a tap: make and start the audio graph right here,
+   before anything is awaited (the microphone prompt would use the tap up) */
+function unlockAudio(){
+  try{
+    if(!actx || actx.state === 'closed') actx = new (window.AudioContext || window.webkitAudioContext)();
+    if(actx.state !== 'running') actx.resume().catch(() => {});
+  }catch(e){}
+}
 async function begin(){
+  unlockAudio();
   keepAwake();
   $('#gate').classList.add('gone');
-  try{ await startMic(inputId); orb.toListening();
+  try{ await startMic(inputId, {reuse:true}); orb.toListening();
        const tr = mstream && mstream.getAudioTracks()[0]; logEvent('start', 'Started, listening from ' + ((tr && tr.label) || 'the default input'));
        probeWords();
-  }catch(e){ $('#gate b').textContent = 'Microphone not available'; $('#gate').classList.remove('gone'); }
+  }catch(e){
+    // say WHY, in words a singer can act on, and keep the real error in the log
+    const n = (e && e.name) || 'Error';
+    const why = n === 'NotAllowedError' ? ['Microphone is switched off for Prompter', 'Open Settings, then Apps, then Safari, then Microphone, and choose Allow. Then tap here.']
+      : n === 'AudioNotStarted' ? ['Tap once more to start listening', 'The phone wants one more tap before it plays sound.']
+      : n === 'NotFoundError' ? ['No microphone found', 'Plug in or choose a microphone, then tap here.']
+      : n === 'NotReadableError' ? ['Another app is using the microphone', 'Close it (a call, a recording, another listening app), then tap here.']
+      : ['Microphone not available', `Tap to try again. (${n}${e && e.message ? ': ' + e.message : ''})`];
+    $('#gate b').textContent = why[0]; $('#gate small').textContent = why[1];
+    logEvent('miss', `Microphone did not start: ${n}${e && e.message ? ' (' + e.message + ')' : ''}`);
+    $('#gate').classList.remove('gone');
+  }
   document.documentElement.requestFullscreen?.().catch(()=>{});
 }
 $('#gate').addEventListener('click', begin);
