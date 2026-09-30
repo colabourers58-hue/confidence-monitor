@@ -593,7 +593,7 @@ setInterval(reviveMic, 5000);              // a track can end quietly (headphone
    recognition (words.js), searched against every song's lyrics (lyricsearch.js, the Mac's
    search ported). decide.js wantWords() says when; decide.js words() decides what it means. */
 let words = null, LSIX = null, LS = null;
-const WORD_SEARCH = false;           // switched on once tested on real devices
+const WORD_SEARCH = true;            // the browser's own speech recognition, as a last resort (words.js)
 async function startWords(){
   if(!WORD_SEARCH) return;
   try{

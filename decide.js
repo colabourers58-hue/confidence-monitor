@@ -266,6 +266,12 @@ export function createDecider(songs, opts) {
     if (ms != null && heardAt - ms <= C.TOP_SEC) {
       const exp = (heardAt - win) - ms;          // where this window starts if the song began with the music
       if (Math.abs(m.offset_sec - exp) <= C.TOP_TOL) return Object.assign({}, m, {top: true});
+      // the look's own candidates: a place of this song at the top that fits TOP_SHARE as well
+      let near = null;
+      for (const c of m.cands || [])
+        if (c.song_id === m.song_id && !c.live && Math.abs(c.offset_sec - exp) <= C.TOP_TOL &&
+            c.votes >= Math.max(C.TOP_MIN, C.TOP_SHARE * m.votes) && (!near || c.votes > near.votes)) near = c;
+      if (near) return Object.assign({}, m, {offset_sec: near.offset_sec, top: true, moved_from: m.offset_sec});
       if ((m.top_votes || 0) >= Math.max(C.TOP_MIN, C.TOP_SHARE * m.votes) && m.top_offset != null)
         return Object.assign({}, m, {offset_sec: m.top_offset, top: true, moved_from: m.offset_sec});
       return Object.assign({}, m, {top: false});
@@ -312,6 +318,9 @@ export function createDecider(songs, opts) {
     // the music just started but this isn't the top of the song: possible (they started at a
     // later section) but unusual, so it has to keep saying so, look after look
     if (m.top === false) {
+      // a look whose window reaches back before the music started heard too little of the song to
+      // tell its top from the same phrase repeated later (Build Your House on a Rock): it can't vote
+      if (S.music_since != null && heardAt - win < S.music_since) return false;
       if (now - PENDING.at < C.CANDIDATE_TTL && PENDING.song_id === m.song_id &&
           Math.abs(PENDING.started - started) < C.AGREE_SEC) {
         PENDING.n++; PENDING.at = now;
