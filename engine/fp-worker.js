@@ -271,7 +271,9 @@ function fp2Run(pcm, m) {
 function fp2Merge(out, a, m) {
   var G = FP2.idx.G, sc = G.lm_scale, r1 = function (x) { return Math.round(x * 10) / 10; };
   out.fp2 = { song_id: a.song_id, votes: a.votes, margin: a.margin, offset_sec: a.offset_sec, track_votes: a.track_votes, ms: a.ms };
-  out.cands = (out.cands || []).concat(a.cands.map(function (c) {
+  // only candidates with some weight join the piles: in noise the network keeps finding the same
+  // few 'hub' places at 9-16 votes, and those would add up across looks (acc_floor, fp2 votes)
+  out.cands = (out.cands || []).concat(a.cands.filter(function (c) { return c.votes >= (G.acc_floor || 0); }).map(function (c) {
     return { song_id: c.song_id, ref_id: c.ref_id, votes: r1(c.votes * sc), live: c.live, offset_sec: c.offset_sec, via: 'fp2' };
   })).sort(function (x, y) { return y.votes - x.votes; });
   if (m.track && a.track_votes != null && a.track_votes >= G.track_min) {

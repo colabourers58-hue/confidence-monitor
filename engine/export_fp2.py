@@ -67,7 +67,7 @@ def main():
                    'qhop': N.QHOPF, 'db_hop': int(z['hop']), 'dim': int(E.shape[1]), 'nlist': nlist, 'log_eps': 1e-6,
                    'fir_taps': 41, 'window': 'hann, symmetric (np.hanning)'},
         'search': dict(fp2.SEARCH, tol=int(z['hop']) // 2, scale=10.0),
-        'gates': {'min_votes': 30.0, 'min_margin': 1.5, 'track_min': 15.0, 'lm_scale': 12.0 / 30.0,
+        'gates': {'min_votes': 30.0, 'min_margin': 1.5, 'track_min': 15.0, 'lm_scale': 12.0 / 30.0, 'acc_floor': 22.0,
                   'lm_strong_votes': 40, 'lm_strong_margin': 2.0, 'lm_track_min': 5},
         'model': {'file': 'model.onnx', 'bytes': os.path.getsize(os.path.join(OUT, 'model.onnx')), 'input': 'mel', 'output': 'emb'},
         'sections': sections, 'n': int(len(rows)), 'total_bytes': len(blob), 'shards': shards, 'refs': refs,
