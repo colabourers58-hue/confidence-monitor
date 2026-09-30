@@ -94,6 +94,7 @@ export const DEFAULTS = {
   ACC_SEC: 15,           // evidence older than this is forgotten
   ACC_TOL: 0.6,          // looks agree when they put the song's start within this of each other
   ACC_VOTES: 30,         // this much agreeing evidence...
+  ACC_STRONG: 8,         // ...with at least one look this strong on its own (0 = off): unknown songs 2 -> 0 wrong of 43, same speed (30 Sep)
   ACC_LOOKS: 3,          // ...from at least this many looks...
   ACC_MARGIN: 2.0,       // ...and this many times more than any other song's best pile = it's this song
   SEARCH_AFTER: 4,       // (was 10) music this long with no song up: search mode (and ask the words too)
@@ -274,7 +275,8 @@ export function createDecider(songs, opts) {
       if (!P) return false;
       const prior = S.song_id == null && S.cue && S.cue.song_id === P.song_id;
       const NV = prior ? C.PRIOR_ACC_VOTES : C.ACC_VOTES, NL = prior ? C.PRIOR_ACC_LOOKS : C.ACC_LOOKS, NM = prior ? C.PRIOR_ACC_MARGIN : C.ACC_MARGIN;
-      return P.votes >= NV * x && P.looks >= NL && P.pile.length >= NL && P.votes >= NM * Math.max(P.rival, 1);
+      return P.votes >= NV * x && P.looks >= NL && P.pile.length >= NL && P.votes >= NM * Math.max(P.rival, 1) &&
+             (!C.ACC_STRONG || P.pile.some(e => e.votes >= C.ACC_STRONG));   // not only weak looks (chance piles were)
     };
     const P0 = piles(undefined, 0), PK = EVIDENCE.some(e => e.key) ? piles(undefined, 'other') : null;
     // ...but a transposed pile of ANOTHER song that is bigger still says the room may be in another key: wait
