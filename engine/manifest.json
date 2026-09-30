@@ -21,13 +21,13 @@
  },
  "source": {
   "file": "app/library/fingerprints.npz",
-  "postings": 27054774,
-  "bytes": 270582201,
-  "sha256": "c62b9c61fec970b3f9df8d05e6883c6f6d744e07da049e676464cf79c5db8755",
+  "postings": 27341712,
+  "bytes": 273452045,
+  "sha256": "ac2e426410a0587323bcbb861b7711cadf51dd28a4513f6cecde5bc9aef3d874",
   "refs_json": true
  },
  "nbuckets": 262657,
- "universe": 18175155,
+ "universe": 18372967,
  "sections": [
   {
    "name": "bucket_bits",
@@ -39,46 +39,46 @@
    "name": "stream",
    "type": "bits",
    "offset": 1050632,
-   "bytes": 70933974,
-   "bits": 567471786
+   "bytes": 71666172,
+   "bits": 573329375
   }
  ],
  "stats": {
-  "distinct_hashes": 2267348,
-  "postings": 27054774,
-  "stream_bits": 567471786,
-  "unary_ones": 26333404,
+  "distinct_hashes": 2277470,
+  "postings": 27341712,
+  "stream_bits": 573329375,
+  "unary_ones": 26587112,
   "max_rice_k": 24
  },
  "checksum": [
-  2740699015,
-  2773166199
+  978246908,
+  488274205
  ],
- "total_bytes": 71984606,
+ "total_bytes": 72716804,
  "shards": [
   {
-   "file": "index/fp-00-61a6fb1043.bin",
+   "file": "index/fp-00-1359438856.bin",
    "bytes": 14000000
   },
   {
-   "file": "index/fp-01-2f6bf4360f.bin",
+   "file": "index/fp-01-008212ae00.bin",
    "bytes": 14000000
   },
   {
-   "file": "index/fp-02-34ba3c7a06.bin",
+   "file": "index/fp-02-57c0f97c0e.bin",
    "bytes": 14000000
   },
   {
-   "file": "index/fp-03-3ec135b89e.bin",
+   "file": "index/fp-03-dd6d150a15.bin",
    "bytes": 14000000
   },
   {
-   "file": "index/fp-04-9de4989d3c.bin",
+   "file": "index/fp-04-0292118bf2.bin",
    "bytes": 14000000
   },
   {
-   "file": "index/fp-05-a606943460.bin",
-   "bytes": 1984606
+   "file": "index/fp-05-907f9450b4.bin",
+   "bytes": 2716804
   }
  ],
  "refs": [
@@ -9002,6 +9002,138 @@
    "excluded": true,
    "duration": 290.065,
    "start": 18157152
+  },
+  {
+   "ref_id": "comeclosertome::aida-live-in-soweto",
+   "song_id": "comeclosertome",
+   "via": "release",
+   "live": true,
+   "shift": 0.0,
+   "aligned": null,
+   "excluded": true,
+   "duration": 260.809,
+   "start": 18175155
+  },
+  {
+   "ref_id": "comeclosertome",
+   "song_id": "comeclosertome",
+   "via": "instrumental",
+   "live": false,
+   "shift": 0.0,
+   "aligned": null,
+   "excluded": false,
+   "duration": 305.92,
+   "start": 18190880
+  },
+  {
+   "ref_id": "comehome::aida-live-in-soweto",
+   "song_id": "comehome",
+   "via": "release",
+   "live": true,
+   "shift": 0.0,
+   "aligned": null,
+   "excluded": true,
+   "duration": 380.473,
+   "start": 18209876
+  },
+  {
+   "ref_id": "comehome",
+   "song_id": "comehome",
+   "via": "instrumental",
+   "live": false,
+   "shift": 0.0,
+   "aligned": null,
+   "excluded": false,
+   "duration": 342.096,
+   "start": 18232995
+  },
+  {
+   "ref_id": "freshoil::aida-live-in-kingston",
+   "song_id": "freshoil",
+   "via": "release",
+   "live": true,
+   "shift": 0.0,
+   "aligned": null,
+   "excluded": true,
+   "duration": 224.712,
+   "start": 18254362
+  },
+  {
+   "ref_id": "freshoil",
+   "song_id": "freshoil",
+   "via": "instrumental",
+   "live": false,
+   "shift": 0.0,
+   "aligned": null,
+   "excluded": false,
+   "duration": 224.078,
+   "start": 18267973
+  },
+  {
+   "ref_id": "heavensong::aida-live-at-adelaide-chapel",
+   "song_id": "heavensong",
+   "via": "release",
+   "live": true,
+   "shift": 0.0,
+   "aligned": null,
+   "excluded": true,
+   "duration": 266.058,
+   "start": 18281639
+  },
+  {
+   "ref_id": "heavensong",
+   "song_id": "heavensong",
+   "via": "instrumental",
+   "live": false,
+   "shift": 0.0,
+   "aligned": null,
+   "excluded": false,
+   "duration": 221.518,
+   "start": 18298123
+  },
+  {
+   "ref_id": "heedthecall::aida-live-at-taita-hills",
+   "song_id": "heedthecall",
+   "via": "release",
+   "live": true,
+   "shift": 0.0,
+   "aligned": null,
+   "excluded": true,
+   "duration": 216.947,
+   "start": 18311518
+  },
+  {
+   "ref_id": "icantkeepittomyself::aida-live-at-you-can-depend-on-me",
+   "song_id": "icantkeepittomyself",
+   "via": "release",
+   "live": true,
+   "shift": 0.0,
+   "aligned": null,
+   "excluded": true,
+   "duration": 252.057,
+   "start": 18325054
+  },
+  {
+   "ref_id": "icantkeepittomyself",
+   "song_id": "icantkeepittomyself",
+   "via": "instrumental",
+   "live": false,
+   "shift": 0.0,
+   "aligned": null,
+   "excluded": false,
+   "duration": 340.976,
+   "start": 18340727
+  },
+  {
+   "ref_id": "keepingmyeyesonyou::aida-live-in-port-elizabeth",
+   "song_id": "keepingmyeyesonyou",
+   "via": "release",
+   "live": true,
+   "shift": 0.0,
+   "aligned": null,
+   "excluded": true,
+   "duration": 194.509,
+   "start": 18360817
   }
  ]
 }

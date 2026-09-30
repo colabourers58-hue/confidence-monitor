@@ -1,7 +1,6 @@
 {
   "name": "Prompter",
   "short_name": "Prompter",
-  "start_url": "./",
   "scope": "./",
   "display": "fullscreen",
   "orientation": "any",

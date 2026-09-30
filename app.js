@@ -1,7 +1,7 @@
 /* Everything runs on this device. No server, no network after the first load. */
-import {Orb} from './orb.js?v=202609301402';
+import {Orb} from './orb.js?v=202609301408';
 // Stamped by publish_site.sh on every publish ('dev' when served straight from this Mac).
-const APP_VERSION = '202609301402';
+const APP_VERSION = '202609301408';
 
 const $ = s => document.querySelector(s);
 // the orb is decoration: if this device can't draw it (old GPU, WebGL off, a shader error), the
@@ -22,13 +22,36 @@ let dec = null;
 async function loadSongs(){
   const list = await (await fetch('data/songs.json?v=' + APP_VERSION)).json();
   for(const s of list) SONGS[s.id] = s;
+  await loadPrivate();
 }
+/* Other artists' songs come in a scrambled pack. The private link carries its key (?k=…): open it
+   once and this device keeps the key, so those songs are there from then on. No password, ever. */
+function privateKey(){
+  const q = new URLSearchParams(location.search).get('k');
+  try{ if(q) localStorage.setItem('cm.k', q); return q || localStorage.getItem('cm.k'); }catch(e){ return q; }
+}
+async function loadPrivate(){
+  const k = privateKey();
+  if(!k || !(window.crypto && crypto.subtle)) return;
+  try{
+    const b64 = k.replace(/-/g, '+').replace(/_/g, '/') + '='.repeat((4 - k.length % 4) % 4);
+    const raw = Uint8Array.from(atob(b64), c => c.charCodeAt(0));
+    const blob = new Uint8Array(await (await fetch('data/private.pack?v=' + APP_VERSION)).arrayBuffer());
+    const key = await crypto.subtle.importKey('raw', raw, 'AES-GCM', false, ['decrypt']);
+    const plain = await crypto.subtle.decrypt({name: 'AES-GCM', iv: blob.slice(0, 12),
+                    additionalData: new TextEncoder().encode('prompter-private-v1')}, key, blob.slice(12));
+    const extra = JSON.parse(new TextDecoder().decode(plain));
+    for(const s of extra) SONGS[s.id] = s;
+    privateCount = extra.length;
+  }catch(e){ console.warn('private songs:', e); }
+}
+let privateCount = 0;
 
 /* ---------------- engine (runs in a worker, on device) ---------------- */
 let worker = null, engineReady = false, loadMsgT = 0;
 function startEngine(){
-  try{ worker = new Worker('engine/fp-worker.js?v=202609301402', {type:'module'}); }
-  catch(e){ try{ worker = new Worker('engine/fp-worker.js?v=202609301402'); }catch(e2){ worker = null; } }
+  try{ worker = new Worker('engine/fp-worker.js?v=202609301408', {type:'module'}); }
+  catch(e){ try{ worker = new Worker('engine/fp-worker.js?v=202609301408'); }catch(e2){ worker = null; } }
   if(!worker){ $('#load').classList.add('done'); return; }
   worker.onmessage = ev => {
     const m = ev.data || {};
@@ -745,14 +768,15 @@ async function checkUpdate(){
     const k = 'cm.upd.' + v;
     if(sessionStorage.getItem(k)) return;          // already tried this one: don't loop
     sessionStorage.setItem(k, '1');
-    location.replace(location.pathname + '?v=' + encodeURIComponent(v));
+    const kq = new URLSearchParams(location.search).get('k');
+    location.replace(location.pathname + '?' + (kq ? 'k=' + encodeURIComponent(kq) + '&' : '') + 'v=' + encodeURIComponent(v));
   }catch(e){}                                      // offline: the stored copy is the right one
 }
 function showVersion(){
   const pretty = APP_VERSION === 'dev' ? 'running from this Mac'
     : APP_VERSION.replace(/^(\d{4})(\d\d)(\d\d)(\d\d)(\d\d)$/, (m, y, mo, d, h, mi) =>
         new Date(+y, +mo - 1, +d, +h, +mi).toLocaleString([], {day:'numeric', month:'short', hour:'numeric', minute:'2-digit'}));
-  $('#cpVer').textContent = 'Version ' + pretty;
+  $('#cpVer').textContent = 'Version ' + pretty + (privateCount ? ` · ${privateCount} private songs unlocked` : '');
   const q = new URLSearchParams(location.search);
   if(q.get('v')){                                  // we just updated: say so, then tidy the address
     const t = $('#toast'); t.textContent = 'Prompter updated'; t.hidden = false;
