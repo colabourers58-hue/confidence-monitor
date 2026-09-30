@@ -1,7 +1,7 @@
 /* Everything runs on this device. No server, no network after the first load. */
-import {Orb} from './orb.js?v=202609301410';
+import {Orb} from './orb.js?v=202609301414';
 // Stamped by publish_site.sh on every publish ('dev' when served straight from this Mac).
-const APP_VERSION = '202609301410';
+const APP_VERSION = '202609301414';
 
 const $ = s => document.querySelector(s);
 // the orb is decoration: if this device can't draw it (old GPU, WebGL off, a shader error), the
@@ -50,8 +50,8 @@ let privateCount = 0;
 /* ---------------- engine (runs in a worker, on device) ---------------- */
 let worker = null, engineReady = false, loadMsgT = 0;
 function startEngine(){
-  try{ worker = new Worker('engine/fp-worker.js?v=202609301410', {type:'module'}); }
-  catch(e){ try{ worker = new Worker('engine/fp-worker.js?v=202609301410'); }catch(e2){ worker = null; } }
+  try{ worker = new Worker('engine/fp-worker.js?v=202609301414', {type:'module'}); }
+  catch(e){ try{ worker = new Worker('engine/fp-worker.js?v=202609301414'); }catch(e2){ worker = null; } }
   if(!worker){ $('#load').classList.add('done'); return; }
   worker.onmessage = ev => {
     const m = ev.data || {};
@@ -722,6 +722,46 @@ $('#gate').addEventListener('click', begin);
 
 /* the welcome sheet: once per person (and again whenever WELCOME changes, to say what's new) */
 const WELCOME = '1';
+/* one-click "save to this device": the browser's own install prompt where it exists (Chrome, Edge,
+   Android). iPhone/iPad and Mac Safari don't allow a site to add itself, so there the button
+   shows exactly where to tap. */
+let deferredInstall = null;
+function installInfo(){
+  const ua = navigator.userAgent;
+  return {standalone: matchMedia('(display-mode: standalone), (display-mode: fullscreen)').matches || !!navigator.standalone,
+          ios: /iPad|iPhone|iPod/.test(ua) || (/Macintosh/.test(ua) && navigator.maxTouchPoints > 1),
+          ipad: /iPad/.test(ua) || (/Macintosh/.test(ua) && navigator.maxTouchPoints > 1),
+          macSafari: /Macintosh/.test(ua) && navigator.maxTouchPoints <= 1 && /Safari/.test(ua) && !/Chrome|Chromium|Edg/.test(ua)};
+}
+function refreshInstall(){
+  const i = installInfo();
+  const label = i.standalone ? '' : i.ios ? 'Add to Home Screen' : i.macSafari ? 'Add to Dock' : 'Add to this device';
+  for(const b of [$('#wInstall'), $('#cpInstall')]){ b.hidden = !label; b.textContent = label; }
+  if(label && !i.standalone) $('#wKeep').textContent = '';          // the button says it; no second instruction
+}
+async function doInstall(e){
+  e && e.stopPropagation();
+  const i = installInfo();
+  if(deferredInstall){ deferredInstall.prompt(); try{ await deferredInstall.userChoice; }catch(err){} deferredInstall = null; refreshInstall(); return; }
+  const h = $('#saveHelp');
+  const B = t => `<b style="display:inline;font-size:inherit">${t}</b>`;
+  if(i.macSafari){ h.querySelector('.card').innerHTML = `<b>Add Prompter to your Dock</b>In the menu bar, choose ${B('File')}, then ${B('Add to Dock')}.`; h.querySelector('.arrow').hidden = true; }
+  else if(!i.ios){          // Chrome/Edge/Android before their own prompt is ready
+    h.querySelector('.card').innerHTML = /Android/.test(navigator.userAgent)
+      ? `<b>Add Prompter to this phone</b>Tap the ${B('⋮')} menu at the top right of Chrome, then ${B('Install app')} (or ${B('Add to Home screen')}).`
+      : `<b>Add Prompter to this computer</b>Click the install icon at the right end of the address bar, or open the browser menu and choose ${B('Install Prompter')}.`;
+    h.querySelector('.arrow').hidden = true; h.classList.add('ipad');
+  }
+  h.classList.toggle('ipad', i.ipad); $('#shareWhere') && ($('#shareWhere').textContent = i.ipad ? 'at the top of the screen' : 'at the bottom of the screen');
+  h.hidden = false;
+}
+addEventListener('beforeinstallprompt', e => { e.preventDefault(); deferredInstall = e; refreshInstall(); });
+addEventListener('appinstalled', () => { deferredInstall = null; refreshInstall(); logEvent('start', 'Saved to this device'); });
+$('#wInstall').addEventListener('click', doInstall);
+$('#cpInstall').addEventListener('click', e => { $('#cp').hidden = true; doInstall(e); });
+$('#saveHelp').addEventListener('click', e => { e.stopPropagation(); $('#saveHelp').hidden = true; });
+$('#saveHelp').addEventListener('pointerdown', e => e.stopPropagation());
+
 function showWelcome(){
   const ua = navigator.userAgent, standalone = matchMedia('(display-mode: standalone), (display-mode: fullscreen)').matches || navigator.standalone;
   const ios = /iPad|iPhone|iPod/.test(ua) || (/Macintosh/.test(ua) && navigator.maxTouchPoints > 1);
@@ -731,6 +771,7 @@ function showWelcome(){
     /Macintosh/.test(ua) && /Safari/.test(ua) && !/Chrome/.test(ua) ? 'To keep it on this Mac: in the menu bar choose File, then Add to Dock.' :
     'To keep it on this computer: click the install icon at the right of the address bar.';
   $('#welcome').hidden = false; $('#welcome').classList.remove('leaving');
+  refreshInstall();
 }
 $('#wGo').addEventListener('click', e => {
   e.stopPropagation();
@@ -790,6 +831,7 @@ setInterval(checkUpdate, 3 * 60 * 1000);          // left open all day: still pi
 await loadSongs();
 refit();
 showVersion();
+refreshInstall();
 try{ const r = await fetch('fpstatus', {cache:'no-store'}); if(r.ok) serverMode = !!(await r.json()).ready; }catch(e){}
 if(serverMode){
   $('#load').classList.add('done');

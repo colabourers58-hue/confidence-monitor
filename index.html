@@ -22,6 +22,8 @@
 <meta name="twitter:image" content="https://colabourers58-hue.github.io/confidence-monitor/og.png">
 
 <link rel="manifest" href="manifest.webmanifest">
+<script>/* iPhone/iPad: a saved app must open the exact link it came from (keeps the private key) */
+if(/iPad|iPhone|iPod/.test(navigator.userAgent)||(/Macintosh/.test(navigator.userAgent)&&navigator.maxTouchPoints>1))document.querySelector('link[rel=manifest]').href='manifest-ios.webmanifest'</script>
 <link rel="apple-touch-icon" href="icon-512.png">
 <style>
   @font-face{font-family:StageFallback;src:url(fonts/inter-800.woff2) format('woff2');font-weight:700 900;font-display:swap}
@@ -148,6 +150,22 @@
   #welcome button:active{transform:scale(.97);filter:brightness(.92)}
   #welcome button:focus-visible{outline:3px solid #fff;outline-offset:3px}
   #welcome .keep{color:var(--label-3)}
+  #welcome button.second{background:rgba(10,140,255,.18);color:#62b6ff}
+  /* iPhone/iPad can't be added in one tap (Apple doesn't allow it): point at Safari's Share button */
+  #saveHelp{position:fixed;inset:0;z-index:40;display:flex;align-items:flex-end;justify-content:center;
+            background:rgba(0,0,0,.55);-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px)}
+  #saveHelp[hidden]{display:none}
+  #saveHelp .card{margin:0 16px max(84px,calc(env(safe-area-inset-bottom) + 70px));max-width:460px;padding:22px 22px 20px;border-radius:20px;
+            background:#1c1c1e;color:#fff;font-size:18px;line-height:1.45;text-align:left}
+  #saveHelp .card b{display:block;font-size:20px;margin-bottom:10px}
+  #saveHelp .card ol{margin:0;padding-left:1.3em}
+  #saveHelp .card svg{width:22px;height:22px;vertical-align:-4px;fill:#0a84ff}
+  #saveHelp .arrow{position:fixed;bottom:max(18px,env(safe-area-inset-bottom));left:50%;transform:translateX(-50%);
+            width:0;height:0;border-left:16px solid transparent;border-right:16px solid transparent;border-top:22px solid #1c1c1e}
+  #saveHelp.ipad{align-items:flex-start}
+  #saveHelp.ipad .card{margin-top:70px}
+  #saveHelp.ipad .arrow{top:40px;bottom:auto;left:auto;right:120px;transform:none;border-top:0;border-bottom:22px solid #1c1c1e}
+  #cpInstall{font-size:15px;font-weight:600;padding:10px 14px;background:rgba(10,140,255,.18);color:#62b6ff;margin-top:10px;margin-left:8px}
   #cpAbout{font-size:15px;font-weight:600;padding:10px 14px;background:rgba(120,120,128,.24);color:var(--label);margin-top:10px;margin-left:8px}
   /* the control panel: what it hears, what it did, how fast */
   #cp{position:fixed;inset:0;z-index:10;background:rgba(0,0,0,.72);-webkit-backdrop-filter:blur(24px);backdrop-filter:blur(24px);
@@ -222,7 +240,7 @@
     <div id="devlist"></div></section>
   <section class="card"><h3>Right now</h3><div class="now" id="cpNow">–</div></section>
   <section class="card"><h3>This session</h3><div class="stats" id="cpStats"></div></section>
-  <section class="card"><h3>Log</h3><div id="log"></div><button id="cpCopy">Copy log</button><button id="cpAbout">About Prompter</button></section>
+  <section class="card"><h3>Log</h3><div id="log"></div><button id="cpCopy">Copy log</button><button id="cpAbout">About Prompter</button><button id="cpInstall" hidden>Add to this device</button></section>
 </div></div>
 <div id="welcome" hidden role="dialog" aria-modal="true" aria-labelledby="wTitle"><div class="sheet">
   <h1 id="wTitle">Welcome to <span>Prompter</span></h1>
@@ -239,10 +257,14 @@
   <div class="foot">
     <small>Next it will ask to use the microphone. Tap Allow. That&rsquo;s how it hears the music.</small>
     <button id="wGo">Let&rsquo;s Go</button>
+    <button id="wInstall" class="second" hidden>Add to this device</button>
     <small class="keep" id="wKeep"></small>
   </div>
 </div></div>
+<div id="saveHelp" hidden><div class="card"><b>Add Prompter to your Home Screen</b><ol>
+  <li>Tap the Share button <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2l4.2 4.2-1.4 1.4L13 5.8V15h-2V5.8L9.2 7.6 7.8 6.2zM5 10h3v2H6v8h12v-8h-2v-2h3a1 1 0 0 1 1 1v10a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V11a1 1 0 0 1 1-1z"/></svg> <span id="shareWhere">at the bottom of the screen</span>.</li>
+  <li>Choose <b style="display:inline;font-size:inherit">Add to Home Screen</b>, then Add.</li></ol></div><div class="arrow"></div></div>
 <div id="gate"><b>Tap to begin</b><small>One tap allows the microphone. After that it runs on its own.</small></div>
-<script type="module" src="app.js?v=202609301410"></script>
+<script type="module" src="app.js?v=202609301414"></script>
 </body>
 </html>

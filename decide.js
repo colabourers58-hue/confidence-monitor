@@ -107,6 +107,12 @@ export const DEFAULTS = {
   WORDS_CONFIRM: 2,      // words alone must name the same song twice, at least this far apart...
   WORDS_CONFIRM_SEC: 20, // ...within this long (a harsh room makes speech recognition invent lines)
   WORDS_AGREE: 3,        // a fingerprint candidate this close (s) to a words clock keeps the song up
+  // ROOM MEMORY (learn()). A look heard confidently on track is "how this song sounds in this room";
+  // the engine stores its hashes so the song is found faster next time. Only from fingerprint locks
+  // that have been proven for a while, never from a guess: a wrong lesson would make it worse.
+  LEARN_VOTES: null,     // track hashes a look needs to be learnt from (null = 2 x TRACK_MIN)
+  LEARN_LOOKS: 3,        // ...after this many looks in a row on track
+  LEARN_AFTER: 6,        // ...and this long (s) after the fingerprints took the song
 };
 
 export function createDecider(songs, opts) {
@@ -128,6 +134,8 @@ export function createDecider(songs, opts) {
     floor: null,        // the room's own noise floor (mic RMS), learnt from quiet looks
     music_since: null,  // when the current stretch of music began (after a quiet gap)
     up_at: -1e9,        // when a song was last on screen
+    ear_at: null,       // when the fingerprints took (or confirmed) the song up; null = not theirs
+    on_looks: 0,        // looks in a row that found us exactly on track
     last_match: null, conf: 0, conf_at: 0, rev: 0,
   };
   const PENDING = {song_id: null, started: null, at: 0, n: 0};
@@ -148,11 +156,11 @@ export function createDecider(songs, opts) {
 
   function take(id, started, now) {
     Object.assign(S, {song_id: id, started_at: started, last_confirm: now, on_track_at: now,
-                      driver: 'ear', mode: 'timed', anchor: null});
+                      driver: 'ear', mode: 'timed', anchor: null, ear_at: now, on_looks: 0});
     PENDING.song_id = null; bump();
   }
   function clear() {
-    Object.assign(S, {song_id: null, started_at: null, driver: null, mode: 'timed', anchor: null});
+    Object.assign(S, {song_id: null, started_at: null, driver: null, mode: 'timed', anchor: null, ear_at: null, on_looks: 0});
     PENDING.song_id = null; bump();
   }
 
@@ -217,7 +225,7 @@ export function createDecider(songs, opts) {
     if (sum < C.ACC_VOTES || looks < C.ACC_LOOKS || mine.length < C.ACC_LOOKS || sum < C.ACC_MARGIN * Math.max(rival, 1) || !S.auto) return false;
     // already up at this very place (a words estimate the fingerprints now confirm): hand it to the ear
     if (S.song_id === winner && S.started_at != null && Math.abs(S.started_at - P.start) < C.RESYNC_SEC) {
-      Object.assign(S, {driver: 'ear', last_confirm: now, on_track_at: now}); EVIDENCE = []; bump();
+      Object.assign(S, {driver: 'ear', last_confirm: now, on_track_at: now, ear_at: now, on_looks: 0}); EVIDENCE = []; bump();
       return false;
     }
     // START FROM THE TOP applies to added-up evidence too (it once locked 6.4 s ahead on a repeated
@@ -248,7 +256,7 @@ export function createDecider(songs, opts) {
     }
     r = Object.assign({}, r, {song_id: winner, ref_id: (cands.find(c => c.song_id === winner) || {}).ref_id || r.ref_id});
     Object.assign(S, {song_id: r.song_id, started_at: st, paused_at: null, last_confirm: now, on_track_at: now,
-                      driver: 'ear', mode: 'timed', anchor: null, searching: false});
+                      driver: 'ear', mode: 'timed', anchor: null, searching: false, ear_at: now, on_looks: 0});
     S.last_match = {song_id: r.song_id, offset: heardAt - win - st, votes: sum, margin: sum / Math.max(rival, 1),
                     at: heardAt, via: r.ref_id && r.ref_id.includes('::') ? r.ref_id : null, how};
     EVIDENCE = []; PENDING.song_id = null;
@@ -309,7 +317,7 @@ export function createDecider(songs, opts) {
     if (S.song_id === m.song_id && S.started_at != null && Math.abs(S.started_at - started) < C.RESYNC_SEC) {
       S.last_confirm = now; PENDING.song_id = null;
       // an estimated clock (words, a live recording) that a studio recording now confirms: the ear has it
-      if (S.driver === 'words' || S.driver === 'live') { Object.assign(S, {driver: 'ear', on_track_at: now}); bump(); }
+      if (S.driver === 'words' || S.driver === 'live') { Object.assign(S, {driver: 'ear', on_track_at: now, ear_at: now, on_looks: 0}); bump(); }
       return false;
     }
     // something is up and was on track recently: a different song, or a different place in
@@ -398,10 +406,10 @@ export function createDecider(songs, opts) {
       let anchor = 0;
       for (let j = 0; j < cues.length; j++) if (!isSec(cues[j])) { anchor = j; break; }
       cues.forEach((c, j) => { if (!isSec(c) && c.t != null && c.t <= tEst) anchor = j; });
-      Object.assign(S, {song_id: sid, started_at: null, driver: 'live', mode: 'words', anchor, last_confirm: now});
+      Object.assign(S, {song_id: sid, started_at: null, driver: 'live', mode: 'words', anchor, last_confirm: now, ear_at: null, on_looks: 0});
     } else {
       Object.assign(S, {song_id: sid, started_at: heardAt - (m.offset_sec + win) * k, paused_at: null, driver: 'live',
-                        mode: 'timed', anchor: null, last_confirm: now, on_track_at: now});
+                        mode: 'timed', anchor: null, last_confirm: now, on_track_at: now, ear_at: null, on_looks: 0});
     }
     bump();
     return true;
@@ -434,7 +442,7 @@ export function createDecider(songs, opts) {
           if (!best || d < best.d) best = {cue: x.cue, d};
         }
         if (!best || best.d <= C.WORDS_OUT) return false;
-        S.started_at = at - (s.cues[best.cue].t + half(s, best.cue));
+        S.started_at = at - (s.cues[best.cue].t + half(s, best.cue)); S.ear_at = null; S.on_looks = 0;
         S.last_words = {cue: best.cue, at, moved: true};
         bump();
         return true;
@@ -462,7 +470,7 @@ export function createDecider(songs, opts) {
                     how: 'from the sung words', line: r.line, score: r.score};
     if (!hasTimes(s) || s.cues[r.cue].t == null) {   // no timings: the one case left for a block of words
       Object.assign(S, {song_id: r.song_id, started_at: null, paused_at: null, driver: 'words', mode: 'words',
-                        anchor: r.cue, last_confirm: now, searching: false});
+                        anchor: r.cue, last_confirm: now, searching: false, ear_at: null, on_looks: 0});
       bump(); return true;
     }
     // which line is being sung right now: the newest words, if they name a line of this song
@@ -472,7 +480,7 @@ export function createDecider(songs, opts) {
     let started = at - (s.cues[cue].t + half(s, cue)), driver = 'words';
     if (agrees) { started = P.start; driver = 'ear'; S.last_match.how = `sung words + ${P.looks} looks agree`; }
     Object.assign(S, {song_id: r.song_id, started_at: started, paused_at: null, driver, mode: 'timed', anchor: null,
-                      last_confirm: now, on_track_at: now, searching: false});
+                      last_confirm: now, on_track_at: now, searching: false, ear_at: driver === 'ear' ? now : null, on_looks: 0});
     S.last_words = {cue, at, moved: false};
     if (driver === 'ear') EVIDENCE = [];
     bump();
@@ -510,6 +518,7 @@ export function createDecider(songs, opts) {
     // always verifying: count looks off track while music plays; three in a row is doubt
     if (S.song_id != null && S.driver === 'ear' && r && r.track_votes != null) {
       const loud = now - S.last_loud < 1.5;
+      S.on_looks = onTrack ? (S.on_looks || 0) + 1 : 0;
       if (onTrack) { S.off_looks = 0; S.doubt = false; }
       else if (loud) { S.off_looks = (S.off_looks || 0) + 1; if (S.off_looks >= C.DOUBT_LOOKS) S.doubt = true; }
     } else if (S.song_id == null) { S.off_looks = 0; S.doubt = false; }
@@ -545,15 +554,30 @@ export function createDecider(songs, opts) {
   /** Put a song up by hand (demo / operator). driver 'hand' is never released automatically. */
   function hold(fields, now) {
     Object.assign(S, {driver: 'hand', mode: 'timed', anchor: null, started_at: null}, fields,
-                  {last_confirm: now, on_track_at: now});
+                  {last_confirm: now, on_track_at: now, ear_at: null, on_looks: 0});   // put up by hand: never learnt from
     PENDING.song_id = null; CHALLENGE.song_id = null; CHALLENGE.n = 0; bump();
   }
 
   /** Should the device be listening for sung words? While searching (music, nothing up), and
    *  while the song up has only an estimated clock (words, a live recording) that words correct.
    *  Never while a fingerprint clock or a hand-held song is up. */
+  /** Room memory: should the engine learn the look that just ended at heardAt (result r)? Only
+   *  when the fingerprints took this song (driver 'ear', not words, a live estimate or a hand)
+   *  at least LEARN_AFTER ago, LEARN_LOOKS looks in a row found it exactly on track, this look
+   *  strongly (LEARN_VOTES) and at the clock's own place, and nothing is in doubt. Returns the
+   *  worker's learn message ({at, song_id, lyric_offset, ref_id}) or null. */
+  function learn(r, heardAt, win, now) {
+    if (!r || S.song_id == null || S.driver !== 'ear' || S.mode !== 'timed' || S.started_at == null || S.ear_at == null) return null;
+    if (S.doubt || (S.on_looks || 0) < C.LEARN_LOOKS || now - S.ear_at < C.LEARN_AFTER) return null;
+    const need = C.LEARN_VOTES != null ? C.LEARN_VOTES : 2 * C.TRACK_MIN;
+    if (r.track_votes == null || r.track_votes < need || r.track_offset == null) return null;
+    if (r.track_recent != null && r.track_recent < C.TRACK_RECENT_MIN) return null;
+    if (Math.abs(r.track_offset - (heardAt - win - S.started_at)) > C.TRACK_TOL) return null;   // asked about another place
+    return {at: heardAt, song_id: S.song_id, lyric_offset: r.track_offset, ref_id: r.track_ref || null};
+  }
+
   const wantWords = () => S.song_id == null ? !!S.searching : (S.driver === 'words' || S.driver === 'live');
 
-  return {state: S, config: C, heard, track, top, result, tick, hold, words, wantWords, stop: clear, believable,
+  return {state: S, config: C, heard, track, top, result, tick, hold, words, wantWords, learn, stop: clear, believable,
           listening: on => { S.active = !!on; }};
 }

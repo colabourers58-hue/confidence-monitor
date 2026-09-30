@@ -337,14 +337,18 @@
       var rs = idx.trackCache[track.song_id] || (idx.trackCache[track.song_id] = trackRefs(idx, track.song_id));
       for (j = 0; j < rs.length; j++) expv[rs[j]] = Math.fround((track.at + (idx.refs[rs[j]].shift || 0)) / SEC_PER_FRAME);
     }
-    var tolF = track.tol / SEC_PER_FRAME, bins = [], recent = 0;
+    var tolF = track.tol / SEC_PER_FRAME, bins = [], brefs = [], recent = 0;
     for (j = 0; j < n; j++) {
       var d = ho[j] - expv[hr[j]];                    // NaN for other refs: never within tol
-      if (Math.abs(d) <= tolF) { bins.push(Math.floor(d / 2)); if (hq && hq[j] >= recentFrom) recent++; }
+      if (Math.abs(d) <= tolF) { bins.push(Math.floor(d / 2)); brefs.push(hr[j]); if (hq && hq[j] >= recentFrom) recent++; }
     }
-    if (!bins.length) return { votes: 0, offset: null, recent: hq ? 0 : null };
-    var t = topTwo(bins);
-    return { votes: t.votes, offset: round3(track.at + t.bin * 2 * SEC_PER_FRAME), recent: hq ? recent : null };
+    if (!bins.length) return { votes: 0, offset: null, recent: hq ? 0 : null, ref: null };
+    // the recording the best place was heard in (the one the room is playing): most hashes in that bin
+    var t = topTwo(bins.slice());
+    var per = Object.create(null), bestR = -1, bestC = 0;
+    for (j = 0; j < bins.length; j++) if (bins[j] === t.bin) { var c = per[brefs[j]] = (per[brefs[j]] || 0) + 1; if (c > bestC) { bestC = c; bestR = brefs[j]; } }
+    return { votes: t.votes, offset: round3(track.at + t.bin * 2 * SEC_PER_FRAME), recent: hq ? recent : null,
+             ref: bestR >= 0 ? idx.refs[bestR].ref_id : null };
   }
 
   // ---------------------------------------------------------------- room memory (learned postings)
@@ -657,11 +661,24 @@
     var q = fingerprint(pcm, p.density, p.fan);
     var res = { song_id: null, ref_id: null, via: null, offset_sec: null, rec_offset_sec: null, votes: 0,
                 runner_up: 0, margin: 0, hits: 0, hashes: q.h.length, live: false, duration: null, cands: [],
-                track_votes: opts.track ? 0 : null, track_offset: null, track_recent: opts.track ? 0 : null,
+                track_votes: opts.track ? 0 : null, track_offset: null, track_recent: opts.track ? 0 : null, track_ref: null,
                 top_votes: opts.top ? 0 : null, top_offset: null };
     if (q.h.length === 0) return res;
+    res.query = q;                                    // the worker keeps it: room memory learns from it
     var cur = new Cursor(idx), nq = q.h.length, lens = new Int32Array(nq), pos = new Float64Array(nq), total = 0, j;
     for (j = 0; j < nq; j++) { lens[j] = seek(idx, cur, q.h[j]); pos[j] = cur.pos; total += lens[j]; }
+    // learned postings (room memory): counted exactly like shipped ones. A hash repeating within
+    // this look (a hum) doesn't use them.
+    var L = idx.learned, llo = null, lhi = null;
+    if (L && L.n) {
+      var mult = multiplicity(q.h);
+      llo = new Int32Array(nq); lhi = new Int32Array(nq);
+      for (j = 0; j < nq; j++) {
+        if (mult[j] > ROOM.REPEAT_MAX) continue;
+        var hu = q.h[j] >>> 0;
+        llo[j] = lowerBound(L.keys, L.n, hu); lhi[j] = upperBound(L.keys, L.n, hu); total += lhi[j] - llo[j];
+      }
+    }
     res.hits = total;
     if (total === 0 || total > maxHits) return res;
     var keys = new Int32Array(total), hr = new Int32Array(total), ho = new Int32Array(total), hq = new Int32Array(total), qmax = 0;
@@ -680,12 +697,22 @@
         keys[n++] = r * 100000 + (off >> 1) + 40000;   // >>1 floors, like //
       }
     }
+    if (llo) for (j = 0; j < nq; j++) {
+      var qt2 = q.t[j];
+      for (var e2 = llo[j]; e2 < lhi[j]; e2++) {
+        var lv = L.vals[e2], lr = lv >>> FRAME_BITS;
+        if (excl && excl[lr]) continue;
+        var loff = (lv & FRAME_MASK) - qt2;
+        hr[n] = lr; ho[n] = loff; hq[n] = qt2; if (qt2 > qmax) qmax = qt2;
+        keys[n++] = lr * 100000 + (loff >> 1) + 40000;
+      }
+    }
     if (n === 0) return res;
     if (opts.track) {
       // recentFrom: hashes from the last 2 s of the window. Right after a song change most of the
       // window is still the old song; its last seconds are not, so they can't vouch for it.
       var tk = trackCount(idx, hr, ho, n, opts.track, hq, qmax - Math.round(2.0 / SEC_PER_FRAME));
-      res.track_votes = tk.votes; res.track_offset = tk.offset; res.track_recent = tk.recent;
+      res.track_votes = tk.votes; res.track_offset = tk.offset; res.track_recent = tk.recent; res.track_ref = tk.ref;
     }
     keys = keys.subarray(0, n);
     keys.sort();
@@ -743,6 +770,8 @@
     SR: SR, NFFT: NFFT, HOP: HOP, NBIN: NBIN, DENSITY: DENSITY, FAN: FAN,
     rfftMag: rfftMag, spectro: spectro, maxFilter: maxFilter, percentile: percentile, peaks: peaks,
     hashes: hashes, fingerprint: fingerprint, createIndex: createIndex, lookup: lookup, verify: verify,
-    match: match, trackRefs: trackRefs
+    match: match, trackRefs: trackRefs,
+    ROOM: ROOM, learn: learn, createRoom: createRoom, roomExport: roomExport, roomImport: roomImport,
+    roomClear: roomClear, roomStats: roomStats, roomDirty: roomDirty, recipe: recipe
   };
 });
