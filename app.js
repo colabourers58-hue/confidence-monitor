@@ -1,7 +1,7 @@
 /* Everything runs on this device. No server, no network after the first load. */
-import {Orb} from './orb.js?v=202609301414';
+import {Orb} from './orb.js?v=202609301415';
 // Stamped by publish_site.sh on every publish ('dev' when served straight from this Mac).
-const APP_VERSION = '202609301414';
+const APP_VERSION = '202609301415';
 
 const $ = s => document.querySelector(s);
 // the orb is decoration: if this device can't draw it (old GPU, WebGL off, a shader error), the
@@ -50,8 +50,8 @@ let privateCount = 0;
 /* ---------------- engine (runs in a worker, on device) ---------------- */
 let worker = null, engineReady = false, loadMsgT = 0;
 function startEngine(){
-  try{ worker = new Worker('engine/fp-worker.js?v=202609301414', {type:'module'}); }
-  catch(e){ try{ worker = new Worker('engine/fp-worker.js?v=202609301414'); }catch(e2){ worker = null; } }
+  try{ worker = new Worker('engine/fp-worker.js?v=202609301415', {type:'module'}); }
+  catch(e){ try{ worker = new Worker('engine/fp-worker.js?v=202609301415'); }catch(e2){ worker = null; } }
   if(!worker){ $('#load').classList.add('done'); return; }
   worker.onmessage = ev => {
     const m = ev.data || {};
@@ -735,7 +735,8 @@ function installInfo(){
 }
 function refreshInstall(){
   const i = installInfo();
-  const label = i.standalone ? '' : i.ios ? 'Add to Home Screen' : i.macSafari ? 'Add to Dock' : 'Add to this device';
+  // the button exists only where it truly works in one tap (the browser's own install prompt)
+  const label = (!i.standalone && deferredInstall) ? 'Add to this device' : '';
   for(const b of [$('#wInstall'), $('#cpInstall')]){ b.hidden = !label; b.textContent = label; }
   if(label && !i.standalone) $('#wKeep').textContent = '';          // the button says it; no second instruction
 }
