@@ -273,7 +273,9 @@ function fp2Merge(out, a, m) {
   out.fp2 = { song_id: a.song_id, votes: a.votes, margin: a.margin, offset_sec: a.offset_sec, track_votes: a.track_votes, ms: a.ms };
   // only candidates with some weight join the piles: in noise the network keeps finding the same
   // few 'hub' places at 9-16 votes, and those would add up across looks (acc_floor, fp2 votes)
-  out.cands = (out.cands || []).concat(a.cands.filter(function (c) { return c.votes >= (G.acc_floor || 0); }).map(function (c) {
+  // LOCK-ONLY (30 Sep 16:20): fp2's weak candidates added up across looks named wrong songs while an
+  // unknown song played (Destiny, 4 wrong songs). Only a single strong fp2 look may take the screen.
+  if (false) out.cands = (out.cands || []).concat(a.cands.filter(function (c) { return c.votes >= (G.acc_floor || 0); }).map(function (c) {
     return { song_id: c.song_id, ref_id: c.ref_id, votes: r1(c.votes * sc), live: c.live, offset_sec: c.offset_sec, via: 'fp2' };
   })).sort(function (x, y) { return y.votes - x.votes; });
   if (m.track && a.track_votes != null && a.track_votes >= G.track_min) {

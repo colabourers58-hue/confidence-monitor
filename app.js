@@ -1,7 +1,7 @@
 /* Everything runs on this device. No server, no network after the first load. */
-import {Orb} from './orb.js?v=202609301614';
+import {Orb} from './orb.js?v=202609301617';
 // Stamped by publish_site.sh on every publish ('dev' when served straight from this Mac).
-const APP_VERSION = '202609301614';
+const APP_VERSION = '202609301617';
 
 const $ = s => document.querySelector(s);
 // the orb is decoration: if this device can't draw it (old GPU, WebGL off, a shader error), the
@@ -50,8 +50,8 @@ let privateCount = 0;
 /* ---------------- engine (runs in a worker, on device) ---------------- */
 let worker = null, engineReady = false, loadMsgT = 0;
 function startEngine(){
-  try{ worker = new Worker('engine/fp-worker.js?v=202609301614', {type:'module'}); }
-  catch(e){ try{ worker = new Worker('engine/fp-worker.js?v=202609301614'); }catch(e2){ worker = null; } }
+  try{ worker = new Worker('engine/fp-worker.js?v=202609301617', {type:'module'}); }
+  catch(e){ try{ worker = new Worker('engine/fp-worker.js?v=202609301617'); }catch(e2){ worker = null; } }
   if(!worker){ $('#load').classList.add('done'); return; }
   worker.onmessage = ev => {
     const m = ev.data || {};
@@ -1010,7 +1010,7 @@ if(serverMode){
   $('#load').classList.add('done');
   setInterval(pollServer, 150);            // the Mac says what it heard: check often, it is on this network
 }else{
-  try{ dec = (await import('./decide.js?v=' + APP_VERSION)).createDecider(id => SONGS[id]); }catch(e){ console.warn('decide.js:', e); }
+  try{ dec = (await import('./decide.js?v=' + APP_VERSION)).createDecider(id => SONGS[id], {KEYS: []}); }catch(e){ console.warn('decide.js:', e); }   // KEYS: [] = key-change search OFF (30 Sep): six extra keys named wrong songs on an unknown song (Destiny)
   startEngine();
   await startWords();
   if('serviceWorker' in navigator) navigator.serviceWorker.register('sw.js').catch(()=>{});

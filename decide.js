@@ -59,7 +59,7 @@ export const DEFAULTS = {
   TRACK_RECENT_MIN: 1,   // ...of which at least this many from the window's last 2 s
   CHALLENGE_N: 3,        // agreeing windows needed to move to another place in THIS song (the other chorus)
   OFF_TRACK_SEC: 2.5,    // and the current place must have gone unheard this long
-  CHALLENGE_SONG_N: 2,   // a DIFFERENT song needs fewer (Joel: songs change on a whim; a minute is unacceptable)
+  CHALLENGE_SONG_N: 3,   // (2 flipped between wrong songs on an unknown song) a DIFFERENT song needs fewer (Joel: songs change on a whim; a minute is unacceptable)
   OFF_TRACK_SONG_SEC: 1.5,
   CHALLENGE_GAP: 2.0,    // a challenger's windows must follow each other within this
   CHALLENGE_WITHIN: 20,  // the challenge rule applies while the song was on track this recently
@@ -139,7 +139,7 @@ export const DEFAULTS = {
   // up, other keys are tried too (from the same look's peaks). A song found at key k is locked AT k:
   // its tracking, doubt checks and room memory all use k. In doubt, 0 and k's neighbours are tried
   // (a song that modulates up for its last chorus).
-  KEYS: [1, -1, 2, -2, 3, -3],
+  KEYS: [1, -1, 2, -2, 3, -3],   // the app turns these OFF (app.js createDecider opts) until measured on unknown songs
   KEY_AFTER: 2,
   KEY_STRICT: 1.5,       // a transposed answer needs this many times the votes an untransposed one does
   KEY_MARGIN: 1.6,       // ...and one look's transposed answer this margin over the next song
