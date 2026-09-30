@@ -1,7 +1,7 @@
 /* Everything runs on this device. No server, no network after the first load. */
-import {Orb} from './orb.js?v=202609301507';
+import {Orb} from './orb.js?v=202609301523';
 // Stamped by publish_site.sh on every publish ('dev' when served straight from this Mac).
-const APP_VERSION = '202609301507';
+const APP_VERSION = '202609301523';
 
 const $ = s => document.querySelector(s);
 // the orb is decoration: if this device can't draw it (old GPU, WebGL off, a shader error), the
@@ -50,8 +50,8 @@ let privateCount = 0;
 /* ---------------- engine (runs in a worker, on device) ---------------- */
 let worker = null, engineReady = false, loadMsgT = 0;
 function startEngine(){
-  try{ worker = new Worker('engine/fp-worker.js?v=202609301507', {type:'module'}); }
-  catch(e){ try{ worker = new Worker('engine/fp-worker.js?v=202609301507'); }catch(e2){ worker = null; } }
+  try{ worker = new Worker('engine/fp-worker.js?v=202609301523', {type:'module'}); }
+  catch(e){ try{ worker = new Worker('engine/fp-worker.js?v=202609301523'); }catch(e2){ worker = null; } }
   if(!worker){ $('#load').classList.add('done'); return; }
   worker.onmessage = ev => {
     const m = ev.data || {};
@@ -510,7 +510,7 @@ function buildSong(song){
     const p = document.createElement('p'); p.className = 'ln' + (brk ? ' brk' : ''); brk = false;
     p.textContent = c.text; p.dataset.i = k; col.appendChild(p); lineEls[k] = p;
   });
-  col.style.transition = 'none'; col.style.transform = 'translateY(40vh)';
+  col.style.transition = 'none'; col.style.transform = 'translateY(50vh)';
   requestAnimationFrame(() => { col.style.transition = ''; });
 }
 // mark the sung line, dim what is past, soften what is further away, and glide it into place
@@ -528,14 +528,16 @@ function setActive(k, pending){
 }
 function scrollTo(k){
   const el = lineEls[k], view = $('#view'); if(!el || !view) return;
-  const y = view.clientHeight*0.40 - (el.offsetTop + el.offsetHeight/2);
+  // the sung line sits in the middle of the lyric area, between the title bar and the section strip
+  // (Joel: "it should really be in the center")
+  const y = view.clientHeight*0.5 - (el.offsetTop + el.offsetHeight/2);
   $('#col').style.transform = `translateY(${Math.round(y)}px)`;
 }
 let zoom = parseFloat(localStorage.getItem('cm.zoom') || '1') || 1;
 function refit(){
   // default lyric size (Joel: 30% bigger than the first version, for reading from the stage);
   // the pinch / +/- zoom multiplies on top of it
-  $('#col').style.fontSize = (Math.min(innerHeight*0.0975, Math.max(23, innerWidth*0.11)) * zoom).toFixed(1) + 'px';
+  $('#col').style.fontSize = (Math.min(innerHeight*0.12, Math.max(28, innerWidth*0.125)) * zoom).toFixed(1) + 'px';
   if(typeof activeCue === 'string' || typeof activeCue === 'number'){
     const k = parseInt(activeCue, 10); if(!isNaN(k)) requestAnimationFrame(() => scrollTo(k));
   }

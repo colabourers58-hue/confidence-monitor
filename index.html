@@ -61,18 +61,18 @@ if(/iPad|iPhone|iPod/.test(navigator.userAgent)||(/Macintosh/.test(navigator.use
 
   /* the lyrics: one column that glides so the line being sung always sits at the same height */
   #view{flex:1 1 auto;position:relative;overflow:hidden;
-    -webkit-mask-image:linear-gradient(180deg,transparent 0,#000 15%,#000 80%,transparent 100%);
-            mask-image:linear-gradient(180deg,transparent 0,#000 15%,#000 80%,transparent 100%)}
+    -webkit-mask-image:linear-gradient(180deg,transparent 0,#000 13%,#000 85%,transparent 100%);
+            mask-image:linear-gradient(180deg,transparent 0,#000 13%,#000 85%,transparent 100%)}
   #col{position:absolute;left:0;right:0;top:0;padding:0 max(5vmin,7%);will-change:transform;
        font-size:6.4vh;transition:transform .8s cubic-bezier(.2,.9,.22,1)}
-  .ln{margin:0 0 .62em;text-align:center;font-weight:700;line-height:1.13;letter-spacing:-.021em;
-      text-wrap:balance;color:rgba(255,255,255,.30);filter:blur(1.4px);transform:scale(.88);
-      transition:color .5s,filter .5s,transform .7s cubic-bezier(.2,.9,.22,1)}
-  .ln.brk{margin-top:1.1em}                      /* a new section starts */
-  .ln.near{color:rgba(255,255,255,.55);filter:blur(.35px);transform:scale(.9)}
-  .ln.past{color:rgba(255,255,255,.20);filter:blur(1.8px)}
-  .ln.on{color:var(--live);filter:none;transform:scale(1.12)}
-  .ln.pending{color:var(--pending);filter:none;transform:scale(1.12)}
+  .ln{margin:0 0 .36em;text-align:center;font-weight:800;line-height:1.13;letter-spacing:-.021em;
+      text-wrap:balance;color:rgba(255,255,255,.5);transform:scale(.94);
+      transition:color .5s,transform .7s cubic-bezier(.2,.9,.22,1)}
+  .ln.brk{margin-top:.75em}                      /* a new section starts */
+  .ln.near{color:rgba(255,255,255,.92);transform:scale(.96)}   /* the next line: read-ahead, must be crisp */
+  .ln.past{color:rgba(255,255,255,.3)}
+  .ln.on{color:var(--live);transform:scale(1.08)}
+  .ln.pending{color:var(--pending);transform:scale(1.08)}
   /* a sung or quoted lyric: the whole passage as one block, sized to fill the screen */
   #blockView{flex:1 1 auto;display:none;align-items:center;justify-content:center;
              padding:1vh max(5vmin,6%) 2vh;overflow:hidden}
@@ -265,6 +265,6 @@ if(/iPad|iPhone|iPod/.test(navigator.userAgent)||(/Macintosh/.test(navigator.use
   <li>Tap the Share button <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2l4.2 4.2-1.4 1.4L13 5.8V15h-2V5.8L9.2 7.6 7.8 6.2zM5 10h3v2H6v8h12v-8h-2v-2h3a1 1 0 0 1 1 1v10a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V11a1 1 0 0 1 1-1z"/></svg> <span id="shareWhere">at the bottom of the screen</span>.</li>
   <li>Choose <b style="display:inline;font-size:inherit">Add to Home Screen</b>, then Add.</li></ol></div><div class="arrow"></div></div>
 <div id="gate"><b>Tap to begin</b><small>One tap allows the microphone. After that it runs on its own.</small></div>
-<script type="module" src="app.js?v=202609301507"></script>
+<script type="module" src="app.js?v=202609301523"></script>
 </body>
 </html>
