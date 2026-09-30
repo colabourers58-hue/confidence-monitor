@@ -56,6 +56,7 @@ export const DEFAULTS = {
   END_GRACE: 2.5,        // past the song's end by this much: let it go
   TRACK_TOL: 0.6,        // seconds either side of where we expect to be
   TRACK_MIN: 5,          // hashes at the expected place = still on track
+  TRACK_RECENT_MIN: 1,   // ...of which at least this many from the window's last 2 s
   CHALLENGE_N: 3,        // agreeing windows needed to move off a song that was on track
   OFF_TRACK_SEC: 2.5,    // and the current place must have gone unheard this long
   CHALLENGE_GAP: 2.0,    // a challenger's windows must follow each other within this
@@ -482,7 +483,10 @@ export function createDecider(songs, opts) {
     if (PENDING.song_id) conf = Math.max(conf, 0.7);
     S.conf = S.song_id == null ? Math.max(conf, now - S.conf_at < 3 ? S.conf * 0.8 : conf) : 0;
     S.conf_at = now;
-    const onTrack = r != null && r.track_votes != null && r.track_votes >= C.TRACK_MIN;
+    // on track = enough hashes at the expected place over the whole window AND at least one from
+    // its last 2 s (after a song change the window's tail no longer vouches for the old song)
+    const onTrack = r != null && r.track_votes != null && r.track_votes >= C.TRACK_MIN &&
+                    (r.track_recent == null || r.track_recent >= C.TRACK_RECENT_MIN);
     let changed = false;
     if (liveHit && !onTrack) changed = considerLive(m, heardAt, win, now);
     if (m) S.last_match = {song_id: m.song_id, offset: m.offset_sec, votes: m.votes, margin: m.margin, at: heardAt,

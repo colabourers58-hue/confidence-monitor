@@ -326,7 +326,7 @@
    *  track=(spec, tol, lyric_at). track = {song_id, at, tol}: at is on the lyric timeline and
    *  each ref is expected at at + its shift; or {refs: {ref_id: expected s in that ref}, at, tol}.
    *  Returns {votes, offset}: offset = where the best-fitting place is, on the lyric timeline. */
-  function trackCount(idx, hr, ho, n, track) {
+  function trackCount(idx, hr, ho, n, track, hq, recentFrom) {
     var expv = new Float64Array(idx.nref).fill(NaN), r, j;
     if (track.refs) {
       for (r = 0; r < idx.nref; r++) {
@@ -337,14 +337,14 @@
       var rs = idx.trackCache[track.song_id] || (idx.trackCache[track.song_id] = trackRefs(idx, track.song_id));
       for (j = 0; j < rs.length; j++) expv[rs[j]] = Math.fround((track.at + (idx.refs[rs[j]].shift || 0)) / SEC_PER_FRAME);
     }
-    var tolF = track.tol / SEC_PER_FRAME, bins = [];
+    var tolF = track.tol / SEC_PER_FRAME, bins = [], recent = 0;
     for (j = 0; j < n; j++) {
       var d = ho[j] - expv[hr[j]];                    // NaN for other refs: never within tol
-      if (Math.abs(d) <= tolF) bins.push(Math.floor(d / 2));
+      if (Math.abs(d) <= tolF) { bins.push(Math.floor(d / 2)); if (hq && hq[j] >= recentFrom) recent++; }
     }
-    if (!bins.length) return { votes: 0, offset: null };
+    if (!bins.length) return { votes: 0, offset: null, recent: hq ? 0 : null };
     var t = topTwo(bins);
-    return { votes: t.votes, offset: round3(track.at + t.bin * 2 * SEC_PER_FRAME) };
+    return { votes: t.votes, offset: round3(track.at + t.bin * 2 * SEC_PER_FRAME), recent: hq ? recent : null };
   }
 
   /** Match mono Float32Array PCM at 16 kHz. Mirrors server.py's use of fingerprint.match():
@@ -364,14 +364,14 @@
     var q = fingerprint(pcm, p.density, p.fan);
     var res = { song_id: null, ref_id: null, via: null, offset_sec: null, rec_offset_sec: null, votes: 0,
                 runner_up: 0, margin: 0, hits: 0, hashes: q.h.length, live: false, duration: null, cands: [],
-                track_votes: opts.track ? 0 : null, track_offset: null,
+                track_votes: opts.track ? 0 : null, track_offset: null, track_recent: opts.track ? 0 : null,
                 top_votes: opts.top ? 0 : null, top_offset: null };
     if (q.h.length === 0) return res;
     var cur = new Cursor(idx), nq = q.h.length, lens = new Int32Array(nq), pos = new Float64Array(nq), total = 0, j;
     for (j = 0; j < nq; j++) { lens[j] = seek(idx, cur, q.h[j]); pos[j] = cur.pos; total += lens[j]; }
     res.hits = total;
     if (total === 0 || total > maxHits) return res;
-    var keys = new Int32Array(total), hr = new Int32Array(total), ho = new Int32Array(total);
+    var keys = new Int32Array(total), hr = new Int32Array(total), ho = new Int32Array(total), hq = new Int32Array(total), qmax = 0;
     var n = 0, refStart = idx.refStart, excl = idx.excluded;
     for (j = 0; j < nq; j++) {
       var len = lens[j];
@@ -383,12 +383,17 @@
         while (refStart[r + 1] <= g) r++;            // postings ascend, so refs only move forward
         if (excl && excl[r]) continue;
         var off = g - refStart[r] - qt;
-        hr[n] = r; ho[n] = off;
+        hr[n] = r; ho[n] = off; hq[n] = qt; if (qt > qmax) qmax = qt;
         keys[n++] = r * 100000 + (off >> 1) + 40000;   // >>1 floors, like //
       }
     }
     if (n === 0) return res;
-    if (opts.track) { var tk = trackCount(idx, hr, ho, n, opts.track); res.track_votes = tk.votes; res.track_offset = tk.offset; }
+    if (opts.track) {
+      // recentFrom: hashes from the last 2 s of the window. Right after a song change most of the
+      // window is still the old song; its last seconds are not, so they can't vouch for it.
+      var tk = trackCount(idx, hr, ho, n, opts.track, hq, qmax - Math.round(2.0 / SEC_PER_FRAME));
+      res.track_votes = tk.votes; res.track_offset = tk.offset; res.track_recent = tk.recent;
+    }
     keys = keys.subarray(0, n);
     keys.sort();
     var best = 0, bestKey = 0, run = 1, pc = [], pk = [];
