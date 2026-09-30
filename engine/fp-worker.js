@@ -117,6 +117,7 @@ function load(base) {
       self.postMessage({ type: 'ready', refs: man.refs.length, bytes: total, ms: Math.round(now() - t0),
                          format: man.format, decide: man.decide || null });
       loadRoom();
+      setTimeout(function () { loadFP2(base); }, 1500);   // the learned second opinion: never delays the landmarks
     });
   }).catch(function (err) {
     loading = null;                                  // allow a retry with another 'load'
@@ -192,6 +193,99 @@ function save() {
 }
 function saveSoon() { if (!saveT) saveT = setTimeout(save, 15000); }
 
+// ---------------------------------------------------------------- learned fingerprint (fp2)
+// A second opinion for big reverberant rooms and live singing over the backing track (app/fp2.py,
+// app/RECOGNIZER.md). Loads after the landmarks, runs only when the landmarks aren't already sure,
+// and mirrors server.py FP2=1: one look above its own gate may take the screen, its candidates go
+// into the same evidence piles (scaled to landmark votes), its track evidence keeps a song on track.
+// Anything failing (no network for the runtime, no index, a slow device) leaves the landmarks alone.
+var FP2 = { lib: null, idx: null, sess: null, ort: null, off: false, ms: 0, n: 0, skip: false, why: null };
+var ORT_BASE = 'https://cdn.jsdelivr.net/npm/onnxruntime-web@1.20.1/dist/';
+function fp2Status(why) { FP2.why = why; self.postMessage({ type: 'fp2', ready: !!FP2.sess && !FP2.off, why: why, ms: Math.round(FP2.ms) }); }
+function loadOrt() {
+  if (self.ort) return Promise.resolve(self.ort);
+  try { importScripts(ORT_BASE + 'ort.wasm.min.js'); if (self.ort) return Promise.resolve(self.ort); } catch (e) { /* module worker */ }
+  return import(ORT_BASE + 'ort.wasm.min.mjs').then(function (m) { return m.default || m; });
+}
+function loadFP2Lib(base) {
+  if (self.FP2Lib) return Promise.resolve(self.FP2Lib);
+  return fetch(base + 'fp2.js' + (self.location.search || '')).then(function (r) {
+    if (!r.ok) throw new Error('fp2.js: HTTP ' + r.status);
+    return r.text();
+  }).then(function (src) { var mod = { exports: {} }; (new Function('module', 'exports', src))(mod, mod.exports); return mod.exports; });
+}
+function loadFP2(base) {
+  if (FP2.lib || FP2.off) return;
+  var man, lib, t0 = now();
+  loadFP2Lib(base).then(function (l) { lib = l; return fetch(base + 'fp2/manifest.json'); })
+    .then(function (r) { if (!r.ok) throw new Error('fp2/manifest.json: HTTP ' + r.status); return r.json(); })
+    .then(function (m) {
+      man = m;
+      var blob = new Uint8Array(man.total_bytes), offset = 0, chain = Promise.resolve();
+      man.shards.forEach(function (s) { var at = offset; offset += s.bytes;
+        chain = chain.then(function () { return readShard(base + 'fp2/' + s.file, blob, at, s.bytes, function () {}); }); });
+      return chain.then(function () { return blob; });
+    })
+    .then(function (blob) {
+      FP2.idx = lib.createFP2(man, blob, E.rfftMag); FP2.lib = lib;
+      return loadOrt();
+    })
+    .then(function (ort) {
+      FP2.ort = ort;
+      ort.env.wasm.numThreads = 1; ort.env.wasm.wasmPaths = ORT_BASE;
+      return ort.InferenceSession.create(base + 'fp2/' + man.model.file + (self.location.search || ''), { executionProviders: ['wasm'] });
+    })
+    .then(function (sess) {
+      var P = FP2.idx.P, n = 31, z = new Float32Array(n * P.nmel * P.segf), t1 = now();
+      return sess.run({ mel: new FP2.ort.Tensor('float32', z, [n, P.nmel, P.segf]) }).then(function () {
+        var t2 = now();
+        return sess.run({ mel: new FP2.ort.Tensor('float32', z, [n, P.nmel, P.segf]) }).then(function () {
+          var ms = now() - t2;
+          if (ms > 1500) { FP2.off = true; fp2Status('too slow: ' + Math.round(ms) + ' ms a look'); return; }
+          FP2.sess = sess; FP2.ms = ms; fp2Status('ready in ' + Math.round(now() - t0) + ' ms');
+        });
+      });
+    })
+    .catch(function (err) { FP2.off = true; fp2Status(String(err && err.message || err)); });
+}
+function fp2Wanted(out, m, pcm) {
+  if (!FP2.sess || FP2.off || pcm.length < 32000) return false;
+  var G = FP2.idx.G;
+  if (out.song_id && out.votes >= G.lm_strong_votes && out.margin >= G.lm_strong_margin) return false;   // landmarks sure
+  if (m.track && (out.track_votes || 0) >= G.lm_track_min) return false;                               // on track already
+  if (FP2.ms > 350) { FP2.skip = !FP2.skip; if (FP2.skip) return false; }                              // slow device: every other look
+  return true;
+}
+function fp2Run(pcm, m) {
+  var t0 = now(), lib = FP2.lib, idx = FP2.idx, f = lib.features(idx, pcm);
+  if (!f) return Promise.resolve(null);
+  return FP2.sess.run({ mel: new FP2.ort.Tensor('float32', f.P, [f.n, idx.P.nmel, idx.P.segf]) }).then(function (o) {
+    var emb = o[FP2.sess.outputNames[0]].data;
+    var a = lib.answer(idx, lib.search(idx, emb, f.qf), emb, f.qf, { track: m.track || null });
+    var ms = now() - t0; FP2.ms = FP2.n ? 0.8 * FP2.ms + 0.2 * ms : ms; FP2.n++;
+    if (FP2.ms > 1500) { FP2.off = true; fp2Status('too slow: ' + Math.round(FP2.ms) + ' ms a look'); }
+    a.ms = Math.round(ms);
+    return a;
+  });
+}
+function fp2Merge(out, a, m) {
+  var G = FP2.idx.G, sc = G.lm_scale, r1 = function (x) { return Math.round(x * 10) / 10; };
+  out.fp2 = { song_id: a.song_id, votes: a.votes, margin: a.margin, offset_sec: a.offset_sec, track_votes: a.track_votes, ms: a.ms };
+  out.cands = (out.cands || []).concat(a.cands.map(function (c) {
+    return { song_id: c.song_id, ref_id: c.ref_id, votes: r1(c.votes * sc), live: c.live, offset_sec: c.offset_sec, via: 'fp2' };
+  })).sort(function (x, y) { return y.votes - x.votes; });
+  if (m.track && a.track_votes != null && a.track_votes >= G.track_min) {
+    out.track_votes = Math.max(out.track_votes || 0, G.lm_track_min);
+    if (out.track_offset == null) out.track_offset = a.track_offset;
+  }
+  if (!out.song_id && a.song_id && a.votes >= G.min_votes && a.margin >= G.min_margin) {
+    out.song_id = a.song_id; out.ref_id = a.ref_id; out.via = 'fp2'; out.live = a.live; out.duration = a.duration;
+    out.offset_sec = a.offset_sec; out.rec_offset_sec = a.rec_offset_sec;
+    out.votes = r1(a.votes * sc); out.runner_up = r1(a.runner_up * sc); out.margin = a.margin;
+  }
+  return out;
+}
+
 self.onmessage = function (ev) {
   var m = ev.data || {};
   if (m.type === 'load') { load(m.base || './'); return; }
@@ -223,6 +317,12 @@ self.onmessage = function (ev) {
       delete out.peaks;
     }
     catch (err) { out = { error: String(err && err.message || err) }; }
+    if (!out.error && fp2Wanted(out, m, pcm)) {
+      fp2Run(pcm, m).then(function (a) { if (a) fp2Merge(out, a, m); })
+        .catch(function (err) { out.fp2_error = String(err && err.message || err); })
+        .then(function () { self.postMessage(result(out, m, win, t0)); });
+      return;
+    }
     self.postMessage(result(out, m, win, t0));
   }
 };

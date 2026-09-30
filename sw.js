@@ -1,6 +1,9 @@
 /* Keeps the whole app on the device. First visit stores everything; after that it
    never needs a network. Bump VERSION to push an update the next time it is online. */
-const VERSION = 'cm-202609301610';   // stamped by publish_site.sh
+const VERSION = 'cm-202609301613';   // stamped by publish_site.sh
+// ONNX Runtime Web (runs the learned fingerprint in engine/fp-worker.js), from its CDN, kept offline
+const ORT_BASE = 'https://cdn.jsdelivr.net/npm/onnxruntime-web@1.20.1/dist/';
+const ORT_FILES = ['ort.wasm.min.js', 'ort.wasm.min.mjs', 'ort-wasm-simd-threaded.mjs', 'ort-wasm-simd-threaded.wasm'];
 const SHELL = ['./', 'index.html', 'app.js', 'orb.js', 'manifest.webmanifest', 'manifest-ios.webmanifest', 'icon-512.png', 'icon-192.png',
                'data/songs.json', 'fonts/inter-600.woff2', 'fonts/inter-800.woff2', 'awake.mp4'];
 self.addEventListener('install', e => {
@@ -18,6 +21,13 @@ self.addEventListener('install', e => {
       // the engine's code straight from the server (a copy minutes old would pair an old engine with a new app)
       for(const f of files){ try{ await c.add(f.endsWith('.js') ? new Request(f, {cache:'reload'}) : f); }catch(err){} }
     }catch(err){}
+    // the learned fingerprint (engine/fp2) and its runtime: optional, each file on its own
+    try{
+      const m2 = await (await fetch('engine/fp2/manifest.json', {cache:'no-store'})).json();
+      const f2 = ['engine/fp2/manifest.json', 'engine/fp2.js', 'engine/fp2/' + m2.model.file, ...(m2.shards || []).map(s => 'engine/fp2/' + s.file)];
+      for(const f of f2){ try{ await c.add(f.endsWith('.js') ? new Request(f, {cache:'reload'}) : f); }catch(err){} }
+      for(const f of ORT_FILES){ try{ await c.add(new Request(ORT_BASE + f, {mode:'cors'})); }catch(err){} }
+    }catch(err){}
     self.skipWaiting();
   })());
 });
@@ -33,7 +43,9 @@ self.addEventListener('activate', e => {
 self.addEventListener('fetch', e => {
   if(e.request.method !== 'GET') return;
   const url = new URL(e.request.url);
-  const immutable = url.pathname.includes('/engine/') && !url.pathname.endsWith('manifest.json');
+  const ortFile = url.href.startsWith(ORT_BASE);
+  if(url.origin !== location.origin && !ortFile) return;
+  const immutable = (url.pathname.includes('/engine/') && !url.pathname.endsWith('manifest.json')) || ortFile;
   e.respondWith((async () => {
     const c = await caches.open(VERSION);
     if(immutable){
@@ -41,10 +53,11 @@ self.addEventListener('fetch', e => {
       if(hit) return hit;
     }
     try{
-      const res = await Promise.race([
+      // big immutable files (index shards, the runtime) get all the time they need
+      const res = immutable ? await fetch(e.request) : await Promise.race([
         fetch(e.request, {cache:'no-store'}),
         new Promise((_, rej) => setTimeout(() => rej(new Error('slow')), 3500))]);
-      if(res.ok && url.origin === location.origin) c.put(e.request, res.clone());
+      if(res.ok && (url.origin === location.origin || ortFile)) c.put(e.request, res.clone());
       return res;
     }catch(err){
       return (await c.match(e.request, {ignoreSearch:true})) || (await c.match('index.html')) || Response.error();
