@@ -1,7 +1,7 @@
 /* Everything runs on this device. No server, no network after the first load. */
-import {Orb} from './orb.js?v=202609302156';
+import {Orb} from './orb.js?v=202609302202';
 // Stamped by publish_site.sh on every publish ('dev' when served straight from this Mac).
-const APP_VERSION = '202609302156';
+const APP_VERSION = '202609302202';
 
 const $ = s => document.querySelector(s);
 // the orb is decoration: if this device can't draw it (old GPU, WebGL off, a shader error), the
@@ -48,10 +48,10 @@ async function loadPrivate(){
 let privateCount = 0;
 
 /* ---------------- engine (runs in a worker, on device) ---------------- */
-let worker = null, engineReady = false, loadMsgT = 0;
+let worker = null, engineReady = false, loadMsgT = 0, engineRetry = 0;
 function startEngine(){
-  try{ worker = new Worker('engine/fp-worker.js?v=202609302156', {type:'module'}); }
-  catch(e){ try{ worker = new Worker('engine/fp-worker.js?v=202609302156'); }catch(e2){ worker = null; } }
+  try{ worker = new Worker('engine/fp-worker.js?v=202609302202', {type:'module'}); }
+  catch(e){ try{ worker = new Worker('engine/fp-worker.js?v=202609302202'); }catch(e2){ worker = null; } }
   if(!worker){ $('#load').classList.add('done'); return; }
   worker.onmessage = ev => {
     const m = ev.data || {};
@@ -62,9 +62,14 @@ function startEngine(){
     if(m.type === 'result'){ lastLookAt = performance.now()/1000; onResult(m); }
     if(m.type === 'room'){ roomInfo = m; if(!$('#cp').hidden) renderRoom();
       if(m.error && !m.ready) console.warn('room memory:', m.error); }
-    if(m.type === 'error'){ $('#load').classList.add('done'); $('#loadMsg').hidden = true; console.warn('engine:', m.message); }
+    if(m.type === 'error'){ $('#load').classList.add('done'); $('#loadMsg').hidden = true; console.warn('engine:', m.message);
+      // a download that broke (slow or dropped connection) must not leave it deaf until someone reloads: try again,
+      // and what already arrived is kept by the offline store, so each try gets further
+      if(!engineReady){ const w = worker; worker = null; try{ w && w.terminate(); }catch(e){}
+        engineRetry = Math.min(60, (engineRetry || 3) * 2); setTimeout(() => { if(!engineReady && !worker) startEngine(); }, engineRetry * 1000); } }
   };
-  worker.onerror = () => { worker = null; $('#load').classList.add('done'); };
+  worker.onerror = () => { worker = null; $('#load').classList.add('done');
+    if(!engineReady){ engineRetry = Math.min(60, (engineRetry || 3) * 2); setTimeout(() => { if(!engineReady && !worker) startEngine(); }, engineRetry * 1000); } };
   worker.postMessage({type:'load', base: new URL('engine/', location.href).href});
 }
 
@@ -333,6 +338,14 @@ function showWhy(now, loud, up){
   el.classList.toggle('show', !!t); el.classList.toggle('bad', cls === 'bad');
   if(pill.textContent !== p) pill.textContent = p;
   pill.className = cls; pill.hidden = !p;
+  placeStat(pill);
+}
+function placeStat(pill){
+  const d = $('#dot'), corner = st.song && orbCorner && d;
+  if(corner){ const r = d.getBoundingClientRect();
+    pill.style.left = Math.max(8, r.left - 8) + 'px'; pill.style.top = (r.bottom + 10) + 'px'; pill.style.bottom = 'auto'; pill.style.transform = 'none'; }
+  else { const m = Math.min(innerWidth, innerHeight);
+    pill.style.left = '50%'; pill.style.top = Math.max(8, innerHeight/2 - m*0.27 - pill.offsetHeight - 14) + 'px'; pill.style.bottom = 'auto'; pill.style.transform = 'translateX(-50%)'; }
 }
 addEventListener('online', () => { whyAt = 0; }); addEventListener('offline', () => { whyAt = 0; });
 
