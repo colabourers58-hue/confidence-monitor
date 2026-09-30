@@ -1,7 +1,7 @@
 /* Everything runs on this device. No server, no network after the first load. */
-import {Orb} from './orb.js?v=202609301625';
+import {Orb} from './orb.js?v=202609301632';
 // Stamped by publish_site.sh on every publish ('dev' when served straight from this Mac).
-const APP_VERSION = '202609301625';
+const APP_VERSION = '202609301632';
 
 const $ = s => document.querySelector(s);
 // the orb is decoration: if this device can't draw it (old GPU, WebGL off, a shader error), the
@@ -50,8 +50,8 @@ let privateCount = 0;
 /* ---------------- engine (runs in a worker, on device) ---------------- */
 let worker = null, engineReady = false, loadMsgT = 0;
 function startEngine(){
-  try{ worker = new Worker('engine/fp-worker.js?v=202609301625', {type:'module'}); }
-  catch(e){ try{ worker = new Worker('engine/fp-worker.js?v=202609301625'); }catch(e2){ worker = null; } }
+  try{ worker = new Worker('engine/fp-worker.js?v=202609301632', {type:'module'}); }
+  catch(e){ try{ worker = new Worker('engine/fp-worker.js?v=202609301632'); }catch(e2){ worker = null; } }
   if(!worker){ $('#load').classList.add('done'); return; }
   worker.onmessage = ev => {
     const m = ev.data || {};
@@ -274,7 +274,7 @@ async function renderDevices(){
   let devs = [];
   try{ devs = (await navigator.mediaDevices.enumerateDevices()).filter(d => d.kind === 'audioinput'); }catch(e){}
   const tr = mstream && mstream.getAudioTracks()[0], current = tr && tr.getSettings().deviceId;
-  if(!devs.length){ list.innerHTML = '<div class="mrow">Tap to begin first, then open this again.</div>'; return; }
+  if(!devs.length || !devs.some(d => d.label)){ list.innerHTML = '<div class="mrow">Allow the microphone first (tap the screen), then open this again to see every input.</div>'; if(!devs.length) return; }
   devs.forEach(d => {
     const b = document.createElement('button');
     b.className = 'dev' + (d.deviceId === current ? ' on' : '');
@@ -285,6 +285,8 @@ async function renderDevices(){
   });
 }
 function openPanel(){ $('#cp').hidden = false; renderPanel(); renderNow(); renderDevices(); renderRoom(); }
+// a microphone or audio interface plugged in or out: the list follows while the panel is open
+try{ navigator.mediaDevices.addEventListener('devicechange', () => { if(!$('#cp').hidden) renderDevices(); }); }catch(e){}
 $('#cpForget') && ($('#cpForget').onclick = () => {
   const mac = serverMode;
   if((!worker && !mac) || !confirm(`Forget what ${mac ? 'the Mac has' : 'this device has'} learned about how songs sound in this room?`)) return;
