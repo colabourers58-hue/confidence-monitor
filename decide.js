@@ -47,7 +47,9 @@ export const DEFAULTS = {
   AGREE_SEC: 0.75,       // two windows must place the song within this of each other
   CANDIDATE_TTL: 12,     // forget an unconfirmed candidate after this long
   MUSIC_LEVEL: 0.015,    // mic RMS above this means music is playing in the room
-  LOUD_MISS_SEC: 45,     // (1 Oct: 10 dropped RIGHT songs when singing drowned the track and the orb kept coming back; Joel: roll with the timecode. A different song still takes over as soon as it's clearly heard) music playing, yet this song unconfirmed this long: something else is on (a new song takes over sooner, as soon as it is recognised)
+  LOUD_MISS_SEC: 20,     // split the difference (1 Oct): 10 dropped right songs, 45 was too stubborn for real song changes
+  SWITCH_MISS_SEC: 4,    // ...and only 4 (Joel: a song change is an emergency, ~5 s) if a DIFFERENT song is already building up evidence meanwhile
+  LOUD_MISS_OLD: 45,     // (1 Oct: 10 dropped RIGHT songs when singing drowned the track and the orb kept coming back; Joel: roll with the timecode. A different song still takes over as soon as it's clearly heard) music playing, yet this song unconfirmed this long: something else is on (a new song takes over sooner, as soon as it is recognised)
   // ALWAYS VERIFYING. While a song is up, every look checks it is still this song at this place.
   // When that stops holding while music plays, the app is in DOUBT: the corner orb grows so the
   // stage can see it's working it out, and it hunts for the new song at once (adding up evidence).
@@ -692,7 +694,13 @@ export function createDecider(songs, opts) {
     // a pause, a quiet bridge or an a cappella moment is silence, not a different song. (Sound means
     // music-level OR clearly above the room's floor: a soft song is not silence.)
     const lastHeard = Math.max(S.last_loud, S.last_sound), musicNow = now - lastHeard < 3.0;
-    if (musicNow && now - Math.max(S.last_confirm, S.music_since) < C.LOUD_MISS_SEC) return false;
+    const unconf = now - Math.max(S.last_confirm, S.music_since);
+    if (musicNow && unconf < C.LOUD_MISS_SEC) {
+      // the song up has gone unconfirmed while another song keeps building up evidence: the song changed. Let go
+      // now, so the new one comes up (it takes the screen as soon as its own evidence is enough)
+      if (unconf >= C.SWITCH_MISS_SEC) { const P = piles(); if (P && P.song_id !== S.song_id && P.looks >= 3 && P.votes >= 4 * C.ACC_FLOOR) { clear(); return true; } }
+      return false;
+    }
     if (!musicNow && now - lastHeard < C.SILENCE_SEC) return false;
     clear();
     return true;
