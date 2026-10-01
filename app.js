@@ -1,7 +1,7 @@
 /* Everything runs on this device. No server, no network after the first load. */
-import {Orb} from './orb.js?v=202610010009';
+import {Orb} from './orb.js?v=202610010732';
 // Stamped by publish_site.sh on every publish ('dev' when served straight from this Mac).
-const APP_VERSION = '202610010009';
+const APP_VERSION = '202610010732';
 
 const $ = s => document.querySelector(s);
 // the orb is decoration: if this device can't draw it (old GPU, WebGL off, a shader error), the
@@ -50,8 +50,8 @@ let privateCount = 0;
 /* ---------------- engine (runs in a worker, on device) ---------------- */
 let worker = null, engineReady = false, loadMsgT = 0, engineRetry = 0;
 function startEngine(){
-  try{ worker = new Worker('engine/fp-worker.js?v=202610010009', {type:'module'}); }
-  catch(e){ try{ worker = new Worker('engine/fp-worker.js?v=202610010009'); }catch(e2){ worker = null; } }
+  try{ worker = new Worker('engine/fp-worker.js?v=202610010732', {type:'module'}); }
+  catch(e){ try{ worker = new Worker('engine/fp-worker.js?v=202610010732'); }catch(e2){ worker = null; } }
   if(!worker){ $('#load').classList.add('done'); return; }
   worker.onmessage = ev => {
     const m = ev.data || {};
@@ -133,6 +133,10 @@ let actx, ring = [], ringLen = 0, level = 0, busy = false;
 // automatic gain: a quiet feed (a mixer line set low, a mic far from the speakers) is brought up to a working level
 // in software, so nobody has to touch the desk. rawLevel = what actually arrives (for 'no sound' checks).
 let rawLevel = 0, agcPeak = 0.02, agcGain = 1, clipFrac = 0;
+// automatic gain is OFF (1 Oct: it boosted a laptop mic's room noise up to 40x, so the app thought music was always
+// playing and dropped right songs; and it clipped loud singing after a quiet moment). A plain, steady input level
+// set by hand in Settings replaces it: 0 dB = exactly what arrives.
+let inputDb = 0; try{ inputDb = parseFloat(localStorage.getItem('cm.inputdb') || '0') || 0; }catch(e){}
 const AGC_TARGET = 0.12, AGC_MAX = 40;
 let mstream = null, analyser = null, fbuf = null, inputId = null;
 let srcNode = null, procNode = null, lastFrameAt = 0;   // lastFrameAt: when sound last arrived (word search watches it)
@@ -201,9 +205,8 @@ async function startMic0(deviceId, opts){
     const d = e.inputBuffer.getChannelData(0);
     let s = 0; for(let i=0;i<d.length;i++) s += d[i]*d[i];
     rawLevel = Math.sqrt(s/d.length);
-    agcPeak = Math.max(rawLevel, agcPeak * 0.9927, 1e-5);                  // the music's recent loudness (8 s half-life)
-    agcGain = 0.92 * agcGain + 0.08 * Math.min(AGC_MAX, Math.max(0.25, AGC_TARGET / agcPeak));   // up for a quiet feed, down for a loud one
-    let clip = 0; for(let i=0;i<d.length;i++) if(Math.abs(d[i]) > 0.985) clip++;          // distorted before it reached us: only the desk can fix it
+    agcGain = Math.pow(10, inputDb / 20);                                   // the hand-set level, nothing automatic
+    let clip = 0; for(let i=0;i<d.length;i++) if(Math.abs(d[i]) > 0.985) clip++;          // distorted before it reached us
     clipFrac = 0.96 * clipFrac + 0.04 * (clip / d.length);
     level = rawLevel * agcGain;
     const g = new Float32Array(d.length); for(let i=0;i<d.length;i++) g[i] = Math.max(-1, Math.min(1, d[i] * agcGain));
@@ -339,17 +342,17 @@ function showWhy(now, loud, up){
     p = `Listening \u00b7 ${mic}` + (ago == null ? '' : ` \u00b7 checked ${ago} s ago`) + (online ? '' : ' \u00b7 offline, using saved songs');
     if(updateWaiting) p += ' \u00b7 update ready (applies next time Prompter is opened)';
     if(ago != null && ago > 10){ cls = 'bad'; t = 'Prompter has stopped checking the music. Reload the page'; }
-    if(clipFrac > 0.004){ t = 'The sound is distorting (too loud before it reaches Prompter). Turn the feed down at the desk'; cls = 'bad'; }
+    if(clipFrac > 0.02){ t = 'Input very hot: turn it down at the desk'; cls = 'warn'; }
     else if(up && dec && dec.state.doubt) { t = 'Checking: the music doesn’t match this song right now'; cls = 'warn'; }
     else if(!up && !st.song && music){
-      if(agcGain >= AGC_MAX * 0.95 && level * 3.2 < 0.13){ t = 'The sound is extremely faint even boosted. Turn the feed up at the desk'; cls = 'warn'; }
+      if(level * 3.2 < 0.02){ t = 'Very quiet input: turn it up (Settings \u203a Input level)'; cls = 'warn'; }
       else if(now - attemptStart > 15){ t = (closest && now - closest.at < 8)
           ? `Hearing music but haven’t recognised it yet (closest: ${(SONGS[closest.id] || {}).title || closest.id}). Type the song in Settings`
           : 'Hearing music but haven’t recognised it yet. Type the song in Settings'; cls = 'warn'; }
     }
   }
   // NEVER cover the lyrics (Joel, 30 Sep): while a song is up, any message goes into the small top line instead
-  if(st.song && t){ p = t; t = ''; }
+  if(t){ p = t; t = ''; }                                         // never a banner over the screen (Joel, 1 Oct)
   if(el.textContent !== t) el.textContent = t;
   el.classList.toggle('show', !!t); el.classList.toggle('bad', false);
   if(pill.textContent !== p) pill.textContent = p;
@@ -362,13 +365,13 @@ function drawMeter(now){
   const box = $('#meter'), pill = $('#stat'); if(!box || !pill) return;
   box.hidden = !mstream || pill.hidden;
   if(box.hidden) return;
-  const db = rawLevel > 0 ? Math.max(-60, 20 * Math.log10(rawLevel * Math.SQRT2)) : -60;   // RMS -> about peak-equivalent dBFS
+  const db = rawLevel > 0 ? Math.max(-60, 20 * Math.log10(rawLevel * agcGain * Math.SQRT2)) : -60;   // what Prompter hears, after the Input level
   if(db >= mPeak || now - mPeakAt > 1.5){ mPeak = db; mPeakAt = now; }
   const pc = v => ((v + 60) / 60 * 100).toFixed(1) + '%';
   box.querySelector('i').style.width = pc(db);
   box.querySelector('b').style.left = pc(mPeak);
   box.querySelector('i').style.background = clipFrac > 0.004 || db > -3 ? '#ff453a' : db > -12 ? '#ffd60a' : '#30d158';
-  box.querySelector('span').textContent = rawLevel > 0 ? `${Math.round(db)} dB` + (agcGain > 1.5 ? ` · boosted ×${agcGain.toFixed(0)}` : '') : 'no signal';
+  box.querySelector('span').textContent = rawLevel > 0 ? `${Math.round(db)} dB` : 'no signal';
   const r = pill.getBoundingClientRect();
   if(box.classList.contains('compact')){ box.style.left = (r.right + 10) + 'px'; box.style.top = (r.top + r.height/2 - box.offsetHeight/2) + 'px'; box.style.width = '300px'; }
   else { box.style.left = r.left + 'px'; box.style.top = (r.bottom + 6) + 'px'; box.style.width = Math.max(220, r.width) + 'px'; }
@@ -432,6 +435,10 @@ function tellSong(song){
 }
 $('#tellQ') && ($('#tellQ').oninput = renderTell);
 $('#tellQ') && ($('#tellQ').onkeydown = e => { if(e.key === 'Enter'){ const r = fuzzySongs($('#tellQ').value)[0]; if(r) tellSong(r.s); } e.stopPropagation(); });
+function setInputDb(v){ inputDb = Math.max(-24, Math.min(24, v)); try{ localStorage.setItem('cm.inputdb', String(inputDb)); }catch(e){}
+  const r = $('#inDb'), o = $('#inDbV'); if(r) r.value = inputDb; if(o) o.textContent = (inputDb > 0 ? '+' : '') + inputDb + ' dB'; }
+$('#inDb') && ($('#inDb').oninput = e => setInputDb(parseFloat(e.target.value)));
+setInputDb(inputDb);
 function openPanel(){ $('#cp').hidden = false; renderPanel(); renderNow(); renderDevices(); renderRoom(); }
 // a microphone or audio interface plugged in or out: the list follows while the panel is open
 try{ navigator.mediaDevices.addEventListener('devicechange', () => { if(!$('#cp').hidden) renderDevices(); }); }catch(e){}
@@ -608,10 +615,14 @@ function placeOrb(){
   const home = (!listening || !orbCorner) ? 'middle' : 'corner';
   if(home === orbHome) return;
   orbHome = home;
-  if(home === 'corner') orb.toCorner(orbCorner[0], orbCorner[1], cornerSize()); else orb.toListening();
+  if(home === 'corner') (() => { const z = cornerSize(), c = fitCorner(orbCorner[0], orbCorner[1], z); orb.toCorner(c[0], c[1], z); })(); else orb.toListening();
 }
 // in its corner the orb shows it's working: bigger while it hears music and hunts for the song,
 // biggest as it closes in, calm and small when the room is quiet
+function fitCorner(x, y, size){                 // keep the whole orb (and its glow) on screen, at any size
+  const m = Math.min(innerWidth, innerHeight), hw = innerWidth / 2 / m, hh = innerHeight / 2 / m, r = size * 1.25 + 0.02;
+  return [Math.max(-hw + r, Math.min(hw - r, x)), Math.max(-hh + r, Math.min(hh - r, y))];
+}
 function cornerSize(){
   const hunting = !serverMode && dec && dec.state.searching ? 1 : 0;
   const loud = Math.min(1, level * 3.2 / 0.12);
@@ -621,7 +632,7 @@ function cornerSize(){
 let cornerAt = 0;
 function breatheCorner(now){          // refresh the corner size a few times a second, smoothly
   if(st.song || orbHome !== 'corner' || now - cornerAt < 0.25) return;
-  cornerAt = now; orb.toCorner(orbCorner[0], orbCorner[1], cornerSize());
+  cornerAt = now; (() => { const z = cornerSize(), c = fitCorner(orbCorner[0], orbCorner[1], z); orb.toCorner(c[0], c[1], z); })();
 }
 function release(){
   if(st.song) logEvent('release', `Let go of ${st.song.title}`);

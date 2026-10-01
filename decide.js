@@ -47,7 +47,7 @@ export const DEFAULTS = {
   AGREE_SEC: 0.75,       // two windows must place the song within this of each other
   CANDIDATE_TTL: 12,     // forget an unconfirmed candidate after this long
   MUSIC_LEVEL: 0.015,    // mic RMS above this means music is playing in the room
-  LOUD_MISS_SEC: 10,     // (was 20; Joel: a changed song must come up fast) music playing, yet this song unconfirmed this long: something else is on (a new song takes over sooner, as soon as it is recognised)
+  LOUD_MISS_SEC: 45,     // (1 Oct: 10 dropped RIGHT songs when singing drowned the track and the orb kept coming back; Joel: roll with the timecode. A different song still takes over as soon as it's clearly heard) music playing, yet this song unconfirmed this long: something else is on (a new song takes over sooner, as soon as it is recognised)
   // ALWAYS VERIFYING. While a song is up, every look checks it is still this song at this place.
   // When that stops holding while music plays, the app is in DOUBT: the corner orb grows so the
   // stage can see it's working it out, and it hunts for the new song at once (adding up evidence).
