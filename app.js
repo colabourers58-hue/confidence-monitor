@@ -1,7 +1,7 @@
 /* Everything runs on this device. No server, no network after the first load. */
-import {Orb} from './orb.js?v=202609302248';
+import {Orb} from './orb.js?v=202610010009';
 // Stamped by publish_site.sh on every publish ('dev' when served straight from this Mac).
-const APP_VERSION = '202609302248';
+const APP_VERSION = '202610010009';
 
 const $ = s => document.querySelector(s);
 // the orb is decoration: if this device can't draw it (old GPU, WebGL off, a shader error), the
@@ -50,8 +50,8 @@ let privateCount = 0;
 /* ---------------- engine (runs in a worker, on device) ---------------- */
 let worker = null, engineReady = false, loadMsgT = 0, engineRetry = 0;
 function startEngine(){
-  try{ worker = new Worker('engine/fp-worker.js?v=202609302248', {type:'module'}); }
-  catch(e){ try{ worker = new Worker('engine/fp-worker.js?v=202609302248'); }catch(e2){ worker = null; } }
+  try{ worker = new Worker('engine/fp-worker.js?v=202610010009', {type:'module'}); }
+  catch(e){ try{ worker = new Worker('engine/fp-worker.js?v=202610010009'); }catch(e2){ worker = null; } }
   if(!worker){ $('#load').classList.add('done'); return; }
   worker.onmessage = ev => {
     const m = ev.data || {};
@@ -348,8 +348,10 @@ function showWhy(now, loud, up){
           : 'Hearing music but haven’t recognised it yet. Type the song in Settings'; cls = 'warn'; }
     }
   }
+  // NEVER cover the lyrics (Joel, 30 Sep): while a song is up, any message goes into the small top line instead
+  if(st.song && t){ p = t; t = ''; }
   if(el.textContent !== t) el.textContent = t;
-  el.classList.toggle('show', !!t); el.classList.toggle('bad', cls === 'bad');
+  el.classList.toggle('show', !!t); el.classList.toggle('bad', false);
   if(pill.textContent !== p) pill.textContent = p;
   pill.className = cls; pill.hidden = !p;
   placeStat(pill);
