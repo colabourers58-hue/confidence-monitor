@@ -1,7 +1,7 @@
 /* Everything runs on this device. No server, no network after the first load. */
-import {Orb} from './orb.js?v=202610011151';
+import {Orb} from './orb.js?v=202610012018';
 // Stamped by publish_site.sh on every publish ('dev' when served straight from this Mac).
-const APP_VERSION = '202610011151';
+const APP_VERSION = '202610012018';
 
 const $ = s => document.querySelector(s);
 // the orb is decoration: if this device can't draw it (old GPU, WebGL off, a shader error), the
@@ -50,8 +50,8 @@ let privateCount = 0;
 /* ---------------- engine (runs in a worker, on device) ---------------- */
 let worker = null, engineReady = false, loadMsgT = 0, engineRetry = 0;
 function startEngine(){
-  try{ worker = new Worker('engine/fp-worker.js?v=202610011151', {type:'module'}); }
-  catch(e){ try{ worker = new Worker('engine/fp-worker.js?v=202610011151'); }catch(e2){ worker = null; } }
+  try{ worker = new Worker('engine/fp-worker.js?v=202610012018', {type:'module'}); }
+  catch(e){ try{ worker = new Worker('engine/fp-worker.js?v=202610012018'); }catch(e2){ worker = null; } }
   if(!worker){ $('#load').classList.add('done'); return; }
   worker.onmessage = ev => {
     const m = ev.data || {};
@@ -704,7 +704,8 @@ function sectionName(t){
 let lineEls = [], activeCue = -2, gaps = [];
 // a long wait before the next line (an intro, an instrumental) shows three dots that fill as the time
 // passes, like Apple Music, so the singer sees the next line coming (Joel)
-const GAP_MIN = 6.5;              // seconds between two lines' starts before it counts as a wait
+const GAP_SILENCE = 7.5;          // seconds of NO singing (after the line has been sung) before dots show: about two bars, not a long held line (Joel, 1 Oct)
+const lineDur = text => Math.max(1.8, Math.min(7, 0.42 * text.split(/\s+/).length + 0.8));   // about how long a line takes to sing
 function buildSong(song){
   cues = song.cues; lastSec = -1; activeCue = -2;
   $('#title').textContent = song.title;
@@ -726,9 +727,10 @@ function buildSong(song){
   cues.forEach((c,k) => {
     if(c.s){ brk = true; return; }
     if(c.t != null){
-      if(prev == null){ if(c.t >= 4) addGap(0, c.t, -1); }                      // the intro
-      else if(c.t - prev.t >= GAP_MIN) addGap(prev.t + Math.min(4, (c.t - prev.t)/2), c.t, prev.k);
-      prev = {t: c.t, k};
+      if(prev == null){ if(c.t >= 6) addGap(0, c.t, -1); }                      // the intro
+      else { const sung = lineDur(prev.text);                                     // the dots come once the line is over
+        if(c.t - prev.t - sung >= GAP_SILENCE) addGap(prev.t + sung + 1, c.t, prev.k); }
+      prev = {t: c.t, k, text: c.text};
     }
     const p = document.createElement('p'); p.className = 'ln' + (brk ? ' brk' : ''); brk = false;
     p.textContent = c.text; p.dataset.i = k; col.appendChild(p); lineEls[k] = p;
