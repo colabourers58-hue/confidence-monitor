@@ -21,13 +21,13 @@
  },
  "source": {
   "file": "app/library/fingerprints.npz",
-  "postings": 32179357,
-  "bytes": 321835478,
-  "sha256": "80752ec3c92130eea3e1813bc5c73600dae334025cddc2d6d5516e6d1805e34a",
+  "postings": 32261966,
+  "bytes": 322661676,
+  "sha256": "31744e48df9c5717dff5917206e2407f4d4fb60c5f741777a8d1e5abe6e659c0",
   "refs_json": true
  },
  "nbuckets": 262657,
- "universe": 21594309,
+ "universe": 21652823,
  "sections": [
   {
    "name": "bucket_bits",
@@ -39,50 +39,50 @@
    "name": "stream",
    "type": "bits",
    "offset": 1050632,
-   "bytes": 84288290,
-   "bits": 674306318
+   "bytes": 84480910,
+   "bits": 675847278
   }
  ],
  "stats": {
-  "distinct_hashes": 2443011,
-  "postings": 32179357,
-  "stream_bits": 674306318,
-  "unary_ones": 31648010,
+  "distinct_hashes": 2443769,
+  "postings": 32261966,
+  "stream_bits": 675847278,
+  "unary_ones": 31728115,
   "max_rice_k": 24
  },
  "checksum": [
-  23442881,
-  2795716524
+  818045801,
+  2956554027
  ],
- "total_bytes": 85338922,
+ "total_bytes": 85531542,
  "shards": [
   {
-   "file": "index/fp-00-534360b269.bin",
+   "file": "index/fp-00-4eb2f10a2c.bin",
    "bytes": 14000000
   },
   {
-   "file": "index/fp-01-c8ff149bde.bin",
+   "file": "index/fp-01-8c00bf33f5.bin",
    "bytes": 14000000
   },
   {
-   "file": "index/fp-02-f95af86e6a.bin",
+   "file": "index/fp-02-5d4b75ede7.bin",
    "bytes": 14000000
   },
   {
-   "file": "index/fp-03-66bcfc2509.bin",
+   "file": "index/fp-03-a51f7269b9.bin",
    "bytes": 14000000
   },
   {
-   "file": "index/fp-04-af756463d0.bin",
+   "file": "index/fp-04-7555a1f2f6.bin",
    "bytes": 14000000
   },
   {
-   "file": "index/fp-05-5fda8c5aff.bin",
+   "file": "index/fp-05-349c3ce250.bin",
    "bytes": 14000000
   },
   {
-   "file": "index/fp-06-cc8d9f9129.bin",
-   "bytes": 1338922
+   "file": "index/fp-06-ae3a5d6713.bin",
+   "bytes": 1531542
   }
  ],
  "refs": [
@@ -10777,6 +10777,28 @@
    "excluded": false,
    "duration": 504.4,
    "start": 21563832
+  },
+  {
+   "ref_id": "goddidnotcondemntheworld78::god-did-not-condemn-the-world-78",
+   "song_id": "goddidnotcondemntheworld78",
+   "via": "release",
+   "live": false,
+   "shift": -0.008,
+   "aligned": true,
+   "excluded": false,
+   "duration": 485.0,
+   "start": 21594309
+  },
+  {
+   "ref_id": "goddidnotcondemntheworld78",
+   "song_id": "goddidnotcondemntheworld78",
+   "via": "instrumental",
+   "live": false,
+   "shift": -0.004,
+   "aligned": true,
+   "excluded": false,
+   "duration": 485.0,
+   "start": 21623566
   }
  ],
  "decide": {
