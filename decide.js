@@ -160,6 +160,12 @@ export function createDecider(songs, opts) {
   // the music can say WHICH song but never WHERE. They start at the top when the beat comes in after quiet,
   // the music never moves the place, and only the singing moves the line (Joel, 30 Sep: Loyalty and Disloyalty)
   const LOOP = new Set(C.LOOPS || []);
+  // versions of one song (God Did Not Condemn the World at 75 / 76 / 78 BPM): one family. Once one is up the app
+  // never jumps to another version mid-song, and a fresh pick leans to the preferred one (Joel, 2 Oct: v23 = the 76)
+  const FAMILY = {goddidnotcondemntheworld: 'gdnc', goddidnotcondemntheworld76: 'gdnc', goddidnotcondemntheworld78: 'gdnc'};
+  const PREFER = {gdnc: 'goddidnotcondemntheworld76'};
+  const fam = id => FAMILY[id] || id;
+  const sameFam = (a, b) => a != null && b != null && fam(a) === fam(b);
   const song = typeof songs === 'function' ? songs : id => songs[id];
   const S = {
     song_id: null,      // what is up
@@ -205,6 +211,11 @@ export function createDecider(songs, opts) {
   const isLive = m => !!(m && (m.live || flag(m.song_id, 'untimed')));
 
   function take(id, started, now, key) {
+    if (PREFER[fam(id)] && id !== PREFER[fam(id)] && song(PREFER[fam(id)])) {
+      const to = PREFER[fam(id)], a = song(id), b = song(to);
+      if (a && b && a.duration && b.duration && started != null) started = now - (now - started) * (b.duration / a.duration);
+      id = to;
+    }
     const loop = LOOP.has(id);
     if (loop && S.music_since != null && S.music_real && now - S.music_since <= C.TOP_SEC) started = S.music_since;
     Object.assign(S, {song_id: id, started_at: started, last_confirm: now, on_track_at: now, taken_at: now,
@@ -331,6 +342,9 @@ export function createDecider(songs, opts) {
     // a looping song: added-up evidence only confirms it once it's up (never re-places it); fresh, it takes the top
     if (LOOP.has(winner)) {
       if (S.song_id === winner) { S.last_confirm = now; EVIDENCE = []; return false; }
+    }
+    if (S.song_id != null && sameFam(S.song_id, winner)) { S.last_confirm = now; EVIDENCE = []; return false; }
+    if (LOOP.has(winner)) {
       if (S.music_since != null && S.music_real && heardAt - S.music_since <= C.TOP_SEC) { st = S.music_since; how += ', from the top (a looping song)'; }
     }
     r = Object.assign({}, r, {song_id: winner, ref_id: (cands.find(c => c.song_id === winner && c.key === pkey) || {}).ref_id || r.ref_id});
@@ -396,6 +410,8 @@ export function createDecider(songs, opts) {
     const started = heardAt - (m.offset_sec + win);
     // a looping song that's up: the music confirms it's still on, and never moves the place
     if (S.song_id === m.song_id && LOOP.has(m.song_id)) { S.last_confirm = now; PENDING.song_id = null; return false; }
+    // another version of the song that's up: it's still this song. Confirm, never switch versions mid-song
+    if (S.song_id != null && S.song_id !== m.song_id && sameFam(S.song_id, m.song_id)) { S.last_confirm = now; PENDING.song_id = null; return false; }
     // already locked on this song and still in step: note that we can still hear it
     const mk = m.key || 0;
     if (S.song_id === m.song_id && S.started_at != null && Math.abs(S.started_at - started) < C.RESYNC_SEC) {
