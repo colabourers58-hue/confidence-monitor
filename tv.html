@@ -1,0 +1,23 @@
+<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Prompter TV check</title>
+<style>body{background:#000;color:#fff;font-family:Arial,sans-serif;font-size:28px;margin:30px}h1{font-size:40px}.ok{color:#30d158}.no{color:#ff453a}
+button{font-size:36px;padding:20px 40px;margin:20px 0;background:#0a84ff;color:#fff;border:0;border-radius:12px}#bar{height:40px;background:#30d158;width:0}#wrap{width:80%;height:40px;background:#333;margin-top:10px}small{color:#aaa;font-size:20px}</style></head>
+<body><h1>Prompter TV check</h1><div id="r"></div>
+<button id="b" onclick="mic()">Test microphone</button><div id="m"></div><div id="wrap"><div id="bar"></div></div>
+<p><small id="ua"></small></p>
+<script>
+var r=document.getElementById('r');function line(t,ok){var d=document.createElement('div');d.className=ok?'ok':'no';d.innerHTML=(ok?'&#10003; ':'&#10007; ')+t;r.appendChild(d);}
+var md=navigator.mediaDevices&&navigator.mediaDevices.getUserMedia;var old=navigator.getUserMedia||navigator.webkitGetUserMedia||navigator.mozGetUserMedia;
+line('Microphone access for websites',!!(md||old));
+line('Audio processing (AudioContext)',!!(window.AudioContext||window.webkitAudioContext));
+line('Background workers',!!window.Worker);
+line('WebAssembly',typeof WebAssembly==='object');
+var mod=('noModule' in document.createElement('script'));line('Modern JavaScript modules',mod);
+var gl=false;try{var c=document.createElement('canvas');gl=!!(c.getContext('webgl')||c.getContext('experimental-webgl'));}catch(e){}line('WebGL graphics',gl);
+line('Secure page (https)',location.protocol==='https:');
+document.getElementById('ua').textContent=navigator.userAgent;
+function mic(){var m=document.getElementById('m');m.textContent='Asking for the microphone...';
+ function ok(s){m.className='ok';m.textContent='MICROPHONE WORKS - clap or talk and watch the bar';try{var AC=window.AudioContext||window.webkitAudioContext;var ac=new AC();if(ac.resume)ac.resume();var src=ac.createMediaStreamSource(s);var an=ac.createAnalyser();an.fftSize=1024;src.connect(an);var buf=new Uint8Array(an.fftSize);
+  setInterval(function(){an.getByteTimeDomainData(buf);var mx=0;for(var i=0;i<buf.length;i++){var v=Math.abs(buf[i]-128);if(v>mx)mx=v;}document.getElementById('bar').style.width=Math.min(100,mx*1.2)+'%';},100);}catch(e){m.textContent+=' (but no audio processing: '+e+')';}}
+ function no(e){m.className='no';m.textContent='NO MICROPHONE: '+(e&&(e.name||e.message)||e);}
+ try{if(md){navigator.mediaDevices.getUserMedia({audio:true}).then(ok,no);}else if(old){old.call(navigator,{audio:true},ok,no);}else no('this browser does not allow websites to use a microphone');}catch(e){no(e);}}
+</script></body></html>
