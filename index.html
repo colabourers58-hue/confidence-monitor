@@ -42,9 +42,9 @@ if(/iPad|iPhone|iPod/.test(navigator.userAgent)||(/Macintosh/.test(navigator.use
        -webkit-font-smoothing:antialiased;color:var(--label);-webkit-user-select:none;user-select:none}
   /* the pointer hides only while it sits still, so a stage screen stays clean but a mouse is never lost */
   body.still, body.still *{cursor:none !important}
-  #orb{position:fixed;inset:0;width:100%;height:100%;z-index:0}
+  #orb{position:fixed;top:0;right:0;bottom:0;left:0;width:100%;height:100%;z-index:0}
 
-  #ui{position:fixed;inset:0;z-index:1;display:flex;flex-direction:column;
+  #ui{position:fixed;top:0;right:0;bottom:0;left:0;z-index:1;display:flex;flex-direction:column;
       padding:env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
       opacity:0;transition:opacity .6s var(--ease)}
   body.song #ui{opacity:1}
@@ -130,14 +130,14 @@ if(/iPad|iPhone|iPod/.test(navigator.userAgent)||(/Macintosh/.test(navigator.use
     font-weight:600;font-size:2.4vh;font-variant-numeric:tabular-nums;opacity:0;transition:opacity .25s;pointer-events:none}
   #zoomTag.show{opacity:1}
 
-  #gate{position:fixed;inset:0;z-index:8;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;
+  #gate{position:fixed;top:0;right:0;bottom:0;left:0;z-index:8;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;
         padding-bottom:13vh;gap:1.4vh;cursor:pointer;transition:opacity .5s var(--ease)}
   #gate b{font-weight:600;font-size:clamp(17px,2.8vh,30px);letter-spacing:-.01em}
   #gate small{color:var(--label-3);font-weight:500;font-size:clamp(12px,1.8vh,20px)}
   #gate.gone{opacity:0;pointer-events:none}
 
   /* ---------- the welcome sheet: shown once, the way a new iOS app says hello ---------- */
-  #welcome{position:fixed;inset:0;z-index:20;display:flex;justify-content:center;overflow-y:auto;touch-action:pan-y;
+  #welcome{position:fixed;top:0;right:0;bottom:0;left:0;z-index:20;display:flex;justify-content:center;overflow-y:auto;touch-action:pan-y;
            background:rgba(0,0,0,.62);-webkit-backdrop-filter:blur(28px) saturate(1.4);backdrop-filter:blur(28px) saturate(1.4);
            transition:opacity .45s var(--ease),transform .45s var(--ease)}
   #welcome[hidden]{display:none}
@@ -160,7 +160,7 @@ if(/iPad|iPhone|iPod/.test(navigator.userAgent)||(/Macintosh/.test(navigator.use
   #welcome .keep{color:var(--label-3)}
   #welcome button.second{background:rgba(10,140,255,.18);color:#62b6ff}
   /* iPhone/iPad can't be added in one tap (Apple doesn't allow it): point at Safari's Share button */
-  #saveHelp{position:fixed;inset:0;z-index:40;display:flex;align-items:flex-end;justify-content:center;
+  #saveHelp{position:fixed;top:0;right:0;bottom:0;left:0;z-index:40;display:flex;align-items:flex-end;justify-content:center;
             background:rgba(0,0,0,.55);-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px)}
   #saveHelp[hidden]{display:none}
   #saveHelp .card{margin:0 16px max(84px,calc(env(safe-area-inset-bottom) + 70px));max-width:460px;padding:22px 22px 20px;border-radius:20px;
@@ -176,7 +176,7 @@ if(/iPad|iPhone|iPod/.test(navigator.userAgent)||(/Macintosh/.test(navigator.use
   #cpInstall{font-size:15px;font-weight:600;padding:10px 14px;background:rgba(10,140,255,.18);color:#62b6ff;margin-top:10px;margin-left:8px}
   #cpAbout{font-size:15px;font-weight:600;padding:10px 14px;background:rgba(120,120,128,.24);color:var(--label);margin-top:10px;margin-left:8px}
   /* the control panel: what it hears, what it did, how fast */
-  #cp{position:fixed;inset:0;z-index:10;background:rgba(0,0,0,.72);-webkit-backdrop-filter:blur(24px);backdrop-filter:blur(24px);
+  #cp{position:fixed;top:0;right:0;bottom:0;left:0;z-index:10;background:rgba(0,0,0,.72);-webkit-backdrop-filter:blur(24px);backdrop-filter:blur(24px);
       overflow:auto;cursor:auto;-webkit-user-select:text;user-select:text}
   #cp[hidden]{display:none}
   #cp .wrap{max-width:760px;margin:0 auto;padding:calc(18px + env(safe-area-inset-top)) 18px calc(28px + env(safe-area-inset-bottom));
@@ -304,6 +304,6 @@ if(/iPad|iPhone|iPod/.test(navigator.userAgent)||(/Macintosh/.test(navigator.use
   <li>Tap the Share button <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2l4.2 4.2-1.4 1.4L13 5.8V15h-2V5.8L9.2 7.6 7.8 6.2zM5 10h3v2H6v8h12v-8h-2v-2h3a1 1 0 0 1 1 1v10a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V11a1 1 0 0 1 1-1z"/></svg> <span id="shareWhere">at the bottom of the screen</span>.</li>
   <li>Choose <b style="display:inline;font-size:inherit">Add to Home Screen</b>, then Add.</li></ol></div><div class="arrow"></div></div>
 <div id="gate"><b>Tap to begin</b><small>One tap allows the microphone. After that it runs on its own.</small></div>
-<script type="module" src="app.js?v=202610020713"></script>
+<script type="module" src="app.js?v=202610021325"></script>
 </body>
 </html>

@@ -1,7 +1,7 @@
 /* Everything runs on this device. No server, no network after the first load. */
-import {Orb} from './orb.js?v=202610020713';
+import {Orb} from './orb.js?v=202610021325';
 // Stamped by publish_site.sh on every publish ('dev' when served straight from this Mac).
-const APP_VERSION = '202610020713';
+const APP_VERSION = '202610021325';
 
 const $ = s => document.querySelector(s);
 // the orb is decoration: if this device can't draw it (old GPU, WebGL off, a shader error), the
@@ -50,8 +50,8 @@ let privateCount = 0;
 /* ---------------- engine (runs in a worker, on device) ---------------- */
 let worker = null, engineReady = false, loadMsgT = 0, engineRetry = 0;
 function startEngine(){
-  try{ worker = new Worker('engine/fp-worker.js?v=202610020713', {type:'module'}); }
-  catch(e){ try{ worker = new Worker('engine/fp-worker.js?v=202610020713'); }catch(e2){ worker = null; } }
+  try{ worker = new Worker('engine/fp-worker.js?v=202610021325', {type:'module'}); }
+  catch(e){ try{ worker = new Worker('engine/fp-worker.js?v=202610021325'); }catch(e2){ worker = null; } }
   if(!worker){ $('#load').classList.add('done'); return; }
   worker.onmessage = ev => {
     const m = ev.data || {};
@@ -1278,6 +1278,12 @@ function showVersion(){
 document.addEventListener('visibilitychange', () => { if(document.visibilityState === 'visible') checkUpdate(); });
 setInterval(checkUpdate, 3 * 60 * 1000);          // left open all day: still picks up a new version between songs
 
+// for testing without audio:  ?demo=<song id>@<seconds into the song>
+const demo = new URLSearchParams(location.search).get('demo');
+const asrfile = new URLSearchParams(location.search).get('asrfile');
+// start-up, as one async function: top-level await needs Chrome 89+, and smart TVs run older engines
+// (a Nasco Android 11 TV's browser is Chrome 83: with top-level await the whole app failed to load)
+(async () => {
 await loadSongs();
 refit();
 showVersion();
@@ -1296,9 +1302,6 @@ if(serverMode){
   checkUpdate();
 }
 
-// for testing without audio:  ?demo=<song id>@<seconds into the song>
-const demo = new URLSearchParams(location.search).get('demo');
-const asrfile = new URLSearchParams(location.search).get('asrfile');
 if(asrfile && !serverMode){ $('#gate').classList.add('gone'); asrFeedFile(asrfile).catch(e => console.warn('asrfile:', e)); }
 if(demo){
   const [id, at] = demo.split('@');
@@ -1333,4 +1336,5 @@ frame();
   try{ granted = (await navigator.permissions.query({name:'microphone'})).state === 'granted'; }catch(e){}
   try{ seen = localStorage.getItem('cm.welcome') === WELCOME; granted = granted || localStorage.getItem('cm.micok') === '1'; }catch(e){}
   if(granted && seen && !$('#gate').classList.contains('gone')) begin();
+})();
 })();
