@@ -10937,8 +10937,8 @@
    "song_id": "thereisnosalvation",
    "via": "release",
    "live": false,
-   "shift": 0.0,
-   "aligned": false,
+   "shift": -0.004,
+   "aligned": true,
    "excluded": false,
    "duration": 496.364,
    "start": 21916828
@@ -10949,7 +10949,7 @@
    "via": "instrumental",
    "live": false,
    "shift": 0.0,
-   "aligned": false,
+   "aligned": true,
    "excluded": false,
    "duration": 496.364,
    "start": 21947138
