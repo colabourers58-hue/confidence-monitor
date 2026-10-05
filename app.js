@@ -1,7 +1,7 @@
 /* Everything runs on this device. No server, no network after the first load. */
-import {Orb} from './orb.js?v=202610051859';
+import {Orb} from './orb.js?v=202610051935';
 // Stamped by publish_site.sh on every publish ('dev' when served straight from this Mac).
-const APP_VERSION = '202610051859';
+const APP_VERSION = '202610051935';
 
 const $ = s => document.querySelector(s);
 // the orb is decoration: if this device can't draw it (old GPU, WebGL off, a shader error), the
@@ -50,8 +50,8 @@ let privateCount = 0;
 /* ---------------- engine (runs in a worker, on device) ---------------- */
 let worker = null, engineReady = false, loadMsgT = 0, engineRetry = 0;
 function startEngine(){
-  try{ worker = new Worker('engine/fp-worker.js?v=202610051859', {type:'module'}); }
-  catch(e){ try{ worker = new Worker('engine/fp-worker.js?v=202610051859'); }catch(e2){ worker = null; } }
+  try{ worker = new Worker('engine/fp-worker.js?v=202610051935', {type:'module'}); }
+  catch(e){ try{ worker = new Worker('engine/fp-worker.js?v=202610051935'); }catch(e2){ worker = null; } }
   if(!worker){ $('#load').classList.add('done'); return; }
   worker.onmessage = ev => {
     const m = ev.data || {};
@@ -375,16 +375,32 @@ function drawMeter(now){
   box.querySelector('i').style.background = clipFrac > 0.004 || db > -3 ? '#ff453a' : db > -12 ? '#ffd60a' : '#30d158';
   box.querySelector('span').textContent = rawLevel > 0 ? `${Math.round(db)} dB` : 'no signal';
   const r = pill.getBoundingClientRect();
-  if(box.classList.contains('compact')){ box.style.left = (r.right + 10) + 'px'; box.style.top = (r.top + r.height/2 - box.offsetHeight/2) + 'px'; box.style.width = '300px'; }
+  if(box.classList.contains('compact')){ box.style.left = (r.right + 10) + 'px'; box.style.top = (r.top + r.height/2 - box.offsetHeight/2) + 'px'; box.style.width = meterW + 'px'; }
   else { box.style.left = r.left + 'px'; box.style.top = (r.bottom + 6) + 'px'; box.style.width = Math.max(220, r.width) + 'px'; }
 }
+const STAT_ROW_W = 1000, METER_MIN = 120;   // below this width the status line goes under the title (index.html @media max-width:999px)
+let meterW = 300;
 function placeStat(pill){
   // a song is up: one small line right after its title. Nothing up: above the orb.
   const t = $('#title'), compact = true;                            // always in the top line, song or no song (Joel)
   pill.classList.toggle('compact', compact); $('#meter') && $('#meter').classList.toggle('compact', compact);
   if(compact){ const r = t.getBoundingClientRect(), tw = Math.min(r.width, t.scrollWidth), se = $('#sect');
-    const after = st.song && se && se.classList.contains('show') && se.textContent ? se.getBoundingClientRect().right : st.song && t.textContent ? r.left + tw : r.left - 18;
-    pill.style.left = (after + 18) + 'px'; pill.style.top = (r.top + r.height/2 - pill.offsetHeight/2) + 'px'; pill.style.bottom = 'auto'; pill.style.transform = 'none'; }
+    // a narrow screen (phone, iPad upright): with a song up, the light and meter get their own line under the title
+    // (#bar makes room for it, index.html), so they never run off the edge or cover the title or the clock
+    const second = st.song && innerWidth < STAT_ROW_W, dot = $('#dot').getBoundingClientRect();
+    const after = second ? dot.left - 18 : st.song && se && se.classList.contains('show') && se.textContent ? se.getBoundingClientRect().right : st.song && t.textContent ? r.left + tw : r.left - 18;
+    const x = after + 18, ck = $('#clock'), cr = ck.getBoundingClientRect();
+    // the right-hand limit: the screen's safe edge, or the song's clock when it shares the line
+    let limit = innerWidth - (parseFloat(getComputedStyle($('#ui')).paddingRight) || 0) - 12;
+    if(!second && st.song && ck.textContent && cr.width && document.body.classList.contains('song') && !document.body.classList.contains('words')) limit = Math.min(limit, cr.left - 12);
+    pill.style.maxWidth = ''; const natural = Math.min(pill.scrollWidth, pill.offsetWidth || pill.scrollWidth), room = limit - x;
+    // the whole light and a 300 px meter when they fit (a TV, a laptop); else the meter gives way first, then the words
+    if(natural + 10 + 300 <= room) meterW = 300;
+    else { meterW = Math.max(METER_MIN, Math.min(300, room - natural - 10));
+           if(natural + 10 + meterW > room) pill.style.maxWidth = Math.max(90, room - 10 - meterW) + 'px'; }
+    pill.style.left = x + 'px';
+    pill.style.top = (second ? r.bottom + Math.max(6, r.height * 0.45) : r.top + r.height/2 - pill.offsetHeight/2) + 'px';
+    pill.style.bottom = 'auto'; pill.style.transform = 'none'; }
   else { const m = Math.min(innerWidth, innerHeight);
     pill.style.left = '50%'; pill.style.top = Math.max(8, innerHeight/2 - m*0.27 - pill.offsetHeight - 14) + 'px'; pill.style.bottom = 'auto'; pill.style.transform = 'translateX(-50%)'; }
 }
@@ -607,14 +623,14 @@ function holdSong(song, c){
     setTimeout(() => { if(st.song === song){ const [x,y] = dotUV(); orb.toStatus(x, y); orbCorner = [x, y]; } }, 380);
   }
 }
-/* Where the orb lives when no song is up. Before the first song: the middle. After that it never
-   takes over the screen again: it waits in its corner, listening. Only when it is NOT listening
-   (microphone off, waiting for a tap) does it come back to the middle. */
+/* Where the orb lives when no song is up: the middle, listening, every time (Joel, 5 Oct: "when the system
+   is at rest listening ... the orb should rest in the middle and be listening, only moving to the side when a
+   song is identified"). A song caught glides it to the title (catchSong); a song let go glides it back here.
+   (The corner resting place below is kept for 'corner' but no longer chosen.) */
 let orbCorner = null, orbHome = '';
 function placeOrb(){
   if(st.song) return;
-  const listening = $('#gate').classList.contains('gone');
-  const home = (!listening || !orbCorner) ? 'middle' : 'corner';
+  const home = 'middle';
   if(home === orbHome) return;
   orbHome = home;
   if(home === 'corner') (() => { const z = cornerSize(), c = fitCorner(orbCorner[0], orbCorner[1], z); orb.toCorner(c[0], c[1], z); })(); else orb.toListening();
@@ -737,6 +753,7 @@ function buildSong(song){
     const p = document.createElement('p'); p.className = 'ln' + (brk ? ' brk' : ''); brk = false;
     p.textContent = c.text; p.dataset.i = k; col.appendChild(p); lineEls[k] = p;
   });
+  fitLines();
   col.style.transition = 'none'; col.style.transform = 'translateY(50vh)';
   requestAnimationFrame(() => { col.style.transition = ''; });
 }
@@ -786,10 +803,22 @@ function refit(){
   // default lyric size (Joel: 30% bigger than the first version, for reading from the stage);
   // the pinch / +/- zoom multiplies on top of it
   $('#col').style.fontSize = (Math.min(innerHeight*0.12, Math.max(28, innerWidth*0.125)) * zoom).toFixed(1) + 'px';
+  fitLines();
   if(typeof activeCue === 'string' || typeof activeCue === 'number'){
     const k = parseInt(activeCue, 10); if(!isNaN(k)) requestAnimationFrame(() => scrollTo(k));
     else if(/^g\d+$/.test(activeCue)){ const g = gaps[+activeCue.slice(1)]; if(g) requestAnimationFrame(() => scrollToEl(g.el)); }
   }
+}
+// a very long line (a phone held upright, a 140-letter line) must never be taller than the clear middle of the
+// lyric area, or its first and last words go under the fades: only such a line is set smaller, just enough to fit
+function fitLines(){
+  const view = $('#view'); if(!view || !view.clientHeight) return;
+  const max = view.clientHeight * 0.62;       // the fades leave ~70% clear around the middle; the sung line is drawn 8% bigger
+  const els = lineEls.filter(Boolean);
+  els.forEach(el => { if(el.style.fontSize) el.style.fontSize = ''; });
+  els.filter(el => el.offsetHeight > max).forEach(el => {         // one layout for the lot; only the long ones are touched
+    for(let n = 0, f = 1; n < 4 && el.offsetHeight > max; n++){ f *= Math.max(0.6, max / el.offsetHeight); el.style.fontSize = f.toFixed(3) + 'em'; }
+  });
 }
 function setZoom(z){
   zoom = Math.max(0.6, Math.min(3.0, z));
@@ -1399,6 +1428,7 @@ const asrfile = new URLSearchParams(location.search).get('asrfile');
 (async () => {
 await loadSongs();
 refit();
+try{ document.fonts.ready.then(() => refit()); }catch(e){}   // the lyric font arriving late changes how long lines wrap
 showVersion();
 refreshInstall();
 try{ const r = await fetch('fpstatus', {cache:'no-store'}); if(r.ok) serverMode = !!(await r.json()).ready; }catch(e){}

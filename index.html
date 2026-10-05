@@ -38,6 +38,7 @@ if(/iPad|iPhone|iPod/.test(navigator.userAgent)||(/Macintosh/.test(navigator.use
   *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
   ::selection{background:var(--live);color:#000}
   html,body{height:100%;background:#000;overflow:hidden;overscroll-behavior:none;touch-action:none}
+  html{-webkit-text-size-adjust:100%;text-size-adjust:100%}   /* iPhone turned sideways must not enlarge the text by itself */
   body{font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display","SF Pro Text",StageFallback,sans-serif;
        -webkit-font-smoothing:antialiased;color:var(--label);-webkit-user-select:none;user-select:none}
   /* the pointer hides only while it sits still, so a stage screen stays clean but a mouse is never lost */
@@ -100,7 +101,7 @@ if(/iPad|iPhone|iPod/.test(navigator.userAgent)||(/Macintosh/.test(navigator.use
   /* both ends melt away gradually (an eased fade, not a straight ramp), and the strip keeps
      clear of the corner button so nothing ever sits on top of a pill */
   #mapWrap{flex:0 0 auto;overflow:hidden;height:12.5vh;min-height:64px;display:flex;align-items:center;
-    margin:0 max(60px,4vw);padding:0 0 max(1.2vh,env(safe-area-inset-bottom));
+    margin:0 max(60px,4vw);padding:0 0 1.2vh;   /* #ui already keeps clear of the home bar */
     --fade:linear-gradient(90deg,transparent 0,rgba(0,0,0,.12) 3%,rgba(0,0,0,.4) 7%,rgba(0,0,0,.78) 11%,#000 15%,
                            #000 85%,rgba(0,0,0,.78) 89%,rgba(0,0,0,.4) 93%,rgba(0,0,0,.12) 97%,transparent 100%);
     -webkit-mask-image:var(--fade);mask-image:var(--fade)}
@@ -179,6 +180,7 @@ if(/iPad|iPhone|iPod/.test(navigator.userAgent)||(/Macintosh/.test(navigator.use
   #cp{position:fixed;top:0;right:0;bottom:0;left:0;z-index:10;background:rgba(0,0,0,.72);-webkit-backdrop-filter:blur(24px);backdrop-filter:blur(24px);
       overflow:auto;cursor:auto;-webkit-user-select:text;user-select:text}
   #cp[hidden]{display:none}
+  #cp{touch-action:pan-y;overscroll-behavior:contain;-webkit-overflow-scrolling:touch}
   #cp .wrap{max-width:760px;margin:0 auto;padding:calc(18px + env(safe-area-inset-top)) 18px calc(28px + env(safe-area-inset-bottom));
             display:flex;flex-direction:column;gap:16px}
   #cp header{display:flex;align-items:center;justify-content:space-between}
@@ -244,6 +246,18 @@ if(/iPad|iPhone|iPod/.test(navigator.userAgent)||(/Macintosh/.test(navigator.use
   #loadMsg{position:fixed;left:50%;bottom:calc(5vh + 20px);transform:translateX(-50%);z-index:7;width:min(420px,86vw);
            text-align:center;font-size:clamp(14px,1.9vh,18px);line-height:1.35;color:var(--label-2);transition:opacity .5s}
   #loadMsg[hidden]{display:block;opacity:0;pointer-events:none}
+  /* ---------- phones and iPads upright (desktop and TV untouched) ---------- */
+  /* narrow: with a song up the status light and meter sit on their own line under the title (app.js placeStat) */
+  @media (max-width:999px){
+    #bar{padding-bottom:calc(1.8vmin + max(28px,3.6vh))}
+  }
+  @media (max-width:699px){
+    /* the section strip: phone-sized pills, so more than one section shows, and the lyrics get the room */
+    #mapWrap{height:auto;min-height:0;padding:10px 0 max(10px,1.2vh)}
+    #map{font-size:clamp(15px,4.4vw,19px)}
+    #sect{display:none}       /* the strip below already shows the section: the song's name gets the room */
+  }
+  @media (pointer:coarse){ #cp .forget{padding:8px 12px} }
   /* old TV engines (Chrome 83) ignore flex 'gap': the same spacing as margins (html.nogap, set by a check below) */
   .nogap #bar > * + *{margin-left:.72em}
   .nogap /* a long wait: three dots that fill one after another as the time passes (collapsed unless it's now) */
@@ -320,6 +334,6 @@ if(/iPad|iPhone|iPod/.test(navigator.userAgent)||(/Macintosh/.test(navigator.use
   <li>Choose <b style="display:inline;font-size:inherit">Add to Home Screen</b>, then Add.</li></ol></div><div class="arrow"></div></div>
 <div id="gate"><b>Tap to begin</b><small>One tap allows the microphone. After that it runs on its own.</small></div>
 <script>(function(){var f=document.createElement("div");f.style.cssText="display:flex;flex-direction:column;row-gap:1px;position:absolute";f.appendChild(document.createElement("div"));f.appendChild(document.createElement("div"));document.documentElement.appendChild(f);if(f.scrollHeight!==1)document.documentElement.className+=" nogap";f.parentNode.removeChild(f);})();</script>
-<script type="module" src="app.js?v=202610051859"></script>
+<script type="module" src="app.js?v=202610051935"></script>
 </body>
 </html>

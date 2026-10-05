@@ -21,13 +21,13 @@
  },
  "source": {
   "file": "app/library/fingerprints.npz",
-  "postings": 32723224,
-  "bytes": 327274799,
-  "sha256": "982ea4415d625e0ee2e5f498709f132262243675e7037a8fcc83b7cb355bc2fe",
+  "postings": 32722498,
+  "bytes": 327267539,
+  "sha256": "b6239916cac507cfb32d5d23955060e51cffadf513ffb87017f6e694154b05bc",
   "refs_json": true
  },
  "nbuckets": 262657,
- "universe": 21977467,
+ "universe": 21977448,
  "sections": [
   {
    "name": "bucket_bits",
@@ -39,50 +39,50 @@
    "name": "stream",
    "type": "bits",
    "offset": 1050632,
-   "bytes": 85632902,
-   "bits": 685063213
+   "bytes": 85630435,
+   "bits": 685043476
   }
  ],
  "stats": {
-  "distinct_hashes": 2453925,
-  "postings": 32723224,
-  "stream_bits": 685063213,
-  "unary_ones": 32411856,
+  "distinct_hashes": 2453813,
+  "postings": 32722498,
+  "stream_bits": 685043476,
+  "unary_ones": 32401826,
   "max_rice_k": 24
  },
  "checksum": [
-  472605851,
-  3880916635
+  255885678,
+  2527156603
  ],
- "total_bytes": 86683534,
+ "total_bytes": 86681067,
  "shards": [
   {
-   "file": "index/fp-00-11e78780a6.bin",
+   "file": "index/fp-00-65e79ef0a7.bin",
    "bytes": 14000000
   },
   {
-   "file": "index/fp-01-79b1a68703.bin",
+   "file": "index/fp-01-39f8624842.bin",
    "bytes": 14000000
   },
   {
-   "file": "index/fp-02-b04df1ad84.bin",
+   "file": "index/fp-02-eaeb85ada3.bin",
    "bytes": 14000000
   },
   {
-   "file": "index/fp-03-071305b537.bin",
+   "file": "index/fp-03-c7819f21f7.bin",
    "bytes": 14000000
   },
   {
-   "file": "index/fp-04-50d36fa735.bin",
+   "file": "index/fp-04-55dc6a3e6a.bin",
    "bytes": 14000000
   },
   {
-   "file": "index/fp-05-ca3d6394cc.bin",
+   "file": "index/fp-05-b76b9119c5.bin",
    "bytes": 14000000
   },
   {
-   "file": "index/fp-06-da74549415.bin",
-   "bytes": 2683534
+   "file": "index/fp-06-31acaca1c5.bin",
+   "bytes": 2681067
   }
  ],
  "refs": [
@@ -10889,28 +10889,6 @@
    "start": 21814940
   },
   {
-   "ref_id": "thereisnosalvation::there-is-no-salvation",
-   "song_id": "thereisnosalvation",
-   "via": "release",
-   "live": false,
-   "shift": -0.004,
-   "aligned": true,
-   "excluded": false,
-   "duration": 496.364,
-   "start": 21831984
-  },
-  {
-   "ref_id": "thereisnosalvation",
-   "song_id": "thereisnosalvation",
-   "via": "instrumental",
-   "live": false,
-   "shift": 0.0,
-   "aligned": true,
-   "excluded": false,
-   "duration": 496.364,
-   "start": 21862247
-  },
-  {
    "ref_id": "eleventhhourlabourers::eleventh-hour-labourers",
    "song_id": "eleventhhourlabourers",
    "via": "release",
@@ -10919,7 +10897,7 @@
    "aligned": true,
    "excluded": false,
    "duration": 383.169,
-   "start": 21892623
+   "start": 21831984
   },
   {
    "ref_id": "prayerofjesus::prayer-of-jesus",
@@ -10930,7 +10908,7 @@
    "aligned": true,
    "excluded": false,
    "duration": 292.445,
-   "start": 21916136
+   "start": 21855497
   },
   {
    "ref_id": "iknowthethoughtsithink::i-know-the-thoughts-i-think",
@@ -10941,7 +10919,7 @@
    "aligned": true,
    "excluded": false,
    "duration": 264.132,
-   "start": 21934198
+   "start": 21873559
   },
   {
    "ref_id": "multitudes::multitudes",
@@ -10952,7 +10930,29 @@
    "aligned": true,
    "excluded": false,
    "duration": 441.923,
-   "start": 21950181
+   "start": 21889542
+  },
+  {
+   "ref_id": "thereisnosalvation::there-is-no-salvation",
+   "song_id": "thereisnosalvation",
+   "via": "release",
+   "live": false,
+   "shift": 0.0,
+   "aligned": false,
+   "excluded": false,
+   "duration": 496.364,
+   "start": 21916828
+  },
+  {
+   "ref_id": "thereisnosalvation",
+   "song_id": "thereisnosalvation",
+   "via": "instrumental",
+   "live": false,
+   "shift": 0.0,
+   "aligned": false,
+   "excluded": false,
+   "duration": 496.364,
+   "start": 21947138
   }
  ],
  "decide": {
