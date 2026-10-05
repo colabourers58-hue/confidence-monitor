@@ -63,11 +63,17 @@ function getEngine(base) {
 }
 
 function readShard(url, into, offset, expect, onBytes) {
-  return fetch(url).then(function (r) {
+  // a download that stops delivering (weak signal) must not leave it deaf forever: after 30 s with no
+  // bytes it is dropped, which reports an error, and app.js starts the load again (stored files come back at once)
+  var ac = typeof AbortController === 'function' ? new AbortController() : null, timer = null;
+  var arm = function () { clearTimeout(timer); if (ac) timer = setTimeout(function () { ac.abort(); }, 30000); };
+  arm();
+  return fetch(url, ac ? { signal: ac.signal } : {}).then(function (r) {
     if (!r.ok) throw new Error(url + ': HTTP ' + r.status);
     if (r.body && r.body.getReader) {
       var reader = r.body.getReader(), got = 0;
       var pump = function () {
+        arm();
         return reader.read().then(function (s) {
           if (s.done) return got;
           if (got + s.value.byteLength > expect) throw new Error(url + ': larger than the manifest says');
@@ -77,13 +83,18 @@ function readShard(url, into, offset, expect, onBytes) {
       };
       return pump();
     }
+    clearTimeout(timer); if (ac) timer = setTimeout(function () { ac.abort(); }, 600000);   // no streaming here: the whole file, 10 min
     return r.arrayBuffer().then(function (ab) {
       if (ab.byteLength > expect) throw new Error(url + ': larger than the manifest says');
       into.set(new Uint8Array(ab), offset); onBytes(ab.byteLength);
       return ab.byteLength;
     });
   }).then(function (n) {
+    clearTimeout(timer);
     if (n !== expect) throw new Error(url + ': ' + n + ' bytes, expected ' + expect);
+  }, function (err) {
+    clearTimeout(timer);
+    throw (ac && ac.signal.aborted) ? new Error(url + ': the connection stopped delivering') : err;
   });
 }
 
@@ -200,7 +211,9 @@ function saveSoon() { if (!saveT) saveT = setTimeout(save, 15000); }
 // into the same evidence piles (scaled to landmark votes), its track evidence keeps a song on track.
 // Anything failing (no network for the runtime, no index, a slow device) leaves the landmarks alone.
 var FP2 = { lib: null, idx: null, sess: null, ort: null, off: false, ms: 0, n: 0, skip: false, why: null };
-var ORT_BASE = 'https://cdn.jsdelivr.net/npm/onnxruntime-web@1.20.1/dist/';
+// ONNX Runtime Web, served from this site (web/vendor/, pinned in web/vendor.json; app/build_vendor.py):
+// never a CDN, so nothing here needs a third-party origin, online or offline
+var ORT_BASE = new URL('../vendor/ort-1.20.1/', self.location.href).href;
 function fp2Status(why) { FP2.why = why; self.postMessage({ type: 'fp2', ready: !!FP2.sess && !FP2.off, why: why, ms: Math.round(FP2.ms) }); }
 function loadOrt() {
   if (self.ort) return Promise.resolve(self.ort);

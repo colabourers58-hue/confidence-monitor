@@ -1,0 +1,26 @@
+{
+ "about": "Third-party runtimes the app needs offline, served from this site (never a CDN at run time). Fetched into web/vendor/ (gitignored) by app/build_vendor.py; publish_site.sh ships them and app/stamp_site.sh checks every file.",
+ "packages": [
+  {
+   "dir": "vendor/ort-1.20.1/",
+   "src": "https://cdn.jsdelivr.net/npm/onnxruntime-web@1.20.1/dist/",
+   "for": "engine/fp-worker.js (the learned fingerprint)",
+   "files": [
+    {"file": "ort.wasm.min.js", "bytes": 49026, "sha256": "e66568724f8848e57cc2a56e4bea3a5b86ce3ff81b2da11eac8ed7ab02b27bd4"},
+    {"file": "ort.wasm.min.mjs", "bytes": 48904, "sha256": "f53ed4792e758e7232f779d479eb8931b97ff3ab2e3b9a33ee00d1251ffdaad6"},
+    {"file": "ort-wasm-simd-threaded.mjs", "bytes": 24618, "sha256": "745eb7c0ce6f18a6aa521971b2877babc7ffb27eecb58ab3bc6e5ef4692672e8"},
+    {"file": "ort-wasm-simd-threaded.wasm", "bytes": 11246032, "sha256": "207d02be4591c156b0a98f024f3d58005b5b04c92274d759fb390338c63559ea"}
+   ]
+  },
+  {
+   "dir": "vendor/transformers-3.8.1/",
+   "src": "https://cdn.jsdelivr.net/npm/@huggingface/transformers@3.8.1/dist/",
+   "for": "asr/asr-worker.js (speech on the device)",
+   "files": [
+    {"file": "transformers.min.js", "bytes": 888173, "sha256": "aa5002b70e789798da263f5f99c62bd3e8fcd0c119258a493c40c180648365fa"},
+    {"file": "ort-wasm-simd-threaded.jsep.mjs", "bytes": 44484, "sha256": "08fb86ec433c78bfb032c5d84a68b8e8e5a8d81268fa39e24314179a5767a5b9"},
+    {"file": "ort-wasm-simd-threaded.jsep.wasm", "bytes": 21596019, "sha256": "c46655e8a94afc45338d4cb2b840475f88e5012d524509916e505079c00bfa39"}
+   ]
+  }
+ ]
+}

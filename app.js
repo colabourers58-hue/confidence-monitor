@@ -1,7 +1,7 @@
 /* Everything runs on this device. No server, no network after the first load. */
-import {Orb} from './orb.js?v=202610021350';
+import {Orb} from './orb.js?v=202610051859';
 // Stamped by publish_site.sh on every publish ('dev' when served straight from this Mac).
-const APP_VERSION = '202610021350';
+const APP_VERSION = '202610051859';
 
 const $ = s => document.querySelector(s);
 // the orb is decoration: if this device can't draw it (old GPU, WebGL off, a shader error), the
@@ -50,8 +50,8 @@ let privateCount = 0;
 /* ---------------- engine (runs in a worker, on device) ---------------- */
 let worker = null, engineReady = false, loadMsgT = 0, engineRetry = 0;
 function startEngine(){
-  try{ worker = new Worker('engine/fp-worker.js?v=202610021350', {type:'module'}); }
-  catch(e){ try{ worker = new Worker('engine/fp-worker.js?v=202610021350'); }catch(e2){ worker = null; } }
+  try{ worker = new Worker('engine/fp-worker.js?v=202610051859', {type:'module'}); }
+  catch(e){ try{ worker = new Worker('engine/fp-worker.js?v=202610051859'); }catch(e2){ worker = null; } }
   if(!worker){ $('#load').classList.add('done'); return; }
   worker.onmessage = ev => {
     const m = ev.data || {};
@@ -332,15 +332,16 @@ function showWhy(now, loud, up){
   else if(tr && (tr.readyState === 'ended' || tr.muted) || (actx && actx.state !== 'running')){
     p = 'Microphone off'; cls = 'bad'; t = gateUp ? '' : `The microphone is off. ${CLICK} anywhere to turn it back on`; }
   else if(!engineReady){
-    if(!online){ p = 'Offline, songs not saved'; cls = 'bad'; t = 'No internet, and this computer hasn’t finished saving the songs. Connect to Wi-Fi'; }
+    if(!online && !OFF.ready){ p = 'Offline, songs not saved'; cls = 'bad'; t = 'No internet, and this device hasn’t finished saving the songs. Connect to Wi-Fi'; }
+    else if(!online){ p = 'Getting the songs ready'; cls = 'warn'; }
     else { const pc = Math.round(100 * loadPct); p = `Getting the songs ready${pc ? ' ' + pc + '%' : ''}`; cls = 'warn';
       if(music) t = `Getting the songs ready${pc ? '… ' + pc + '%' : '…'} It can’t recognise anything until this finishes`; } }
   else if(silent > 8){ p = `No sound from ${mic}`; cls = silent > 30 ? 'bad' : 'warn';
     if(silent > 30) t = `No sound is reaching Prompter from “${mic}”. Check the cable or the feed, or pick the input in Settings`; }
   else {
     const ago = lastLookAt ? Math.max(0, Math.round(now - lastLookAt)) : null;
-    p = `Listening \u00b7 ${mic}` + (ago == null ? '' : ` \u00b7 checked ${ago} s ago`) + (online ? '' : ' \u00b7 offline, using saved songs');
-    if(updateWaiting) p += ' \u00b7 update ready (applies next time Prompter is opened)';
+    p = `Listening \u00b7 ${mic}` + (ago == null ? '' : ` \u00b7 checked ${ago} s ago`);
+    if(updateWaiting) p += ' \u00b7 update saved (applies next time Prompter is opened)';
     if(ago != null && ago > 10){ cls = 'bad'; t = 'Prompter has stopped checking the music. Reload the page'; }
     if(clipFrac > 0.02){ t = 'Input very hot: turn it down at the desk'; cls = 'warn'; }
     else if(up && dec && dec.state.doubt) { t = 'Checking: the music doesn’t match this song right now'; cls = 'warn'; }
@@ -353,6 +354,7 @@ function showWhy(now, loud, up){
   }
   // NEVER cover the lyrics (Joel, 30 Sep): while a song is up, any message goes into the small top line instead
   if(t){ p = t; t = ''; }                                         // never a banner over the screen (Joel, 1 Oct)
+  else if(p && !serverMode){ const o = offlineSeg(); if(o) p += ' \u00b7 ' + o; }   // offline ready, or how far the saving is
   if(el.textContent !== t) el.textContent = t;
   el.classList.toggle('show', !!t); el.classList.toggle('bad', false);
   if(pill.textContent !== p) pill.textContent = p;
@@ -439,7 +441,7 @@ function setInputDb(v){ inputDb = Math.max(-24, Math.min(24, v)); try{ localStor
   const r = $('#inDb'), o = $('#inDbV'); if(r) r.value = inputDb; if(o) o.textContent = (inputDb > 0 ? '+' : '') + inputDb + ' dB'; }
 $('#inDb') && ($('#inDb').oninput = e => setInputDb(parseFloat(e.target.value)));
 setInputDb(inputDb);
-function openPanel(){ $('#cp').hidden = false; renderPanel(); renderNow(); renderDevices(); renderRoom(); }
+function openPanel(){ $('#cp').hidden = false; renderPanel(); renderNow(); renderDevices(); renderRoom(); renderOffline(); }
 // a microphone or audio interface plugged in or out: the list follows while the panel is open
 try{ navigator.mediaDevices.addEventListener('devicechange', () => { if(!$('#cp').hidden) renderDevices(); }); }catch(e){}
 $('#cpForget') && ($('#cpForget').onclick = () => {
@@ -1218,51 +1220,162 @@ document.body.classList.toggle('big', zoom >= 1.35);
 document.body.classList.toggle('huge', zoom >= 1.85);
 
 /* ---------------- everything kept on the device ----------------
-   The big files (the song index, the learned fingerprint, the speech model and their runtimes,
-   ~180 MB) are fetched here, through sw.js once it has taken control, which stores each one. Not in
-   sw.js's install: a browser allows an install only about 5 minutes, and on a slow connection
-   (0.6 MB/s measured on 30 Sep) that failed, and then nothing worked offline. One file at a time;
-   what is already stored comes straight back. */
-async function keepOffline(){
-  if(APP_VERSION === 'dev' || !navigator.onLine) return;
-  await navigator.serviceWorker.ready;
-  if(!navigator.serviceWorker.controller)
-    await new Promise(r => { navigator.serviceWorker.addEventListener('controllerchange', r, {once: true}); setTimeout(r, 20000); });
-  if(!navigator.serviceWorker.controller) return;
-  const list = [];
-  try{ const m = await (await fetch('engine/manifest.json')).json(); for(const x of m.shards || []) list.push('engine/' + (x.file || x)); }catch(e){}
-  try{ const m2 = await (await fetch('engine/fp2/manifest.json')).json();
-       list.push('engine/fp2/' + m2.model.file, ...(m2.shards || []).map(x => 'engine/fp2/' + x.file));
-       const ORT = 'https://cdn.jsdelivr.net/npm/onnxruntime-web@1.20.1/dist/';
-       for(const f of ['ort.wasm.min.js', 'ort.wasm.min.mjs', 'ort-wasm-simd-threaded.mjs', 'ort-wasm-simd-threaded.wasm']) list.push(ORT + f); }catch(e){}
-  try{ const a = await (await fetch('asr/manifest.json')).json();
-       for(const f of a.files) list.push('asr/' + f.file);
-       for(const f of a.runtime.files) list.push(a.runtime.base + f); }catch(e){}
-  let n = 0;
-  for(const u of list){ try{ const r = await fetch(u); if(r.ok){ await r.arrayBuffer(); n++; } }catch(e){} }
-  logEvent('info', `Kept on this device for use with no internet: ${n} of ${list.length} files`);
+   sw.js saves every file a published version needs (offline.json lists each one with its size and
+   checksum; ~230 MB: songs, song index, learned fingerprint, speech model, runtimes). This asks it to,
+   reads the same stores, and says honestly whether this device would work with no internet right now:
+   "Offline ready ✓" only when every file of the running version is there and verified; otherwise
+   "Saving for offline… N%"; and offline and not ready, what won't work. Control Panel › Offline: one
+   line per part. A newer version, once completely saved, takes over between songs (never while
+   listening) or the next time Prompter opens. */
+const OFF = {state: 'checking', ready: false, swOk: false, pct: 0, parts: null, version: null, error: null, persisted: null, usage: null, quota: null, update: null};
+const OFF_PARTS = [['app', 'Songs and app'], ['fingerprints', 'Song fingerprints'], ['neural', 'Neural net (big rooms)'], ['speech', 'Speech (hearing titles)']];
+const OFF_LOST = {app: 'Prompter won’t reopen', fingerprints: 'songs can’t be recognised', neural: 'big-room recognition off', speech: 'titles can’t be heard'};
+const offMB = b => b >= 1e6 ? (b / 1e6).toFixed(b >= 1e8 ? 0 : 1) + ' MB' : Math.max(1, Math.round(b / 1e3)) + ' KB';
+const SCOPE_URL = new URL('./', location.href).href;
+let swReg = null, swBoot = Promise.resolve(), offTimer = null, offSaveAt = 0, offNetAt = 0, offNet = null;
+async function cacheIf(name){ try{ return (await caches.has(name)) ? await caches.open(name) : null; }catch(e){ return null; } }
+// the newest service-worker code there is (a changed sw.js waits until Prompter is next opened, but it can save already)
+function swTarget(){ return (swReg && (swReg.waiting || swReg.active)) || navigator.serviceWorker.controller; }
+function swAsk(msg, ms){
+  return new Promise(res => { const w = msg.type === 'status' ? navigator.serviceWorker.controller : swTarget(); if(!w) return res(null);
+    const ch = new MessageChannel(), t = setTimeout(() => res(null), ms || 3000);
+    ch.port1.onmessage = ev => { clearTimeout(t); res(ev.data); };
+    try{ w.postMessage(msg, [ch.port2]); }catch(e){ clearTimeout(t); res(null); } });
 }
+// a version's list of files, if ALL of it is saved on this device
+async function savedList(v){
+  const c = await cacheIf('cm-shell-' + v); if(!c) return null;
+  const r = await c.match(SCOPE_URL + '__offline-complete'); return r ? r.json() : null;
+}
+// how much of a list is really in the store (a file counts only if its checksum is the one listed)
+async function countSaved(man){
+  const sh = await cacheIf('cm-shell-' + man.version), blobs = await cacheIf('cm-blobs');
+  const parts = {}; let have = 0, total = 0;
+  for(const f of man.files){
+    const p = parts[f.g] || (parts[f.g] = {bytes: 0, have: 0});
+    const c = f.big ? blobs : sh;
+    const r = c ? await c.match(f.big ? SCOPE_URL + '__blob/' + f.h : new URL(f.p, SCOPE_URL).href) : null;
+    p.bytes += f.b; total += f.b;
+    if(r && r.headers.get('x-cm-sha256') === f.h){ p.have += f.b; have += f.b; }
+  }
+  return {parts, have, total};
+}
+// a newer version completely saved on this device (it takes over between songs, or at the next opening)
+async function newerSaved(){
+  let best = null;
+  try{ for(const k of await caches.keys()){ const v = k.slice(9);
+    if(k.startsWith('cm-shell-') && /^\d{12}$/.test(v) && v > APP_VERSION && (!best || v > best) && await savedList(v)) best = v; } }catch(e){}
+  return best;
+}
+async function offlineTick(){
+  clearTimeout(offTimer); OFF.ticks = (OFF.ticks || 0) + 1;
+  try{ await offlineCheck(); }catch(e){ OFF.error = String(e && e.message || e); }
+  if(!$('#cp').hidden) renderOffline();
+  if(OFF.state !== 'dev' && OFF.state !== 'unsupported') offTimer = setTimeout(offlineTick, OFF.ready && !OFF.saving ? 60000 : 2000);
+}
+async function offlineCheck(){
+  if(APP_VERSION === 'dev' || serverMode){ OFF.state = 'dev'; return; }
+  if(!('serviceWorker' in navigator) || !self.caches){ OFF.state = 'unsupported'; return; }
+  const online = navigator.onLine !== false;
+  // 1. is the running version completely saved, and is the service worker in charge the one that serves it?
+  // (a device still run by the old offline code saves with the new one, which takes over when Prompter is next opened)
+  const mine = await savedList(APP_VERSION);
+  const mc = mine ? await countSaved(mine) : null;
+  const ctl = navigator.serviceWorker.controller, st0 = ctl ? await swAsk({type: 'status'}, 2000) : null;
+  OFF.swOk = !!(ctl && st0 && st0.sw >= 2);
+  OFF.ready = !!mc && mc.have === mc.total && OFF.swOk;
+  // 2. what the site has now (every few minutes when ready, every look while saving)
+  if(online && (!OFF.ready || OFF.saving || Date.now() - offNetAt > 180000)){
+    offNetAt = Date.now();
+    // never waits more than 15 s (a weak signal can stall a request for minutes, and this loop must keep going)
+    const ac = typeof AbortController === 'function' ? new AbortController() : null, tm = ac && setTimeout(() => ac.abort(), 15000);
+    try{ offNet = await (await fetch('offline.json?t=' + Date.now(), ac ? {cache: 'no-store', signal: ac.signal} : {cache: 'no-store'})).json(); OFF.checked = new Date(); }
+    catch(e){ OFF.checkErr = String(e && e.message || e); }
+    clearTimeout(tm);
+  }
+  const net = offNet && offNet.version !== APP_VERSION && !(await savedList(offNet.version)) ? offNet : null;   // a newer version to save
+  // 3. ask the service worker to save: the running version if it isn't complete (or lost files), else the newer one
+  if(online && (!OFF.ready || net) && Date.now() > offSaveAt && swTarget()){
+    offSaveAt = Date.now() + 20000;   // it carries on by itself; asked again only if it stopped (cut off, closed, killed)
+    swAsk({type: 'save'}, 600000).then(r => { if(r && !r.ok) OFF.error = r.error; if(r) setTimeout(offlineTick, 50); });
+  }
+  // 4. what to show: the running version's own state, or (not ready) the version being saved
+  const show = OFF.ready ? null : (offNet || mine);
+  const sc = OFF.ready ? mc : show ? (show === mine ? mc : await countSaved(show)) : null;
+  OFF.parts = sc ? sc.parts : null; OFF.pct = sc && sc.total ? sc.have / sc.total : 0; OFF.version = (show || mine || {}).version || null;
+  OFF.saving = net ? Math.floor(100 * (await countSaved(net)).have / Math.max(1, net.files.reduce((s, f) => s + f.b, 0))) : null;
+  OFF.state = OFF.ready ? 'ready' : mc && mc.have === mc.total ? 'reopen' : sc ? 'saving' : online ? 'checking' : 'offline';
+  if(OFF.ready) OFF.error = null;
+  // 5. a newer version is completely saved: switch to it when that is safe
+  OFF.update = await newerSaved();
+  if(OFF.update) applyUpdate();
+}
+function offlineSeg(){
+  const online = navigator.onLine !== false;
+  if(OFF.state === 'dev') return '';
+  if(OFF.state === 'unsupported') return online ? 'this browser can’t save for offline' : '';
+  if(OFF.ready) return online ? 'Offline ready ✓' : 'offline · everything saved ✓';
+  if(OFF.state === 'reopen') return 'Saved for offline · close and reopen Prompter once to finish';
+  if(online) return OFF.state === 'checking' ? '' : `Saving for offline… ${Math.floor(100 * OFF.pct)}%`;
+  const lost = OFF.parts ? OFF_PARTS.filter(([g]) => OFF.parts[g] && OFF.parts[g].have < OFF.parts[g].bytes).map(([g]) => OFF_LOST[g]) : [];
+  return 'Offline, not fully saved' + (lost.length ? ': ' + lost.join(', ') : '');
+}
+function renderOffline(){
+  const el = $('#cpOffline'); if(!el) return;
+  const rows = [];
+  if(OFF.state === 'dev') rows.push(['This device', 'running from the Mac (nothing to save)']);
+  else if(OFF.state === 'unsupported') rows.push(['This device', 'this browser can’t keep Prompter for offline use']);
+  else{
+    rows.push(['Status', OFF.ready ? 'Ready with no internet ✓' : OFF.state === 'reopen' ? 'All saved: close and reopen Prompter once to finish'
+                       : OFF.state === 'saving' ? `Saving… ${Math.floor(100 * OFF.pct)}%`
+                       : navigator.onLine === false ? 'Offline, and not saved yet' : 'Checking…']);
+    for(const [g, label] of OFF_PARTS){ const p = OFF.parts && OFF.parts[g]; if(!p) continue;
+      rows.push([label, p.have >= p.bytes ? `ready ✓ · ${offMB(p.bytes)}` : `${offMB(p.have)} of ${offMB(p.bytes)}`]); }
+    if(OFF.saving != null) rows.push(['New version', `saving… ${OFF.saving}%`]);
+    if(OFF.update) rows.push(['New version', 'saved ✓ (starts between songs, or when Prompter is next opened)']);
+    rows.push(['Kept by this device', OFF.persisted == null ? 'unknown' : OFF.persisted ? 'permanently ✓' : 'until space runs low (the browser said no to “keep”)']);
+    if(OFF.checked) rows.push(['Last looked for a new version', OFF.checked.toLocaleTimeString([], {hour: 'numeric', minute: '2-digit'})]);
+    if(OFF.usage != null) rows.push(['Storage used', `${offMB(OFF.usage)}` + (OFF.quota ? ` of ${offMB(OFF.quota)} allowed` : '')]);
+    if(OFF.error && !OFF.ready) rows.push(['Last problem', OFF.error]);
+  }
+  el.textContent = '';                    // (replaceChildren needs Chrome 86)
+  for(const [a, b] of rows){ const d = document.createElement('div'); d.className = 'mrow words';
+    const x = document.createElement('span'), y = document.createElement('span'); x.textContent = a; y.textContent = b; d.append(x, y); el.appendChild(d); }
+}
+// ask the browser to keep the store permanently (otherwise it may clear it when space runs low)
+async function keepStorage(){
+  try{ if(navigator.storage && navigator.storage.persist){ OFF.persisted = await navigator.storage.persisted();
+    if(!OFF.persisted) OFF.persisted = await navigator.storage.persist(); } }catch(e){}
+  try{ if(navigator.storage && navigator.storage.estimate){ const e = await navigator.storage.estimate(); OFF.usage = e.usage; OFF.quota = e.quota; } }catch(e){}
+  logEvent('info', OFF.persisted ? 'This device will keep Prompter’s offline files permanently'
+                                 : 'This browser did not promise to keep the offline files (it may clear them if space runs low)');
+}
+self.__prompterOffline = OFF;            // for tests and the curious (read-only use)
+if('serviceWorker' in navigator) navigator.serviceWorker.addEventListener('message', ev => {
+  const m = ev.data || {};
+  if(m.type === 'cm-offline' && m.job){ if(m.job.error) OFF.error = m.job.error; if(m.job.complete || m.job.error) setTimeout(offlineTick, 50); }
+});
 
-/* ---------------- always the newest version when online ----------------
-   GitHub keeps serving an old copy for up to 10 minutes after a publish, and the offline store
-   keeps the version it has. So on every open (and whenever it comes back to the front) the app
-   asks what the newest version is, bypassing every cache, and if it's behind it reloads itself
-   onto that exact version. Never while a song is on screen. */
-async function checkUpdate(){
-  if(APP_VERSION === 'dev' || serverMode || st.song || st.words) return;
-  try{
-    const v = (await (await fetch('version.json?t=' + Date.now(), {cache:'no-store'})).json()).version;
-    if(!v || v === APP_VERSION) return;
-    // NEVER reload while listening: a reload stops the microphone, and a browser may not restart it without a
-    // click (30 Sep: a machine sat deaf for 13 minutes in a service). The update waits for the next opening.
-    if(mstream){ updateWaiting = v; return; }
-    const k = 'cm.upd.' + v;
-    if(sessionStorage.getItem(k)) return;          // already tried this one: don't loop
-    sessionStorage.setItem(k, '1');
-    const kq = new URLSearchParams(location.search).get('k');
-    location.replace(location.pathname + '?' + (kq ? 'k=' + encodeURIComponent(kq) + '&' : '') + 'v=' + encodeURIComponent(v));
-  }catch(e){}                                      // offline: the stored copy is the right one
+/* ---------------- updates ----------------
+   A new published version saves itself in the background (above) and takes over only once every one
+   of its files is saved: between songs while not listening, or as Prompter opens. Never while
+   listening: a reload stops the microphone, and a browser may not restart it without a tap (30 Sep: a
+   machine sat deaf for 13 minutes in a service); then it waits for the next opening. */
+async function applyUpdate(){
+  const v = OFF.update;
+  if(APP_VERSION === 'dev' || serverMode || !v || v <= APP_VERSION) return;
+  if(st.song || st.words || mstream){
+    if(updateWaiting !== v) logEvent('info', 'A new version is saved on this device; it starts the next time Prompter is opened');
+    updateWaiting = v; return; }
+  const k = 'cm.upd.' + v;
+  try{ if(sessionStorage.getItem(k)) return; }catch(e){}   // already switched to this one: don't loop
+  const r = await swAsk({type: 'use', version: v}, 10000);
+  if(!r || !r.ok){ console.warn('update: could not switch', r); return; }
+  try{ sessionStorage.setItem(k, '1'); }catch(e){}
+  const kq = new URLSearchParams(location.search).get('k');
+  location.replace(location.pathname + '?' + (kq ? 'k=' + encodeURIComponent(kq) + '&' : '') + 'v=' + encodeURIComponent(v));
 }
+function checkUpdate(){ offNetAt = 0; offlineTick(); }   // look at the site now
 function showVersion(){
   const pretty = APP_VERSION === 'dev' ? 'running from this Mac'
     : APP_VERSION.replace(/^(\d{4})(\d\d)(\d\d)(\d\d)(\d\d)$/, (m, y, mo, d, h, mi) =>
@@ -1275,7 +1388,7 @@ function showVersion(){
     q.delete('v'); history.replaceState(null, '', location.pathname + (q.toString() ? '?' + q : ''));
   }
 }
-document.addEventListener('visibilitychange', () => { if(document.visibilityState === 'visible') checkUpdate(); });
+document.addEventListener('visibilitychange', () => { if(document.visibilityState === 'visible') checkUpdate(); });   // back from the background: carry on saving, look for a new version
 setInterval(checkUpdate, 3 * 60 * 1000);          // left open all day: still picks up a new version between songs
 
 // for testing without audio:  ?demo=<song id>@<seconds into the song>
@@ -1298,8 +1411,16 @@ if(serverMode){
   startEngine();
   await startWords();
   startASR();                              // the words, heard on this device
-  if('serviceWorker' in navigator) navigator.serviceWorker.register('sw.js').then(() => keepOffline()).catch(()=>{});
-  checkUpdate();
+  // never awaited here: nothing about the offline store may hold up the lyrics
+  if('serviceWorker' in navigator && APP_VERSION !== 'dev'){
+    swBoot = (async () => {
+      // a newer version completely saved while Prompter was closed: switch to it now, before listening starts
+      OFF.update = await newerSaved(); if(OFF.update) await applyUpdate();
+      swReg = await navigator.serviceWorker.register('sw.js');
+    })().catch(e => console.warn('sw:', e));
+    keepStorage();
+    swBoot.then(() => Promise.race([navigator.serviceWorker.ready, new Promise(r => setTimeout(r, 10000))])).then(() => offlineTick());
+  }else offlineTick();
 }
 
 if(asrfile && !serverMode){ $('#gate').classList.add('gone'); asrFeedFile(asrfile).catch(e => console.warn('asrfile:', e)); }
@@ -1335,6 +1456,7 @@ frame();
   let granted = false, seen = false;
   try{ granted = (await navigator.permissions.query({name:'microphone'})).state === 'granted'; }catch(e){}
   try{ seen = localStorage.getItem('cm.welcome') === WELCOME; granted = granted || localStorage.getItem('cm.micok') === '1'; }catch(e){}
+  await Promise.race([swBoot, new Promise(r => setTimeout(r, 1500))]);   // a saved update switches over first (a reload)
   if(granted && seen && !$('#gate').classList.contains('gone')) begin();
 })();
 })();

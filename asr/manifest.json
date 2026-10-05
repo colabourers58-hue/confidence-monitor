@@ -33,7 +33,7 @@
   }
  ],
  "runtime": {
-  "base": "https://cdn.jsdelivr.net/npm/@huggingface/transformers@3.8.1/dist/",
+  "base": "vendor/transformers-3.8.1/",
   "files": [
    "transformers.min.js",
    "ort-wasm-simd-threaded.jsep.mjs",

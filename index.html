@@ -292,6 +292,7 @@ if(/iPad|iPhone|iPod/.test(navigator.userAgent)||(/Macintosh/.test(navigator.use
     <h3 style="margin-top:16px">Tell it the song that’s on</h3>
     <input id="tellQ" type="search" autocomplete="off" autocorrect="off" spellcheck="false" placeholder="Type the song (spelling doesn’t matter)">
     <div id="tellList" style="display:flex;flex-direction:column;gap:8px;margin-top:10px"></div></section>
+  <section class="card"><h3>Offline · works with no internet</h3><div id="cpOffline"></div></section>
   <section class="card"><h3>This session</h3><div class="stats" id="cpStats"></div></section>
   <section class="card"><h3>Log</h3><div id="log"></div><button id="cpCopy">Copy log</button><button id="cpAbout">About Prompter</button><button id="cpInstall" hidden>Add to this device</button></section>
 </div></div>
@@ -319,6 +320,6 @@ if(/iPad|iPhone|iPod/.test(navigator.userAgent)||(/Macintosh/.test(navigator.use
   <li>Choose <b style="display:inline;font-size:inherit">Add to Home Screen</b>, then Add.</li></ol></div><div class="arrow"></div></div>
 <div id="gate"><b>Tap to begin</b><small>One tap allows the microphone. After that it runs on its own.</small></div>
 <script>(function(){var f=document.createElement("div");f.style.cssText="display:flex;flex-direction:column;row-gap:1px;position:absolute";f.appendChild(document.createElement("div"));f.appendChild(document.createElement("div"));document.documentElement.appendChild(f);if(f.scrollHeight!==1)document.documentElement.className+=" nogap";f.parentNode.removeChild(f);})();</script>
-<script type="module" src="app.js?v=202610021350"></script>
+<script type="module" src="app.js?v=202610051859"></script>
 </body>
 </html>

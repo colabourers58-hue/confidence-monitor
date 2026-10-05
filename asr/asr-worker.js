@@ -5,12 +5,15 @@
  * app.js sends it 5 s windows of the room at 16 kHz while no song is up; each comes back as text
  * and goes through the same title and lyric rules as any other words (mention.js, lyricsearch.js,
  * decide.js). The model files are in ./models/ (app/build_asr.py, listed in ./manifest.json);
- * transformers.js and its ONNX Runtime come from jsDelivr, kept offline by sw.js.
+ * transformers.js and its ONNX Runtime are in ../vendor/ (app/build_vendor.py), kept offline by sw.js.
  *
  * Messages in:  {type:'load'}  {type:'hear', pcm: Float32Array (16 kHz), at}
  * Messages out: {type:'ready', ms} {type:'heard', text, at, ms} {type:'error', message}
  */
-const TF = 'https://cdn.jsdelivr.net/npm/@huggingface/transformers@3.8.1/dist/transformers.min.js';
+// transformers.js and its ONNX Runtime, served from this site (web/vendor/, pinned in web/vendor.json):
+// never a CDN, so nothing here needs a third-party origin, online or offline
+const TF_DIR = new URL('../vendor/transformers-3.8.1/', self.location.href).href;
+const TF = TF_DIR + 'transformers.min.js';
 let asr = null, loading = null;
 
 async function load() {
@@ -20,6 +23,7 @@ async function load() {
   env.allowLocalModels = true;
   env.localModelPath = new URL('./models/', self.location.href).href;
   env.useBrowserCache = false;                         // sw.js keeps them (one copy, not two)
+  env.backends.onnx.wasm.wasmPaths = TF_DIR;           // its runtime from here too (its default is jsDelivr)
   env.backends.onnx.wasm.numThreads = 1;               // a GitHub Pages site can't use threads; and the
                                                        // fingerprints must always have a core to themselves
   const man = await (await fetch(new URL('./manifest.json', self.location.href))).json();
