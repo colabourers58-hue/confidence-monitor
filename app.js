@@ -1,7 +1,7 @@
 /* Everything runs on this device. No server, no network after the first load. */
-import {Orb} from './orb.js?v=202610061519';
+import {Orb} from './orb.js?v=202610062058';
 // Stamped by publish_site.sh on every publish ('dev' when served straight from this Mac).
-const APP_VERSION = '202610061519';
+const APP_VERSION = '202610062058';
 
 const $ = s => document.querySelector(s);
 // the orb is decoration: if this device can't draw it (old GPU, WebGL off, a shader error), the
@@ -50,8 +50,8 @@ let privateCount = 0;
 /* ---------------- engine (runs in a worker, on device) ---------------- */
 let worker = null, engineReady = false, loadMsgT = 0, engineRetry = 0;
 function startEngine(){
-  try{ worker = new Worker('engine/fp-worker.js?v=202610061519', {type:'module'}); }
-  catch(e){ try{ worker = new Worker('engine/fp-worker.js?v=202610061519'); }catch(e2){ worker = null; } }
+  try{ worker = new Worker('engine/fp-worker.js?v=202610062058', {type:'module'}); }
+  catch(e){ try{ worker = new Worker('engine/fp-worker.js?v=202610062058'); }catch(e2){ worker = null; } }
   if(!worker){ $('#load').classList.add('done'); return; }
   worker.onmessage = ev => {
     const m = ev.data || {};
@@ -1238,6 +1238,27 @@ let seen = null; try{ seen = localStorage.getItem('cm.welcome'); }catch(e){}
 if(seen !== WELCOME && !new URLSearchParams(location.search).get('demo')) showWelcome();
 $('#cpDone').addEventListener('click', () => { $('#cp').hidden = true; });
 $('#cpBtn').addEventListener('click', e => { e.stopPropagation(); openPanel(); });
+/* full screen: one button (and the F key); the icon flips to "exit" while full screen. Hidden where the
+   browser can't do it (iPhone Safari: Add to Home Screen gives full screen there) */
+(function(){
+  const b = $('#fsBtn'), el = document.documentElement;
+  const isFs = () => !!(document.fullscreenElement || document.webkitFullscreenElement);
+  const can = !!(el.requestFullscreen || el.webkitRequestFullscreen);
+  if(!b) return;
+  if(!can){ b.hidden = true; return; }
+  const ON = '<path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/>', OFF = '<path d="M9 4v5H4M15 4v5h5M9 20v-5H4M15 20v-5h5"/>';
+  const paint = () => { b.querySelector('svg').innerHTML = isFs() ? OFF : ON; b.setAttribute('aria-label', isFs() ? 'Exit full screen' : 'Full screen'); };
+  const toggle = () => {
+    try{
+      if(isFs()) (document.exitFullscreen || document.webkitExitFullscreen).call(document);
+      else { const r = (el.requestFullscreen || el.webkitRequestFullscreen).call(el); if(r && r.catch) r.catch(()=>{}); }
+    }catch(e){}
+  };
+  b.addEventListener('click', e => { e.stopPropagation(); toggle(); });
+  addEventListener('keydown', e => { if((e.key === 'f' || e.key === 'F') && !/INPUT|TEXTAREA/.test((e.target || {}).tagName || '')) toggle(); });
+  document.addEventListener('fullscreenchange', paint); document.addEventListener('webkitfullscreenchange', paint);
+  paint();
+})();
 $('#cpBtn').addEventListener('pointerdown', e => e.stopPropagation());
 $('#cpCopy').addEventListener('click', async () => {
   const text = LOG.map(e => `${new Date(e.t).toISOString()}  ${e.kind}  ${e.text}`).join('\n');

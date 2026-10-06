@@ -214,6 +214,12 @@ if(/iPad|iPhone|iPod/.test(navigator.userAgent)||(/Macintosh/.test(navigator.use
          justify-content:center;opacity:.35;cursor:pointer;transition:opacity .2s}
   #cpBtn:hover,#cpBtn:focus-visible{opacity:.9}
   #cpBtn svg{width:22px;height:22px}
+  #fsBtn{position:fixed;right:calc(68px + env(safe-area-inset-right));bottom:calc(14px + env(safe-area-inset-bottom));z-index:9;
+         width:44px;height:44px;border-radius:22px;border:0;background:rgba(120,120,128,.16);display:flex;align-items:center;
+         justify-content:center;opacity:.35;cursor:pointer;transition:opacity .2s}
+  #fsBtn:hover,#fsBtn:focus-visible{opacity:.9}
+  #fsBtn svg{width:22px;height:22px}
+  #fsBtn[hidden]{display:none}
   #load{position:fixed;left:50%;bottom:5vh;transform:translateX(-50%);z-index:7;width:min(260px,40vw);height:7px;
         border-radius:3px;background:var(--fill);overflow:hidden;transition:opacity .5s}
   #load i{display:block;height:100%;width:0;background:var(--label-3);transition:width .2s}
@@ -289,6 +295,7 @@ if(/iPad|iPhone|iPod/.test(navigator.userAgent)||(/Macintosh/.test(navigator.use
 <div id="meter" hidden><div class="track"><i></i><b></b></div><span></span></div>
 <div id="load"><i></i></div>
 <div id="loadMsg" hidden>Getting the songs ready. This happens once, and Wi-Fi makes it quicker.</div>
+<button id="fsBtn" aria-label="Full screen" title="Full screen (F)"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/></svg></button>
 <button id="cpBtn" aria-label="Control panel"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round"><path d="M4 7h10M18 7h2M4 17h4M12 17h8"/><circle cx="16" cy="7" r="2.4"/><circle cx="10" cy="17" r="2.4"/></svg></button>
 <div id="cp" hidden><div class="wrap">
   <header><h2>Control Panel</h2><button id="cpDone">Done</button></header>
@@ -334,6 +341,6 @@ if(/iPad|iPhone|iPod/.test(navigator.userAgent)||(/Macintosh/.test(navigator.use
   <li>Choose <b style="display:inline;font-size:inherit">Add to Home Screen</b>, then Add.</li></ol></div><div class="arrow"></div></div>
 <div id="gate"><b>Tap to begin</b><small>One tap allows the microphone. After that it runs on its own.</small></div>
 <script>(function(){var f=document.createElement("div");f.style.cssText="display:flex;flex-direction:column;row-gap:1px;position:absolute";f.appendChild(document.createElement("div"));f.appendChild(document.createElement("div"));document.documentElement.appendChild(f);if(f.scrollHeight!==1)document.documentElement.className+=" nogap";f.parentNode.removeChild(f);})();</script>
-<script type="module" src="app.js?v=202610061519"></script>
+<script type="module" src="app.js?v=202610062058"></script>
 </body>
 </html>

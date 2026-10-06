@@ -21,13 +21,13 @@
  },
  "source": {
   "file": "app/library/fingerprints.npz",
-  "postings": 33285459,
-  "bytes": 332897779,
-  "sha256": "9fe77e5f4018a03e792de529f7e6e52b46a48929f506a67e99b81938a15dacc0",
+  "postings": 33288878,
+  "bytes": 332931969,
+  "sha256": "e1db22519f60915d0b8385da859f85f2290d1dd5c86cd967c227dcc2f6272644",
   "refs_json": true
  },
  "nbuckets": 262657,
- "universe": 22403545,
+ "universe": 22403663,
  "sections": [
   {
    "name": "bucket_bits",
@@ -39,50 +39,50 @@
    "name": "stream",
    "type": "bits",
    "offset": 1050632,
-   "bytes": 87110775,
-   "bits": 696886200
+   "bytes": 87116436,
+   "bits": 696931482
   }
  ],
  "stats": {
-  "distinct_hashes": 2481785,
-  "postings": 33285459,
-  "stream_bits": 696886200,
-  "unary_ones": 32934446,
+  "distinct_hashes": 2481574,
+  "postings": 33288878,
+  "stream_bits": 696931482,
+  "unary_ones": 32926396,
   "max_rice_k": 24
  },
  "checksum": [
-  565875846,
-  536081347
+  4124488871,
+  594602544
  ],
- "total_bytes": 88161407,
+ "total_bytes": 88167068,
  "shards": [
   {
-   "file": "index/fp-00-6743086fb5.bin",
+   "file": "index/fp-00-da524c6e1e.bin",
    "bytes": 14000000
   },
   {
-   "file": "index/fp-01-710ed4510d.bin",
+   "file": "index/fp-01-3d595c443b.bin",
    "bytes": 14000000
   },
   {
-   "file": "index/fp-02-24122562f7.bin",
+   "file": "index/fp-02-70ba18c07a.bin",
    "bytes": 14000000
   },
   {
-   "file": "index/fp-03-24009cd5f1.bin",
+   "file": "index/fp-03-b587222576.bin",
    "bytes": 14000000
   },
   {
-   "file": "index/fp-04-fe395b609a.bin",
+   "file": "index/fp-04-21f83ae611.bin",
    "bytes": 14000000
   },
   {
-   "file": "index/fp-05-68f3bed2be.bin",
+   "file": "index/fp-05-402e66f2e4.bin",
    "bytes": 14000000
   },
   {
-   "file": "index/fp-06-8eb84cdb4c.bin",
-   "bytes": 4161407
+   "file": "index/fp-06-b00a242c12.bin",
+   "bytes": 4167068
   }
  ],
  "refs": [
@@ -10867,17 +10867,6 @@
    "start": 21726831
   },
   {
-   "ref_id": "multitudes::multitudes",
-   "song_id": "multitudes",
-   "via": "release",
-   "live": false,
-   "shift": -0.004,
-   "aligned": true,
-   "excluded": false,
-   "duration": 441.923,
-   "start": 21742814
-  },
-  {
    "ref_id": "thereisnosalvation::there-is-no-salvation",
    "song_id": "thereisnosalvation",
    "via": "release",
@@ -10886,7 +10875,7 @@
    "aligned": false,
    "excluded": false,
    "duration": 496.364,
-   "start": 21770100
+   "start": 21742814
   },
   {
    "ref_id": "thereisnosalvation",
@@ -10897,18 +10886,7 @@
    "aligned": true,
    "excluded": false,
    "duration": 496.364,
-   "start": 21800410
-  },
-  {
-   "ref_id": "multitudes",
-   "song_id": "multitudes",
-   "via": "instrumental",
-   "live": false,
-   "shift": 0.0,
-   "aligned": true,
-   "excluded": false,
-   "duration": 441.923,
-   "start": 21830712
+   "start": 21773124
   },
   {
    "ref_id": "hisnamewillshine",
@@ -10919,7 +10897,7 @@
    "aligned": null,
    "excluded": false,
    "duration": 248.366,
-   "start": 21858007
+   "start": 21803426
   },
   {
    "ref_id": "cantgiveupnow",
@@ -10930,7 +10908,7 @@
    "aligned": null,
    "excluded": false,
    "duration": 297.326,
-   "start": 21873500
+   "start": 21818919
   },
   {
    "ref_id": "centerofmyjoy",
@@ -10941,7 +10919,7 @@
    "aligned": null,
    "excluded": false,
    "duration": 316.604,
-   "start": 21891951
+   "start": 21837370
   },
   {
    "ref_id": "comforter",
@@ -10952,7 +10930,7 @@
    "aligned": null,
    "excluded": false,
    "duration": 280.111,
-   "start": 21911630
+   "start": 21857049
   },
   {
    "ref_id": "countitalljoy",
@@ -10963,7 +10941,7 @@
    "aligned": null,
    "excluded": false,
    "duration": 300.8,
-   "start": 21928794
+   "start": 21874213
   },
   {
    "ref_id": "countitalljoy::count-it-all-joy-2",
@@ -10974,7 +10952,7 @@
    "aligned": null,
    "excluded": false,
    "duration": 300.748,
-   "start": 21946905
+   "start": 21892324
   },
   {
    "ref_id": "everybodysgottoknow",
@@ -10985,7 +10963,7 @@
    "aligned": null,
    "excluded": false,
    "duration": 526.054,
-   "start": 21965013
+   "start": 21910432
   },
   {
    "ref_id": "hecamethrough",
@@ -10996,7 +10974,7 @@
    "aligned": null,
    "excluded": false,
    "duration": 335.647,
-   "start": 21997884
+   "start": 21943303
   },
   {
    "ref_id": "heswaiting",
@@ -11007,7 +10985,7 @@
    "aligned": null,
    "excluded": false,
    "duration": 276.114,
-   "start": 22018578
+   "start": 21963997
   },
   {
    "ref_id": "howiloveyoulord",
@@ -11018,7 +10996,7 @@
    "aligned": null,
    "excluded": false,
    "duration": 245.316,
-   "start": 22035451
+   "start": 21980870
   },
   {
    "ref_id": "ifheavenneverwaspromised",
@@ -11029,7 +11007,7 @@
    "aligned": null,
    "excluded": false,
    "duration": 281.783,
-   "start": 22050532
+   "start": 21995951
   },
   {
    "ref_id": "inhistime",
@@ -11040,7 +11018,7 @@
    "aligned": null,
    "excluded": false,
    "duration": 190.407,
-   "start": 22067867
+   "start": 22013286
   },
   {
    "ref_id": "joytomysoul",
@@ -11051,7 +11029,7 @@
    "aligned": null,
    "excluded": false,
    "duration": 274.39,
-   "start": 22079231
+   "start": 22024650
   },
   {
    "ref_id": "letthechurchsayamen",
@@ -11062,7 +11040,7 @@
    "aligned": null,
    "excluded": false,
    "duration": 352.0,
-   "start": 22096073
+   "start": 22041492
   },
   {
    "ref_id": "peacejehovahsees",
@@ -11073,7 +11051,7 @@
    "aligned": null,
    "excluded": false,
    "duration": 416.052,
-   "start": 22117397
+   "start": 22062816
   },
   {
    "ref_id": "shackles",
@@ -11084,7 +11062,7 @@
    "aligned": null,
    "excluded": false,
    "duration": 210.338,
-   "start": 22143386
+   "start": 22088805
   },
   {
    "ref_id": "thatswhyineededyou",
@@ -11095,7 +11073,7 @@
    "aligned": null,
    "excluded": false,
    "duration": 265.561,
-   "start": 22156082
+   "start": 22101501
   },
   {
    "ref_id": "themoreiseekyou",
@@ -11106,7 +11084,7 @@
    "aligned": null,
    "excluded": false,
    "duration": 327.732,
-   "start": 22172273
+   "start": 22117692
   },
   {
    "ref_id": "thisisthedaywedding",
@@ -11117,7 +11095,7 @@
    "aligned": null,
    "excluded": false,
    "duration": 165.146,
-   "start": 22192065
+   "start": 22137484
   },
   {
    "ref_id": "togodbetheglory",
@@ -11128,7 +11106,7 @@
    "aligned": null,
    "excluded": false,
    "duration": 198.217,
-   "start": 22201890
+   "start": 22147309
   },
   {
    "ref_id": "wearenotashamed",
@@ -11139,7 +11117,7 @@
    "aligned": null,
    "excluded": false,
    "duration": 324.441,
-   "start": 22213745
+   "start": 22159164
   },
   {
    "ref_id": "wearenotashamed::we-are-not-ashamed-3",
@@ -11150,7 +11128,7 @@
    "aligned": null,
    "excluded": false,
    "duration": 324.048,
-   "start": 22233945
+   "start": 22179364
   },
   {
    "ref_id": "yeslord",
@@ -11161,7 +11139,7 @@
    "aligned": null,
    "excluded": false,
    "duration": 321.881,
-   "start": 22254149
+   "start": 22199568
   },
   {
    "ref_id": "youcantbeliving",
@@ -11172,7 +11150,7 @@
    "aligned": null,
    "excluded": false,
    "duration": 385.728,
-   "start": 22274259
+   "start": 22219678
   },
   {
    "ref_id": "youcantbeliving::you-can-t-be-living-89bpm-e-fulldonerevi",
@@ -11183,7 +11161,7 @@
    "aligned": null,
    "excluded": false,
    "duration": 385.68,
-   "start": 22298360
+   "start": 22243779
   },
   {
    "ref_id": "quiettimes",
@@ -11194,7 +11172,7 @@
    "aligned": null,
    "excluded": false,
    "duration": 320.104,
-   "start": 22322458
+   "start": 22267877
   },
   {
    "ref_id": "soonandverysoon",
@@ -11205,7 +11183,7 @@
    "aligned": null,
    "excluded": false,
    "duration": 230.113,
-   "start": 22342417
+   "start": 22287836
   },
   {
    "ref_id": "letsthinkaboutourgod::tommy-walker",
@@ -11216,7 +11194,7 @@
    "aligned": null,
    "excluded": false,
    "duration": 378.95,
-   "start": 22356507
+   "start": 22301926
   },
   {
    "ref_id": "letsthinkaboutourgod",
@@ -11227,7 +11205,29 @@
    "aligned": null,
    "excluded": false,
    "duration": 378.95,
-   "start": 22380037
+   "start": 22325456
+  },
+  {
+   "ref_id": "multitudes::multitudes",
+   "song_id": "multitudes",
+   "via": "release",
+   "live": false,
+   "shift": -0.004,
+   "aligned": true,
+   "excluded": false,
+   "duration": 445.385,
+   "start": 22348964
+  },
+  {
+   "ref_id": "multitudes",
+   "song_id": "multitudes",
+   "via": "instrumental",
+   "live": false,
+   "shift": 0.0,
+   "aligned": true,
+   "excluded": false,
+   "duration": 445.385,
+   "start": 22376295
   }
  ],
  "decide": {
