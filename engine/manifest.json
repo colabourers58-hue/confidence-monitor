@@ -21,13 +21,13 @@
  },
  "source": {
   "file": "app/library/fingerprints.npz",
-  "postings": 32715957,
-  "bytes": 327202129,
-  "sha256": "53cd6cba2e28c558a6c17d7bb957f26b95d488e58afba7bbdd5a792eb502e437",
+  "postings": 32739290,
+  "bytes": 327435486,
+  "sha256": "374c16a16448d5ddb1b33d935a5854826b7fcc79b07c021550b8427319f58055",
   "refs_json": true
  },
  "nbuckets": 262657,
- "universe": 21977425,
+ "universe": 21992918,
  "sections": [
   {
    "name": "bucket_bits",
@@ -39,50 +39,50 @@
    "name": "stream",
    "type": "bits",
    "offset": 1050632,
-   "bytes": 85613132,
-   "bits": 684905053
+   "bytes": 85672770,
+   "bits": 685382157
   }
  ],
  "stats": {
-  "distinct_hashes": 2453650,
-  "postings": 32715957,
-  "stream_bits": 684905053,
-  "unary_ones": 32393515,
+  "distinct_hashes": 2454008,
+  "postings": 32739290,
+  "stream_bits": 685382157,
+  "unary_ones": 32466287,
   "max_rice_k": 24
  },
  "checksum": [
-  250709048,
-  1466143602
+  4210442504,
+  3922099822
  ],
- "total_bytes": 86663764,
+ "total_bytes": 86723402,
  "shards": [
   {
-   "file": "index/fp-00-50663263ee.bin",
+   "file": "index/fp-00-1ebb3fa5be.bin",
    "bytes": 14000000
   },
   {
-   "file": "index/fp-01-ec76e65491.bin",
+   "file": "index/fp-01-336ed5111f.bin",
    "bytes": 14000000
   },
   {
-   "file": "index/fp-02-03fc8e4168.bin",
+   "file": "index/fp-02-8bfbd29900.bin",
    "bytes": 14000000
   },
   {
-   "file": "index/fp-03-94c64d579d.bin",
+   "file": "index/fp-03-286967cbba.bin",
    "bytes": 14000000
   },
   {
-   "file": "index/fp-04-a3c7eb297b.bin",
+   "file": "index/fp-04-b86b19aef8.bin",
    "bytes": 14000000
   },
   {
-   "file": "index/fp-05-86e6e398a3.bin",
+   "file": "index/fp-05-b23baa8580.bin",
    "bytes": 14000000
   },
   {
-   "file": "index/fp-06-707bfefa5b.bin",
-   "bytes": 2663764
+   "file": "index/fp-06-8ce0919ae1.bin",
+   "bytes": 2723402
   }
  ],
  "refs": [
@@ -10953,6 +10953,17 @@
    "excluded": false,
    "duration": 441.923,
    "start": 21950130
+  },
+  {
+   "ref_id": "hisnamewillshine",
+   "song_id": "hisnamewillshine",
+   "via": "instrumental",
+   "live": false,
+   "shift": 0.0,
+   "aligned": null,
+   "excluded": false,
+   "duration": 248.366,
+   "start": 21977425
   }
  ],
  "decide": {
