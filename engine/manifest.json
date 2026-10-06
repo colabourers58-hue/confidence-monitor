@@ -21,13 +21,13 @@
  },
  "source": {
   "file": "app/library/fingerprints.npz",
-  "postings": 32739290,
-  "bytes": 327435486,
-  "sha256": "374c16a16448d5ddb1b33d935a5854826b7fcc79b07c021550b8427319f58055",
+  "postings": 33285459,
+  "bytes": 332897779,
+  "sha256": "9fe77e5f4018a03e792de529f7e6e52b46a48929f506a67e99b81938a15dacc0",
   "refs_json": true
  },
  "nbuckets": 262657,
- "universe": 21992918,
+ "universe": 22403545,
  "sections": [
   {
    "name": "bucket_bits",
@@ -39,50 +39,50 @@
    "name": "stream",
    "type": "bits",
    "offset": 1050632,
-   "bytes": 85672770,
-   "bits": 685382157
+   "bytes": 87110775,
+   "bits": 696886200
   }
  ],
  "stats": {
-  "distinct_hashes": 2454008,
-  "postings": 32739290,
-  "stream_bits": 685382157,
-  "unary_ones": 32466287,
+  "distinct_hashes": 2481785,
+  "postings": 33285459,
+  "stream_bits": 696886200,
+  "unary_ones": 32934446,
   "max_rice_k": 24
  },
  "checksum": [
-  4210442504,
-  3922099822
+  565875846,
+  536081347
  ],
- "total_bytes": 86723402,
+ "total_bytes": 88161407,
  "shards": [
   {
-   "file": "index/fp-00-1ebb3fa5be.bin",
+   "file": "index/fp-00-6743086fb5.bin",
    "bytes": 14000000
   },
   {
-   "file": "index/fp-01-336ed5111f.bin",
+   "file": "index/fp-01-710ed4510d.bin",
    "bytes": 14000000
   },
   {
-   "file": "index/fp-02-8bfbd29900.bin",
+   "file": "index/fp-02-24122562f7.bin",
    "bytes": 14000000
   },
   {
-   "file": "index/fp-03-286967cbba.bin",
+   "file": "index/fp-03-24009cd5f1.bin",
    "bytes": 14000000
   },
   {
-   "file": "index/fp-04-b86b19aef8.bin",
+   "file": "index/fp-04-fe395b609a.bin",
    "bytes": 14000000
   },
   {
-   "file": "index/fp-05-b23baa8580.bin",
+   "file": "index/fp-05-68f3bed2be.bin",
    "bytes": 14000000
   },
   {
-   "file": "index/fp-06-8ce0919ae1.bin",
-   "bytes": 2723402
+   "file": "index/fp-06-8eb84cdb4c.bin",
+   "bytes": 4161407
   }
  ],
  "refs": [
@@ -10757,50 +10757,6 @@
    "start": 21520926
   },
   {
-   "ref_id": "goddidnotcondemntheworld::god-did-not-condemn-the-world",
-   "song_id": "goddidnotcondemntheworld",
-   "via": "release",
-   "live": false,
-   "shift": -0.004,
-   "aligned": true,
-   "excluded": false,
-   "duration": 504.4,
-   "start": 21533405
-  },
-  {
-   "ref_id": "goddidnotcondemntheworld",
-   "song_id": "goddidnotcondemntheworld",
-   "via": "instrumental",
-   "live": false,
-   "shift": -0.004,
-   "aligned": true,
-   "excluded": false,
-   "duration": 504.4,
-   "start": 21563832
-  },
-  {
-   "ref_id": "goddidnotcondemntheworld78::god-did-not-condemn-the-world-78",
-   "song_id": "goddidnotcondemntheworld78",
-   "via": "release",
-   "live": false,
-   "shift": -0.008,
-   "aligned": true,
-   "excluded": false,
-   "duration": 485.0,
-   "start": 21594309
-  },
-  {
-   "ref_id": "goddidnotcondemntheworld78",
-   "song_id": "goddidnotcondemntheworld78",
-   "via": "instrumental",
-   "live": false,
-   "shift": -0.004,
-   "aligned": true,
-   "excluded": false,
-   "duration": 485.0,
-   "start": 21623566
-  },
-  {
    "ref_id": "goddidnotcondemntheworld76::god-did-not-condemn-the-world-76",
    "song_id": "goddidnotcondemntheworld76",
    "via": "release",
@@ -10809,7 +10765,7 @@
    "aligned": true,
    "excluded": false,
    "duration": 497.763,
-   "start": 21652823
+   "start": 21533405
   },
   {
    "ref_id": "goddidnotcondemntheworld76",
@@ -10820,7 +10776,7 @@
    "aligned": true,
    "excluded": false,
    "duration": 497.763,
-   "start": 21682899
+   "start": 21563481
   },
   {
    "ref_id": "diligence::diligence",
@@ -10831,7 +10787,7 @@
    "aligned": true,
    "excluded": false,
    "duration": 291.024,
-   "start": 21712926
+   "start": 21593508
   },
   {
    "ref_id": "eleventhhourlabourers",
@@ -10842,7 +10798,7 @@
    "aligned": true,
    "excluded": false,
    "duration": 383.162,
-   "start": 21729971
+   "start": 21610553
   },
   {
    "ref_id": "prayerofjesus",
@@ -10853,7 +10809,7 @@
    "aligned": true,
    "excluded": false,
    "duration": 292.441,
-   "start": 21753522
+   "start": 21634104
   },
   {
    "ref_id": "iknowthethoughtsithink",
@@ -10864,7 +10820,7 @@
    "aligned": true,
    "excluded": false,
    "duration": 264.131,
-   "start": 21771584
+   "start": 21652166
   },
   {
    "ref_id": "diligence",
@@ -10875,7 +10831,7 @@
    "aligned": true,
    "excluded": false,
    "duration": 290.959,
-   "start": 21787630
+   "start": 21668212
   },
   {
    "ref_id": "eleventhhourlabourers::eleventh-hour-labourers",
@@ -10886,7 +10842,7 @@
    "aligned": true,
    "excluded": false,
    "duration": 383.169,
-   "start": 21804674
+   "start": 21685256
   },
   {
    "ref_id": "prayerofjesus::prayer-of-jesus",
@@ -10897,7 +10853,7 @@
    "aligned": true,
    "excluded": false,
    "duration": 292.445,
-   "start": 21828187
+   "start": 21708769
   },
   {
    "ref_id": "iknowthethoughtsithink::i-know-the-thoughts-i-think",
@@ -10908,7 +10864,7 @@
    "aligned": true,
    "excluded": false,
    "duration": 264.132,
-   "start": 21846249
+   "start": 21726831
   },
   {
    "ref_id": "multitudes::multitudes",
@@ -10919,7 +10875,7 @@
    "aligned": true,
    "excluded": false,
    "duration": 441.923,
-   "start": 21862232
+   "start": 21742814
   },
   {
    "ref_id": "thereisnosalvation::there-is-no-salvation",
@@ -10930,7 +10886,7 @@
    "aligned": false,
    "excluded": false,
    "duration": 496.364,
-   "start": 21889518
+   "start": 21770100
   },
   {
    "ref_id": "thereisnosalvation",
@@ -10941,7 +10897,7 @@
    "aligned": true,
    "excluded": false,
    "duration": 496.364,
-   "start": 21919828
+   "start": 21800410
   },
   {
    "ref_id": "multitudes",
@@ -10952,7 +10908,7 @@
    "aligned": true,
    "excluded": false,
    "duration": 441.923,
-   "start": 21950130
+   "start": 21830712
   },
   {
    "ref_id": "hisnamewillshine",
@@ -10963,7 +10919,315 @@
    "aligned": null,
    "excluded": false,
    "duration": 248.366,
-   "start": 21977425
+   "start": 21858007
+  },
+  {
+   "ref_id": "cantgiveupnow",
+   "song_id": "cantgiveupnow",
+   "via": "instrumental",
+   "live": false,
+   "shift": 0.0,
+   "aligned": null,
+   "excluded": false,
+   "duration": 297.326,
+   "start": 21873500
+  },
+  {
+   "ref_id": "centerofmyjoy",
+   "song_id": "centerofmyjoy",
+   "via": "instrumental",
+   "live": false,
+   "shift": 0.0,
+   "aligned": null,
+   "excluded": false,
+   "duration": 316.604,
+   "start": 21891951
+  },
+  {
+   "ref_id": "comforter",
+   "song_id": "comforter",
+   "via": "instrumental",
+   "live": false,
+   "shift": 0.0,
+   "aligned": null,
+   "excluded": false,
+   "duration": 280.111,
+   "start": 21911630
+  },
+  {
+   "ref_id": "countitalljoy",
+   "song_id": "countitalljoy",
+   "via": "instrumental",
+   "live": false,
+   "shift": 0.0,
+   "aligned": null,
+   "excluded": false,
+   "duration": 300.8,
+   "start": 21928794
+  },
+  {
+   "ref_id": "countitalljoy::count-it-all-joy-2",
+   "song_id": "countitalljoy",
+   "via": "release",
+   "live": false,
+   "shift": 0.0,
+   "aligned": null,
+   "excluded": false,
+   "duration": 300.748,
+   "start": 21946905
+  },
+  {
+   "ref_id": "everybodysgottoknow",
+   "song_id": "everybodysgottoknow",
+   "via": "instrumental",
+   "live": false,
+   "shift": 0.0,
+   "aligned": null,
+   "excluded": false,
+   "duration": 526.054,
+   "start": 21965013
+  },
+  {
+   "ref_id": "hecamethrough",
+   "song_id": "hecamethrough",
+   "via": "instrumental",
+   "live": false,
+   "shift": 0.0,
+   "aligned": null,
+   "excluded": false,
+   "duration": 335.647,
+   "start": 21997884
+  },
+  {
+   "ref_id": "heswaiting",
+   "song_id": "heswaiting",
+   "via": "instrumental",
+   "live": false,
+   "shift": 0.0,
+   "aligned": null,
+   "excluded": false,
+   "duration": 276.114,
+   "start": 22018578
+  },
+  {
+   "ref_id": "howiloveyoulord",
+   "song_id": "howiloveyoulord",
+   "via": "instrumental",
+   "live": false,
+   "shift": 0.0,
+   "aligned": null,
+   "excluded": false,
+   "duration": 245.316,
+   "start": 22035451
+  },
+  {
+   "ref_id": "ifheavenneverwaspromised",
+   "song_id": "ifheavenneverwaspromised",
+   "via": "instrumental",
+   "live": false,
+   "shift": 0.0,
+   "aligned": null,
+   "excluded": false,
+   "duration": 281.783,
+   "start": 22050532
+  },
+  {
+   "ref_id": "inhistime",
+   "song_id": "inhistime",
+   "via": "instrumental",
+   "live": false,
+   "shift": 0.0,
+   "aligned": null,
+   "excluded": false,
+   "duration": 190.407,
+   "start": 22067867
+  },
+  {
+   "ref_id": "joytomysoul",
+   "song_id": "joytomysoul",
+   "via": "instrumental",
+   "live": false,
+   "shift": 0.0,
+   "aligned": null,
+   "excluded": false,
+   "duration": 274.39,
+   "start": 22079231
+  },
+  {
+   "ref_id": "letthechurchsayamen",
+   "song_id": "letthechurchsayamen",
+   "via": "instrumental",
+   "live": false,
+   "shift": 0.0,
+   "aligned": null,
+   "excluded": false,
+   "duration": 352.0,
+   "start": 22096073
+  },
+  {
+   "ref_id": "peacejehovahsees",
+   "song_id": "peacejehovahsees",
+   "via": "instrumental",
+   "live": false,
+   "shift": 0.0,
+   "aligned": null,
+   "excluded": false,
+   "duration": 416.052,
+   "start": 22117397
+  },
+  {
+   "ref_id": "shackles",
+   "song_id": "shackles",
+   "via": "instrumental",
+   "live": false,
+   "shift": 0.0,
+   "aligned": null,
+   "excluded": false,
+   "duration": 210.338,
+   "start": 22143386
+  },
+  {
+   "ref_id": "thatswhyineededyou",
+   "song_id": "thatswhyineededyou",
+   "via": "instrumental",
+   "live": false,
+   "shift": 0.0,
+   "aligned": null,
+   "excluded": false,
+   "duration": 265.561,
+   "start": 22156082
+  },
+  {
+   "ref_id": "themoreiseekyou",
+   "song_id": "themoreiseekyou",
+   "via": "instrumental",
+   "live": false,
+   "shift": 0.0,
+   "aligned": null,
+   "excluded": false,
+   "duration": 327.732,
+   "start": 22172273
+  },
+  {
+   "ref_id": "thisisthedaywedding",
+   "song_id": "thisisthedaywedding",
+   "via": "instrumental",
+   "live": false,
+   "shift": 0.0,
+   "aligned": null,
+   "excluded": false,
+   "duration": 165.146,
+   "start": 22192065
+  },
+  {
+   "ref_id": "togodbetheglory",
+   "song_id": "togodbetheglory",
+   "via": "instrumental",
+   "live": false,
+   "shift": 0.0,
+   "aligned": null,
+   "excluded": false,
+   "duration": 198.217,
+   "start": 22201890
+  },
+  {
+   "ref_id": "wearenotashamed",
+   "song_id": "wearenotashamed",
+   "via": "instrumental",
+   "live": false,
+   "shift": 0.0,
+   "aligned": null,
+   "excluded": false,
+   "duration": 324.441,
+   "start": 22213745
+  },
+  {
+   "ref_id": "wearenotashamed::we-are-not-ashamed-3",
+   "song_id": "wearenotashamed",
+   "via": "release",
+   "live": false,
+   "shift": 0.0,
+   "aligned": null,
+   "excluded": false,
+   "duration": 324.048,
+   "start": 22233945
+  },
+  {
+   "ref_id": "yeslord",
+   "song_id": "yeslord",
+   "via": "instrumental",
+   "live": false,
+   "shift": 0.0,
+   "aligned": null,
+   "excluded": false,
+   "duration": 321.881,
+   "start": 22254149
+  },
+  {
+   "ref_id": "youcantbeliving",
+   "song_id": "youcantbeliving",
+   "via": "instrumental",
+   "live": false,
+   "shift": 0.0,
+   "aligned": null,
+   "excluded": false,
+   "duration": 385.728,
+   "start": 22274259
+  },
+  {
+   "ref_id": "youcantbeliving::you-can-t-be-living-89bpm-e-fulldonerevi",
+   "song_id": "youcantbeliving",
+   "via": "release",
+   "live": false,
+   "shift": 0.0,
+   "aligned": null,
+   "excluded": false,
+   "duration": 385.68,
+   "start": 22298360
+  },
+  {
+   "ref_id": "quiettimes",
+   "song_id": "quiettimes",
+   "via": "instrumental",
+   "live": false,
+   "shift": 0.0,
+   "aligned": null,
+   "excluded": false,
+   "duration": 320.104,
+   "start": 22322458
+  },
+  {
+   "ref_id": "soonandverysoon",
+   "song_id": "soonandverysoon",
+   "via": "instrumental",
+   "live": false,
+   "shift": 0.0,
+   "aligned": null,
+   "excluded": false,
+   "duration": 230.113,
+   "start": 22342417
+  },
+  {
+   "ref_id": "letsthinkaboutourgod::tommy-walker",
+   "song_id": "letsthinkaboutourgod",
+   "via": "release",
+   "live": false,
+   "shift": 0.0,
+   "aligned": null,
+   "excluded": false,
+   "duration": 378.95,
+   "start": 22356507
+  },
+  {
+   "ref_id": "letsthinkaboutourgod",
+   "song_id": "letsthinkaboutourgod",
+   "via": "instrumental",
+   "live": false,
+   "shift": 0.0,
+   "aligned": null,
+   "excluded": false,
+   "duration": 378.95,
+   "start": 22380037
   }
  ],
  "decide": {
