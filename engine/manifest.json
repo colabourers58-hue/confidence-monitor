@@ -10938,7 +10938,7 @@
    "via": "instrumental",
    "live": false,
    "shift": 0.0,
-   "aligned": false,
+   "aligned": true,
    "excluded": false,
    "duration": 496.364,
    "start": 21919828
@@ -10949,7 +10949,7 @@
    "via": "instrumental",
    "live": false,
    "shift": 0.0,
-   "aligned": false,
+   "aligned": true,
    "excluded": false,
    "duration": 441.923,
    "start": 21950130
