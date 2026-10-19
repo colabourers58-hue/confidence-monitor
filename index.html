@@ -75,10 +75,7 @@ if(/iPad|iPhone|iPod/.test(navigator.userAgent)||(/Macintosh/.test(navigator.use
   .gap i{width:.34em;height:.34em;border-radius:50%;background:var(--live);
          opacity:calc(.22 + .78 * var(--f, 0));transform:scale(calc(.8 + .35 * var(--f, 0)));
          transition:opacity .25s linear,transform .25s linear}
-  .gap .cd{font-size:.5em;font-weight:700;color:var(--live);margin-left:.5em;font-variant-numeric:tabular-nums;
-           letter-spacing:.02em;opacity:.85}
-  .gap.on{animation:gapbreathe 2.4s ease-in-out infinite}
-  @keyframes gapbreathe{0%,100%{transform:scale(1)}50%{transform:scale(1.06)}}
+  .gap .cd{font-size:.5em;font-weight:600;color:var(--live);margin-left:.5em;font-variant-numeric:tabular-nums;opacity:.85}
   .ln.brk{margin-top:.75em}                      /* a new section starts */
   .ln.near{color:rgba(255,255,255,.92);transform:scale(.96)}   /* the next line: read-ahead, must be crisp */
   .ln.past{color:rgba(255,255,255,.3)}
@@ -99,34 +96,29 @@ if(/iPad|iPhone|iPod/.test(navigator.userAgent)||(/Macintosh/.test(navigator.use
   body.blackout{background:#000!important}
   body.sectionview #blockView{display:flex}
   #blk{width:100%;text-align:center;transition:opacity .35s}
-  #blkSec{font-weight:600;font-size:.40em;letter-spacing:.16em;text-transform:uppercase;color:var(--live);margin-bottom:.8em}
+  #blkSec{font-weight:500;font-size:.40em;letter-spacing:-.01em;color:var(--label-2);margin-bottom:.8em;font-variant-numeric:tabular-nums}
   #blkLines p{margin:0 0 .26em;font-weight:700;line-height:1.14;letter-spacing:-.02em;color:rgba(255,255,255,.93);text-wrap:balance;
               transition:color .35s}
   #blkLines p.sung{color:rgba(255,255,255,.52)}
   #blkLines p.hit{color:var(--live)}
   #blkNext{margin-top:1.15em;color:var(--label-3);font-weight:600;font-size:.6em;line-height:1.22;text-wrap:balance}
-  #blkNext span{display:block;font-size:.62em;letter-spacing:.16em;text-transform:uppercase;margin-bottom:.45em}
-  /* where we are in the song, readable from the stage: the bottom eighth of the screen, the
-     song's sections as tinted pills (the look of a variable in Apple's Shortcuts). The one
-     being sung is solid blue and fills as it goes; the strip slides to keep it in view. */
-  /* both ends melt away gradually (an eased fade, not a straight ramp), and the strip keeps
-     clear of the corner button so nothing ever sits on top of a pill */
+  #blkNext span{display:block;font-size:.62em;font-weight:500;margin-bottom:.45em}
+  /* where we are in the song, readable from the stage: the bottom eighth of the screen, the song's
+     sections as plain words. The one being sung is white; the rest step back. The strip slides to keep
+     the current one in view, and both ends melt away (an eased fade, not a straight ramp), clear of the
+     corner buttons. */
   #mapWrap{flex:0 0 auto;overflow:hidden;height:12.5vh;min-height:64px;display:flex;align-items:center;
     margin:0 max(60px,4vw);padding:0 0 1.2vh;   /* #ui already keeps clear of the home bar */
     --fade:linear-gradient(90deg,transparent 0,rgba(0,0,0,.12) 3%,rgba(0,0,0,.4) 7%,rgba(0,0,0,.78) 11%,#000 15%,
                            #000 85%,rgba(0,0,0,.78) 89%,rgba(0,0,0,.4) 93%,rgba(0,0,0,.12) 97%,transparent 100%);
     -webkit-mask-image:var(--fade);mask-image:var(--fade)}
-  #map{flex:0 0 auto;display:flex;align-items:center;gap:clamp(10px,1.3vw,22px);white-space:nowrap;padding:0 4vw;
+  #map{flex:0 0 auto;display:flex;align-items:center;gap:clamp(22px,2.4vw,46px);white-space:nowrap;padding:0 4vw;
        font-size:clamp(17px,3.7vh,44px);line-height:1;will-change:transform;transition:transform .6s var(--ease)}
-  #map .sec{position:relative;flex:0 0 auto;border-radius:.4em;padding:.46em .82em .5em;overflow:hidden;
-            background:rgba(10,140,255,.17);transition:background .3s}
-  #map .sec u{position:relative;z-index:1;text-decoration:none;font-weight:700;letter-spacing:.005em;
-              color:#62b6ff;transition:color .3s}
+  #map .sec{position:relative;flex:0 0 auto;padding:.3em 0}
+  #map .sec u{text-decoration:none;font-weight:600;letter-spacing:-.01em;color:rgba(235,235,245,.36);transition:color .4s var(--ease)}
   #map .sec i{display:none}
-  #map .sec.on{background:var(--brand)}
   #map .sec.on u{color:#fff}
-  #map .sec.done{background:rgba(120,120,128,.20)}
-  #map .sec.done u{color:var(--label-3)}
+  #map .sec.done u{color:rgba(235,235,245,.2)}
 
   /* reveal: when a song is caught the words rise out of the orb's flare */
   /* the words must be readable at once when a song is found: a quick rise, almost no wait */
@@ -196,7 +188,7 @@ if(/iPad|iPhone|iPod/.test(navigator.userAgent)||(/Macintosh/.test(navigator.use
             display:flex;flex-direction:column;gap:16px}
   #cp header{display:flex;align-items:center;justify-content:space-between}
   #cp h2{font-size:22px;font-weight:700;letter-spacing:-.01em}
-  #cp h3{font-size:13px;font-weight:600;color:var(--label-2);letter-spacing:.04em;text-transform:uppercase;margin-bottom:10px}
+  #cp h3{font-size:15px;font-weight:600;color:var(--label-2);letter-spacing:-.005em;margin-bottom:10px}
   #cp .card{background:rgba(44,44,46,.78);border-radius:18px;padding:16px}
   #cp button{font:inherit;cursor:pointer;border:0;border-radius:12px}
   #cpDone{font-size:17px;font-weight:600;padding:10px 18px;background:var(--live);color:#000}
@@ -254,11 +246,14 @@ if(/iPad|iPhone|iPod/.test(navigator.userAgent)||(/Macintosh/.test(navigator.use
   #stat{position:fixed;left:calc(14px + env(safe-area-inset-left));bottom:calc(14px + env(safe-area-inset-bottom));z-index:9;max-width:60vw;
         padding:7px 14px 7px 32px;border-radius:18px;background:rgba(28,28,30,.8);color:#fff;font-size:clamp(14px,2vh,20px);font-weight:700;
         white-space:nowrap;overflow:hidden;text-overflow:ellipsis;pointer-events:none}
-  #stat::before{content:"";position:absolute;left:12px;top:50%;width:11px;height:11px;margin-top:-5.5px;border-radius:50%;background:#30d158}
-  #stat.warn::before{background:#ff9f0a} #stat.bad::before{background:#ff453a} #stat.bad{color:#fff;background:rgba(160,20,20,.85)}
-  #stat.compact{font-size:clamp(11px,1.7vh,17px);padding:4px 10px 4px 24px;background:rgba(28,28,30,.55);font-weight:600}
-  #stat.compact::before{left:9px;width:8px;height:8px;margin-top:-4px}
-  #meter.compact{padding:4px 10px;gap:8px;background:rgba(28,28,30,.55)} #meter.compact .track{height:8px} #meter.compact span{font-size:clamp(11px,1.6vh,15px)}
+  /* plain text beside the title; a light only when something needs attention */
+  #stat.warn::before,#stat.bad::before{content:"";position:absolute;left:12px;top:50%;width:9px;height:9px;margin-top:-4.5px;border-radius:50%;background:#ff9f0a}
+  #stat.bad::before{background:#fff} #stat.bad{color:#fff;background:rgba(160,20,20,.85)}
+  #stat.compact{font-size:clamp(11px,1.7vh,17px);padding:4px 0;background:none;font-weight:500;color:var(--label-2);text-shadow:0 1px 12px rgba(0,0,0,.35)}
+  #stat.compact.warn{padding-left:16px;color:#ffb340} #stat.compact.warn::before{left:0;width:7px;height:7px;margin-top:-3.5px}
+  #stat.compact.bad{padding:4px 12px 4px 26px;border-radius:8px;color:#fff;background:rgba(160,20,20,.85);font-weight:600;text-shadow:none}
+  #stat.compact.bad::before{left:11px;width:7px;height:7px;margin-top:-3.5px}
+  #meter.compact{padding:4px 0;gap:8px;background:none} #meter.compact .track{height:6px} #meter.compact span{font-size:clamp(11px,1.6vh,15px);font-weight:500;color:var(--label-3)}
   #meter{position:fixed;z-index:9;display:flex;align-items:center;gap:12px;pointer-events:none;padding:8px 14px;border-radius:14px;background:rgba(28,28,30,.8)}
   #meter .track{position:relative;flex:1;height:10px;border-radius:7px;overflow:hidden;
     background:linear-gradient(90deg,rgba(48,209,88,.22) 0 80%,rgba(255,214,10,.22) 80% 95%,rgba(255,69,58,.25) 95%)}
@@ -359,6 +354,6 @@ if(/iPad|iPhone|iPod/.test(navigator.userAgent)||(/Macintosh/.test(navigator.use
   <li>Choose <b style="display:inline;font-size:inherit">Add to Home Screen</b>, then Add.</li></ol></div><div class="arrow"></div></div>
 <div id="gate"><b>Tap to begin</b><small>One tap allows the microphone. After that it runs on its own.</small></div>
 <script>(function(){var f=document.createElement("div");f.style.cssText="display:flex;flex-direction:column;row-gap:1px;position:absolute";f.appendChild(document.createElement("div"));f.appendChild(document.createElement("div"));document.documentElement.appendChild(f);if(f.scrollHeight!==1)document.documentElement.className+=" nogap";f.parentNode.removeChild(f);})();</script>
-<script type="module" src="app.js?v=202610191428"></script>
+<script type="module" src="app.js?v=202610191446"></script>
 </body>
 </html>
