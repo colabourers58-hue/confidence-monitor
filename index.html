@@ -75,11 +75,16 @@ if(/iPad|iPhone|iPod/.test(navigator.userAgent)||(/Macintosh/.test(navigator.use
   .gap i{width:.34em;height:.34em;border-radius:50%;background:var(--live);
          opacity:calc(.22 + .78 * var(--f, 0));transform:scale(calc(.8 + .35 * var(--f, 0)));
          transition:opacity .25s linear,transform .25s linear}
+  .gap .cd{font-size:.5em;font-weight:700;color:var(--live);margin-left:.5em;font-variant-numeric:tabular-nums;
+           letter-spacing:.02em;opacity:.85}
   .gap.on{animation:gapbreathe 2.4s ease-in-out infinite}
   @keyframes gapbreathe{0%,100%{transform:scale(1)}50%{transform:scale(1.06)}}
   .ln.brk{margin-top:.75em}                      /* a new section starts */
   .ln.near{color:rgba(255,255,255,.92);transform:scale(.96)}   /* the next line: read-ahead, must be crisp */
   .ln.past{color:rgba(255,255,255,.3)}
+  /* following people (no track): the lines still to come a softer white, the creep gentler than the timed glide */
+  body.follow .ln:not(.on):not(.past):not(.near){color:rgba(255,255,255,.62)}
+  body.follow #col{transition:transform 1.4s cubic-bezier(.25,.6,.3,1)}
   .ln.on{color:var(--live);transform:scale(1.08)}
   .ln.pending{color:var(--pending);transform:scale(1.08)}
   /* a sung or quoted lyric: the whole passage as one block, sized to fill the screen */
@@ -87,6 +92,12 @@ if(/iPad|iPhone|iPod/.test(navigator.userAgent)||(/Macintosh/.test(navigator.use
              padding:1vh max(5vmin,6%) 2vh;overflow:hidden}
   body.words #view{display:none}
   body.words #blockView{display:flex}
+  body.sectionview #view{display:none}
+  body.blackout>*{visibility:hidden!important}
+  html.mirror #gate,html.mirror #welcome,html.mirror #cp,html.mirror #cpBtn,html.mirror #fsBtn{display:none!important}
+  html.mirror body{cursor:default}
+  body.blackout{background:#000!important}
+  body.sectionview #blockView{display:flex}
   #blk{width:100%;text-align:center;transition:opacity .35s}
   #blkSec{font-weight:600;font-size:.40em;letter-spacing:.16em;text-transform:uppercase;color:var(--live);margin-bottom:.8em}
   #blkLines p{margin:0 0 .26em;font-weight:700;line-height:1.14;letter-spacing:-.02em;color:rgba(255,255,255,.93);text-wrap:balance;
@@ -220,6 +231,12 @@ if(/iPad|iPhone|iPod/.test(navigator.userAgent)||(/Macintosh/.test(navigator.use
   #fsBtn:hover,#fsBtn:focus-visible{opacity:.9}
   #fsBtn svg{width:22px;height:22px}
   #fsBtn[hidden]{display:none}
+  #likely{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(9vh + env(safe-area-inset-bottom));z-index:8;
+          max-width:92vw;padding:.45em 1.1em;border-radius:999px;background:rgba(0,0,0,.62);
+          font-size:4.2vh;font-weight:700;letter-spacing:.005em;line-height:1.2;text-align:center;white-space:nowrap;overflow:hidden;
+          text-overflow:ellipsis;color:rgba(255,255,255,.9);opacity:0;transition:opacity .8s;pointer-events:none}
+  #likely.show{opacity:1}
+  .ln u,#blkLines u{text-decoration:underline;text-decoration-thickness:.07em;text-underline-offset:.14em;text-decoration-color:currentColor}
   #load{position:fixed;left:50%;bottom:5vh;transform:translateX(-50%);z-index:7;width:min(260px,40vw);height:7px;
         border-radius:3px;background:var(--fill);overflow:hidden;transition:opacity .5s}
   #load i{display:block;height:100%;width:0;background:var(--label-3);transition:width .2s}
@@ -295,6 +312,7 @@ if(/iPad|iPhone|iPod/.test(navigator.userAgent)||(/Macintosh/.test(navigator.use
 <div id="meter" hidden><div class="track"><i></i><b></b></div><span></span></div>
 <div id="load"><i></i></div>
 <div id="loadMsg" hidden>Getting the songs ready. This happens once, and Wi-Fi makes it quicker.</div>
+<div id="likely" aria-live="polite"></div>
 <button id="fsBtn" aria-label="Full screen" title="Full screen (F)"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/></svg></button>
 <button id="cpBtn" aria-label="Control panel"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round"><path d="M4 7h10M18 7h2M4 17h4M12 17h8"/><circle cx="16" cy="7" r="2.4"/><circle cx="10" cy="17" r="2.4"/></svg></button>
 <div id="cp" hidden><div class="wrap">
@@ -341,6 +359,6 @@ if(/iPad|iPhone|iPod/.test(navigator.userAgent)||(/Macintosh/.test(navigator.use
   <li>Choose <b style="display:inline;font-size:inherit">Add to Home Screen</b>, then Add.</li></ol></div><div class="arrow"></div></div>
 <div id="gate"><b>Tap to begin</b><small>One tap allows the microphone. After that it runs on its own.</small></div>
 <script>(function(){var f=document.createElement("div");f.style.cssText="display:flex;flex-direction:column;row-gap:1px;position:absolute";f.appendChild(document.createElement("div"));f.appendChild(document.createElement("div"));document.documentElement.appendChild(f);if(f.scrollHeight!==1)document.documentElement.className+=" nogap";f.parentNode.removeChild(f);})();</script>
-<script type="module" src="app.js?v=202610062058"></script>
+<script type="module" src="app.js?v=202610191428"></script>
 </body>
 </html>

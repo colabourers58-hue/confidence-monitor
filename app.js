@@ -1,7 +1,7 @@
 /* Everything runs on this device. No server, no network after the first load. */
-import {Orb} from './orb.js?v=202610062058';
+import {Orb} from './orb.js?v=202610191428';
 // Stamped by publish_site.sh on every publish ('dev' when served straight from this Mac).
-const APP_VERSION = '202610062058';
+const APP_VERSION = '202610191428';
 
 const $ = s => document.querySelector(s);
 // the orb is decoration: if this device can't draw it (old GPU, WebGL off, a shader error), the
@@ -9,7 +9,7 @@ const $ = s => document.querySelector(s);
 let orb;
 try{ orb = new Orb($('#orb')); orb.attach(document); }     // poke it: it dents, springs back and jiggles
 catch(e){ console.warn('orb:', e); orb = new Proxy({}, {get: () => () => {}}); }
-const LEAD = 1.2;                 // seconds the screen runs ahead of the audio
+let LEAD = 1.8;                   // seconds the screen runs ahead of the audio - the console sets it (16 Oct, the songwriter: 'it needs to be ahead of us')
 const RELEASE_SEC = 10;           // drop a song we have not heard for this long
 
 let SONGS = {};
@@ -50,8 +50,8 @@ let privateCount = 0;
 /* ---------------- engine (runs in a worker, on device) ---------------- */
 let worker = null, engineReady = false, loadMsgT = 0, engineRetry = 0;
 function startEngine(){
-  try{ worker = new Worker('engine/fp-worker.js?v=202610062058', {type:'module'}); }
-  catch(e){ try{ worker = new Worker('engine/fp-worker.js?v=202610062058'); }catch(e2){ worker = null; } }
+  try{ worker = new Worker('engine/fp-worker.js?v=202610191428', {type:'module'}); }
+  catch(e){ try{ worker = new Worker('engine/fp-worker.js?v=202610191428'); }catch(e2){ worker = null; } }
   if(!worker){ $('#load').classList.add('done'); return; }
   worker.onmessage = ev => {
     const m = ev.data || {};
@@ -128,7 +128,7 @@ function applyLocal(now){
 }
 
 /* ---------------- microphone ---------------- */
-const SR = 16000, WIN = 5*SR, EVERY = 500;     // a fresh look every 0.5 s (measured: faster locks; a look costs ~60 ms on a Mac)
+const SR = 16000, WIN = 5*SR, EVERY = 250;   // (was 500) nothing up: a look every 0.25 s;     // a fresh look every 0.5 s (measured: faster locks; a look costs ~60 ms on a Mac)
 let actx, ring = [], ringLen = 0, level = 0, busy = false;
 // automatic gain: a quiet feed (a mixer line set low, a mic far from the speakers) is brought up to a working level
 // in software, so nobody has to touch the desk. rawLevel = what actually arrives (for 'no sound' checks).
@@ -138,7 +138,29 @@ let rawLevel = 0, agcPeak = 0.02, agcGain = 1, clipFrac = 0;
 // set by hand in Settings replaces it: 0 dB = exactly what arrives.
 let inputDb = 0; try{ inputDb = parseFloat(localStorage.getItem('cm.inputdb') || '0') || 0; }catch(e){}
 const AGC_TARGET = 0.12, AGC_MAX = 40;
-let mstream = null, analyser = null, fbuf = null, inputId = null;
+let mstream = null, analyser = null, fbuf = null, inputId = null, MIC_AGC = true;
+// THE CONSOLE SETS THIS SCREEN (13 Oct): microphone, input level and auto level come from the Mac's state ('screen'); this
+// page tells the Mac which inputs it can see. Nothing needs to be touched on the output screen itself.
+const SCREENCFG = {rev: -1};
+async function reportMics(){ if(MIRROR || !serverMode) return;
+  try{ const devs = (await navigator.mediaDevices.enumerateDevices()).filter(d => d.kind === 'audioinput');
+    const tr = mstream && mstream.getAudioTracks()[0], cur = tr && tr.getSettings().deviceId;
+    await fetch('cue', {method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({action:'screen_mics',
+      mics: devs.map(d => ({id: d.deviceId, label: d.label || 'Input ' + d.deviceId.slice(0, 6)})), current: cur, agc: MIC_AGC, input_db: inputDb})}); }catch(e){} }
+// TEXT SIZE (14 Oct, Joel: 'the font size might be a touch too small'): set from the console; the live view follows it too
+let TEXT = 1.35;
+function applyText(sc){ const t = sc && typeof sc.text === 'number' ? sc.text : null;
+  if(t && Math.abs(t - TEXT) > 1e-3){ TEXT = t; BLOCK_MAX = TEXT >= 1.3 ? 4 : 6; lastSec = -1; refit(); if(document.body.classList.contains('sectionview') || st.words) fitBlock(); } }
+async function applyScreenCfg(sc){ applyText(sc); if(MIRROR || !sc || sc.rev === SCREENCFG.rev) return; const first = SCREENCFG.rev === -1; SCREENCFG.rev = sc.rev;
+  if(first && sc.rev === 0) return;                        // nothing set from the console yet: keep this screen's own choices
+  if(typeof sc.input_db === 'number' && sc.input_db !== inputDb) setInputDb(sc.input_db);
+  const wantMic = sc.mic || inputId, agcChanged = (sc.agc !== undefined && !!sc.agc !== MIC_AGC);
+  if(sc.agc !== undefined) MIC_AGC = !!sc.agc;
+  const tr = mstream && mstream.getAudioTracks()[0], cur = tr && tr.getSettings().deviceId;
+  if(mstream && (agcChanged || (sc.mic && sc.mic !== cur))){
+    try{ await startMic(wantMic, {reuse:true}); if(sc.mic){ inputId = sc.mic; try{ localStorage.setItem('cm.input', sc.mic); }catch(e){} }
+         logEvent('input', 'Microphone set from the console'); }catch(e){} }
+  reportMics(); }
 let srcNode = null, procNode = null, lastFrameAt = 0;   // lastFrameAt: when sound last arrived (word search watches it)
 try{ inputId = localStorage.getItem('cm.input'); }catch(e){}
 // one microphone start at a time: two at once (the page's own start and a tap) closed each other's
@@ -159,14 +181,16 @@ async function startMic0(deviceId, opts){
   const reuse = !!(opts && opts.reuse && actx && actx.state !== 'closed');
   if(actx && !keep && !reuse){ try{ await actx.close(); }catch(e){} actx = null; }
   if(reuse){ try{ srcNode && srcNode.disconnect(); procNode && procNode.disconnect(); }catch(e){} }
-  const audio = {echoCancellation:false, noiseSuppression:false, autoGainControl:false};
+  // autoGainControl ON (13 Oct, an echoey hall at 58% input clipped 20-27% of every window and Whisper heard only 'Oh'):
+  // the browser turns the input down itself when it clips - no System Settings for Joel
+  const audio = {echoCancellation:false, noiseSuppression:false, autoGainControl:MIC_AGC};
   if(deviceId) audio.deviceId = {exact: deviceId};
   let stream;
   try{ stream = await navigator.mediaDevices.getUserMedia({audio}); }
   catch(e){
     if(e && e.name === 'NotAllowedError') throw e;                       // the person said no: don't ask again
     // anything else (a remembered input that's gone, a setting the device can't do): the plainest request
-    try{ stream = await navigator.mediaDevices.getUserMedia({audio:{echoCancellation:false,noiseSuppression:false,autoGainControl:false}}); }
+    try{ stream = await navigator.mediaDevices.getUserMedia({audio:{echoCancellation:false,noiseSuppression:false,autoGainControl:MIC_AGC}}); }
     catch(e2){ if(e2 && e2.name === 'NotAllowedError') throw e2; stream = await navigator.mediaDevices.getUserMedia({audio:true}); }
   }
   // nobody chose an input and the browser handed us a phone over Continuity (or another
@@ -478,23 +502,50 @@ addEventListener('pointermove', e => { if(holdXY && Math.hypot(e.clientX-holdXY[
 addEventListener('pointerup', () => clearTimeout(holdT));
 addEventListener('pointercancel', () => clearTimeout(holdT));
 addEventListener('keydown', e => { if(e.key === 'i') openPanel(); });
+/* stage hot keys (Joel, 7 Oct): T = the song on screen from the top; C or Esc = clear to the orb now (that song can't
+   jump straight back for 30 s). On the Mac they go to the server, which decides for every screen. */
+addEventListener('keydown', e => {
+  if(/INPUT|TEXTAREA|SELECT/.test((e.target || {}).tagName || '') || e.metaKey || e.ctrlKey || e.altKey) return;
+  const k = e.key;
+  if(!serverMode || !(k === 't' || k === 'T' || k === 'c' || k === 'C' || k === 'Escape')) return;
+  if(k === 'Escape' && !$('#cp').hidden) return;          // Esc closes the control panel first
+  const action = (k === 't' || k === 'T') ? 'top' : 'stop';
+  fetch('cue', {method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({action})}).catch(()=>{});
+  logEvent('heard', action === 'top' ? 'T pressed: from the top' : 'Cleared by hand');
+});
 let stillT = 0;
 const woke = () => { document.body.classList.remove('still'); clearTimeout(stillT);
                      stillT = setTimeout(() => document.body.classList.add('still'), 3000); };
 addEventListener('pointermove', woke); addEventListener('pointerdown', woke); woke();
 
 let serverMode = false, skew = 0;
+// MEMORY (8 Oct: the page grew ~240 MB a minute and Chrome killed it every ~85 min, mid-service): one reused buffer
+// instead of two new 1.4 MB arrays four times a second, and every reply READ so Chrome can let the request go
+let sendI16 = null;
 async function sendToServer(){
-  if(busy || !actx || ringLen < actx.sampleRate*1.5) return;      // first look after 1.5 s of sound
-  const f = new Float32Array(ringLen); let o = 0;
-  for(const c of ring){ f.set(c, o); o += c.length; }
-  const i16 = new Int16Array(f.length);
-  for(let i=0;i<f.length;i++){ const v = Math.max(-1, Math.min(1, f[i])); i16[i] = v*32767; }
+  if(busy || !actx || ringLen < actx.sampleRate*0.5) return;      // first look after 0.5 s of sound (7 Oct: the first seconds are everything)   // and every 0.25 s with a track up too: a track CHANGE must be caught as fast as a start (7 Oct)
+  if(!sendI16 || sendI16.length !== ringLen) sendI16 = new Int16Array(ringLen);
+  const i16 = sendI16; let o = 0;
+  for(const c of ring){ for(let j=0;j<c.length && o<i16.length;j++){ const v = c[j] > 1 ? 1 : c[j] < -1 ? -1 : c[j]; i16[o++] = v*32767; } }
   busy = true;
-  try{ await fetch('hear', {method:'POST', headers:{'Content-Type':'application/octet-stream','X-Level':String(level),
-                              'X-Rate':String(actx ? actx.sampleRate : SR)}, body:i16.buffer}); }
+  try{ const r = await fetch('hear', {method:'POST', headers:{'Content-Type':'application/octet-stream','X-Level':String(level),
+                              'X-Rate':String(actx ? actx.sampleRate : SR)}, body:i16.subarray(0, o)});
+       await r.text(); }
   catch(e){}
   busy = false;
+}
+// a song the Mac knows but this screen's list doesn't (added after the packs were made - My Redeemer Lives sat
+// 'up' on the Mac and blank on the screen, 7 Oct): fetch it from the Mac, in the screen's own shape
+const songAsked = {};
+async function fetchSong(id){
+  if(!id || SONGS[id] || (songAsked[id] && performance.now() - songAsked[id] < 10000)) return;
+  songAsked[id] = performance.now();
+  try{
+    const x = await (await fetch('song/' + encodeURIComponent(id), {cache:'no-store'})).json();
+    if(x && x.id === id && Array.isArray(x.cues))
+      SONGS[id] = {id, title: x.title, duration: x.duration, flags: x.flags || [],
+                   cues: x.cues.map(c => ({t: c.t, text: c.text, s: (c.s || c.section) ? 1 : 0}))};
+  }catch(e){ console.warn('song from the Mac:', id, e); }
 }
 async function pollServer(){
   try{
@@ -503,16 +554,23 @@ async function pollServer(){
     skew = s.server_now + (performance.now()-t0)/2000 - Date.now()/1000;
     const l = s.listen || {};
     lastDoubt = !!s.doubt;                  // the Mac says the song on screen stopped matching
+    if(typeof s.lead === 'number') LEAD = s.lead;
+    applyScreenCfg(s.screen);
+    document.body.classList.toggle('blackout', !!s.blackout);   // the console's Blackout: the screen goes black, nothing else changes
     if(s.room) roomInfo = {songs: s.room.songs, postings: s.room.postings, ready: true, persist: true, mac: true};
     confNow = (l.conf_at && s.server_now - l.conf_at < 4) ? (l.conf || 0) : 0;
     if(l.last_match) lastMatchInfo = l.last_match;
     if(l.heard && l.heard_at && l.heard_at !== pollServer.heardAt && l.heard.trim().length > 3){
       pollServer.heardAt = l.heard_at; logEvent('heard', 'Heard: “' + l.heard.trim().slice(0, 120) + '”');
+      noteHeard(l.heard);
     }
+    await fetchSong(s.song_id || (s.cued && s.cued.song_id));
     const song = s.song_id && SONGS[s.song_id];
     if(song && s.mode === 'words' && s.anchor != null) showWords(song, s.anchor);
     else if(song && s.started_at != null){
       const startedPerf = performance.now()/1000 - ((Date.now()/1000 + skew) - s.started_at);
+      const fol = s.driver === 'words' || (s.driver === 'live' && s.clock !== 'track');
+      if(fol !== !!st.follow){ st.follow = fol; activeCue = -2; }          // re-place the line for the new mode
       if(!st.song || st.song.id !== song.id || st.words || st.paused != null || Math.abs(st.started - startedPerf) > 0.25)
         catchSong(song, startedPerf, s.driver === 'words' ? (l.last_match && l.last_match.how) || 'from the sung words'
                                    : s.driver === 'live' ? 'a live recording: clock estimated, the singing corrects it'
@@ -531,6 +589,10 @@ async function pollServer(){
     }
     else if(st.song) release();
     if(!s.cued) pollServer.cued = null;
+    // what the preaching points to: a quiet line at the bottom while no song is up (s.likely, 7 Oct)
+    { const lk = $('#likely'), L = s.likely, fresh = L && L.songs && L.songs.length && s.server_now - L.at < 25 && !s.song_id && !s.cued;
+      const txt = fresh ? L.songs.map(x => x.title).join('  ·  ') : '';
+      if(lk && lk.dataset.t !== txt){ lk.dataset.t = txt; lk.textContent = txt ? 'Likely  ·  ' + txt : ''; lk.classList.toggle('show', !!txt); } }
     if(st.song) st.lastConfirm = performance.now()/1000;   // the Mac decides when to let go
   }catch(e){}
 }
@@ -655,11 +717,14 @@ function breatheCorner(now){          // refresh the corner size a few times a s
 function release(){
   if(st.song) logEvent('release', `Let go of ${st.song.title}`);
   st.song = null; st.started = null; st.pending = null; st.words = null; st.paused = null; heldInfo = null;
-  document.body.classList.remove('song', 'words');
+  document.body.classList.remove('song', 'words', 'sectionview');
   orb.setAmbient(0);
   orbHome = ''; placeOrb();
 }
 function showWords(song, anchor){
+  // LIGHT THE LINE THEY'RE ABOUT TO SING (Joel, 7 Oct: 'changing after they sing a line is bad'): the line heard is
+  // already over by the time it's recognised, so the next lyric line is lit; the one heard softens as sung
+  { const c = song.cues; let k = anchor + 1; while(k < c.length && c[k].s) k++; if(k < c.length) anchor = k; }
   const key = song.id + '#' + anchor;
   if(st.words === key) return;
   const fresh = !st.song || st.song.id !== song.id;
@@ -674,20 +739,64 @@ function showWords(song, anchor){
              setTimeout(() => { if(st.song === song){ const [x,y] = dotUV(); orb.toStatus(x, y); orbCorner = [x, y]; } }, 380); }
 }
 // the section that holds the sung line, whole; what was sung softens, the next section waits below
-function renderBlock(song, anchor){
+let BLOCK_MAX = TEXT >= 1.3 ? 4 : 6;   // pages of up to 6 lines; 4 once the console's Text size is 130%+ (bigger words, fewer per page)
+function renderBlock(song, anchor, waiting){
   const c = song.cues;
   let a0 = anchor, a1 = anchor;
   while(a0 > 0 && !c[a0-1].s) a0--;
   while(a1+1 < c.length && !c[a1+1].s) a1++;
   const hasSections = c.some(x => x.s);
   if(!hasSections){ a0 = Math.max(0, anchor-2); a1 = Math.min(c.length-1, anchor+5); }
+  // ONE TEXT SIZE, ALWAYS (15 Oct, Joel: 'some big lines and then some small lines... unreliable on stage when the confidence
+  // monitor is 20 feet away'): the lyrics are set at the console's Text size and never shrink or grow to fit a page. A section
+  // too long for the screen at that size turns into more PAGES instead (balanced: 9 lines = 5 + 4); a page swaps whole.
+  sizeBlock();
+  const _bv = $('#blockView'), _hid = !_bv.clientHeight; if(_hid) _bv.style.display = 'flex';   // measure it as it will show
+  const L = []; for(let k=a0;k<=a1;k++) if(!c[k].s) L.push(k);
+  let pages = Math.max(1, Math.ceil(L.length / BLOCK_MAX)), size = Math.ceil(L.length / pages);
+  // the lyrics get the room first: pages are measured without the dim 'Next' preview, which shows only if it still fits
+  const fits = (p0, p1) => { fillPage(c, L[p0], L[p1], -1); $('#blkNext').innerHTML = ''; const blk = $('#blk'), box = $('#blockView');
+    return blk.scrollHeight <= box.clientHeight * 0.97 && blk.scrollWidth <= box.clientWidth + 1; };
+  for(; pages <= L.length; pages++){
+    size = Math.ceil(L.length / pages); let ok = true;
+    for(let q = 0; q * size < L.length && ok; q++) ok = fits(q * size, Math.min(L.length, (q + 1) * size) - 1);
+    if(ok) break;
+  }
+  size = Math.ceil(L.length / pages);
+  if(_hid) _bv.style.display = '';
+  reportPages(song, L, size);                 // the console mirrors these exact pages (16 Oct)
+  if(L.length){ let pos = L.indexOf(anchor); if(pos < 0){ pos = 0; while(pos + 1 < L.length && L[pos + 1] <= anchor) pos++; }
+    const pg = Math.min(pages - 1, Math.floor(pos / size)); a0 = L[pg * size]; a1 = L[Math.min(L.length, (pg + 1) * size) - 1]; }
   let sec = ''; for(let k=anchor;k>=0;k--) if(c[k].s){ sec = c[k].text; break; }
   $('#blkSec').textContent = sec ? sectionName(sec) : '';
+  fillPage(c, a0, a1, anchor, waiting);
+  BLOCK_WAIT.on = !!waiting; BLOCK_WAIT.sec = sec ? sectionName(sec) : '';
+  { const blk = $('#blk'), box = $('#blockView'); if(_hid) box.style.display = 'flex';
+    if(blk.scrollHeight > box.clientHeight * 0.97) $('#blkNext').innerHTML = '';
+    if(_hid) box.style.display = ''; }
+  const se = $('#sect'); se.textContent = sec ? sectionName(sec) : ''; se.classList.toggle('show', !!sec);
+}
+// THE CONSOLE SHOWS THE SAME PAGES (16 Oct): the console's Live pane draws this screen from the Mac's state with the rules
+// above, but a page's size is measured here, on this window; so each section's pages are told to the Mac (once per change)
+function reportPages(song, L, size){
+  if(!serverMode || MIRROR || !L.length) return;
+  const pages = []; for(let q = 0; q * size < L.length; q++) pages.push([L[q * size], L[Math.min(L.length, (q + 1) * size) - 1]]);
+  const key = song.id + '|' + L[0] + '|' + JSON.stringify(pages) + '|' + TEXT + '|' + innerWidth + 'x' + innerHeight;
+  if(reportPages.key === key) return; reportPages.key = key;
+  try{ fetch('cue', {method:'POST', headers:{'Content-Type':'application/json'}, keepalive: true,
+             body: JSON.stringify({action:'screen_show', song_id: song.id, sec: L[0], pages, text: TEXT, w: innerWidth, h: innerHeight})})
+       .then(r => r.text()).catch(() => {}); }catch(e){}
+}
+const BLOCK_WAIT = {on: false, sec: ''};
+function fillPage(c, a0, a1, anchor, waiting){
   const lines = $('#blkLines'); lines.innerHTML = '';
   for(let k=a0;k<=a1;k++){
     if(c[k].s) continue;
     const p = document.createElement('p'); p.textContent = c[k].text;
-    p.className = k === anchor ? 'hit' : k < anchor ? 'sung' : '';
+    p.className = k === anchor ? (waiting ? '' : 'hit') : k < anchor ? 'sung' : '';
+    if(k === anchor && performance.now() / 1000 - HEARD.at < 20)          // the words that placed it, underlined
+      p.innerHTML = c[k].text.split(/(\s+)/).map(w => { const e = w.replace(/&/g, '&amp;').replace(/</g, '&lt;');
+        return HEARD.words.has(normW(w)) ? '<u>' + e + '</u>' : e; }).join('');
     lines.appendChild(p);
   }
   // a glimpse of what comes next, so they can flow on
@@ -695,18 +804,15 @@ function renderBlock(song, anchor){
   const nxt = []; while(nk < c.length && !c[nk].s && nxt.length < 2){ nxt.push(c[nk].text); nk++; }
   $('#blkNext').innerHTML = nxt.length
     ? `<span>Next${nsec ? ' · ' + esc(sectionName(nsec)) : ''}</span>` + nxt.map(esc).join('<br>') : '';
-  const se = $('#sect'); se.textContent = sec ? sectionName(sec) : ''; se.classList.toggle('show', !!sec);
-  requestAnimationFrame(fitBlock);
 }
-function fitBlock(){
-  const blk = $('#blk'), box = $('#blockView'); if(!box.clientHeight) return;
-  let lo = innerHeight*0.022, hi = innerHeight*0.115*zoom, best = lo;
-  for(let n=0;n<9;n++){
-    const mid = (lo+hi)/2; blk.style.fontSize = mid+'px';
-    if(blk.scrollHeight <= box.clientHeight*0.94 && blk.scrollWidth <= box.clientWidth+1){ best = mid; lo = mid; } else hi = mid;
-  }
-  blk.style.fontSize = best+'px';
+// the one lyric size: a share of the screen height times the console's Text size (100% = 9% of the height)
+function sizeBlock(){
+  const blk = $('#blk'), box = $('#blockView');
+  box.style.paddingLeft = box.style.paddingRight = '3.5%';
+  blk.style.fontSize = (innerHeight * 0.09 * zoom * TEXT).toFixed(1) + 'px';
+  $('#blkNext').style.fontSize = '0.36em'; $('#blkNext').style.marginTop = '0.5em';
 }
+function fitBlock(){ sizeBlock(); if(st.song && typeof activeCue === 'number' && activeCue >= 0 && document.body.classList.contains('sectionview')) renderBlock(st.song, activeCue); }
 
 let cues = [], sections = [], lastNow = '', lastNext = '', lastSec = -1;
 const esc = t => t.replace(/[&<>]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;'}[c]));
@@ -722,7 +828,8 @@ function sectionName(t){
 let lineEls = [], activeCue = -2, gaps = [];
 // a long wait before the next line (an intro, an instrumental) shows three dots that fill as the time
 // passes, like Apple Music, so the singer sees the next line coming (Joel)
-const GAP_SILENCE = 7.5;          // seconds of NO singing (after the line has been sung) before dots show: about two bars, not a long held line (Joel, 1 Oct)
+const GAP_COUNT = 12;             // a wait at least this long shows the seconds to the next line beside the dots
+const GAP_SILENCE = 4.0;          // seconds of NO singing (after the line has been sung) before dots show: about two bars, not a long held line (Joel, 1 Oct)
 const lineDur = text => Math.max(1.8, Math.min(7, 0.42 * text.split(/\s+/).length + 0.8));   // about how long a line takes to sing
 function buildSong(song){
   cues = song.cues; lastSec = -1; activeCue = -2;
@@ -739,7 +846,10 @@ function buildSong(song){
   const col = $('#col'); col.innerHTML = ''; lineEls = []; gaps = [];
   let brk = false, prev = null;
   const addGap = (from, to, after) => {
-    const g = document.createElement('div'); g.className = 'gap'; g.innerHTML = '<i></i><i></i><i></i>';
+    const g = document.createElement('div'); g.className = 'gap';
+    // a LONG wait also counts down to the next line: three dots filling over 74 s look frozen (Daddy thought the
+    // screen froze in There Is No Salvation's instrumental, 7 Oct); a ticking clock shows it's with the track
+    g.innerHTML = '<i></i><i></i><i></i>' + (to - from >= GAP_COUNT ? '<b class="cd"></b>' : '');
     col.appendChild(g); gaps.push({el: g, from, to, after});
   };
   cues.forEach((c,k) => {
@@ -747,7 +857,7 @@ function buildSong(song){
     if(c.t != null){
       if(prev == null){ if(c.t >= 6) addGap(0, c.t, -1); }                      // the intro
       else { const sung = lineDur(prev.text);                                     // the dots come once the line is over
-        if(c.t - prev.t - sung >= GAP_SILENCE) addGap(prev.t + sung + 1, c.t, prev.k); }
+        if(c.t - prev.t - sung >= GAP_SILENCE) addGap(prev.t + sung + 0.5, c.t, prev.k); }
       prev = {t: c.t, k, text: c.text};
     }
     const p = document.createElement('p'); p.className = 'ln' + (brk ? ' brk' : ''); brk = false;
@@ -757,10 +867,38 @@ function buildSong(song){
   col.style.transition = 'none'; col.style.transform = 'translateY(50vh)';
   requestAnimationFrame(() => { col.style.transition = ''; });
 }
+// THE WORDS THAT BROUGHT IT UP (Joel, 6 Oct): the words just heard are underlined in the line on screen,
+// so the stage can see what Prompter heard. Only words heard in the last 20 s; little words don't count.
+const HEARD = {words: new Set(), at: 0};
+const LITTLE = new Set('a an the and of to in on at is it i you me my we our he his she her they them be are was were for so but or as that this with by from'.split(' '));
+const normW = w => w.toLowerCase().replace(/[’']/g, '').replace(/[^a-z0-9]/g, '');
+function noteHeard(text){
+  HEARD.words = new Set(String(text || '').split(/\s+/).map(normW).filter(w => w && !LITTLE.has(w)));
+  HEARD.at = performance.now() / 1000; underlineActive();
+}
+function underlineActive(){
+  const fresh = performance.now() / 1000 - HEARD.at < 20;
+  lineEls.forEach(el => {
+    if(!el) return;
+    if(el.dataset.t == null) el.dataset.t = el.textContent;
+    const on = fresh && el.classList.contains('on');
+    const parts = el.dataset.t.split(/(\s+)/);
+    const html = parts.map(p => {
+      const esc = p.replace(/&/g, '&amp;').replace(/</g, '&lt;');
+      return on && HEARD.words.has(normW(p)) ? '<u>' + esc + '</u>' : esc;
+    }).join('');
+    if(el.dataset.u !== (on ? '1' : '0') || on){ if(el.innerHTML !== html) el.innerHTML = html; el.dataset.u = on ? '1' : '0'; }
+  });
+}
 // mark the sung line, dim what is past, soften what is further away, and glide it into place
+// THE WHOLE SECTION ON SCREEN (the man of God to the lyric team, West Bromwich camp 2026: "Put all the words. Don't put
+// line by line... They are very very slow. They are not corresponding."): a timed song shows its whole verse or chorus
+// as one block, the line being sung lit, the section swapping as a whole. ?view=lines brings back the scrolling lines.
+const SECTION_VIEW = !/[?&]view=lines\b/.test(location.search);
 function setActive(k, pending){
   const key = k + (pending ? 'p' : '');
   if(key === activeCue) return; activeCue = key;
+  if(SECTION_VIEW && st.song && !st.words && k >= 0){ renderBlock(st.song, k); document.body.classList.add('sectionview'); }
   gaps.forEach(g => g.el.classList.remove('on'));
   let order = []; lineEls.forEach((el,i) => { if(el) order.push(i); });
   const pos = order.indexOf(k);
@@ -769,6 +907,7 @@ function setActive(k, pending){
     el.className = 'ln' + (el.classList.contains('brk') ? ' brk' : '')
       + (d === 0 ? (pending ? ' pending' : ' on') : d < 0 ? ' past' : d === 1 ? ' near' : '');
   });
+  underlineActive();
   scrollTo(k);
 }
 // in a wait: the dots are the line being 'sung'; everything up to it is past, the next line is next
@@ -777,6 +916,9 @@ function setGap(n){
   if(key === activeCue) return; activeCue = key;
   gaps.forEach((x,m) => x.el.classList.toggle('on', m === n));
   let next = -1; for(let k = g.after + 1; k < cues.length; k++) if(lineEls[k]){ next = k; break; }
+  // (16 Oct, Joel: 'it doesn't detect the pauses... looks stuck or not listening because lines finish but there's still the
+  // old line up'): in the section view a wait shows the lines COMING, none lit, with the seconds to the first of them
+  if(SECTION_VIEW && st.song && !st.words && next >= 0){ renderBlock(st.song, next, true); document.body.classList.add('sectionview'); }
   lineEls.forEach((el,i) => { if(el) el.className = 'ln' + (el.classList.contains('brk') ? ' brk' : '')
     + (i <= g.after ? ' past' : i === next ? ' near' : ''); });
   scrollToEl(g.el);
@@ -785,24 +927,44 @@ function gapProgress(n, look){
   const g = gaps[n], f = Math.max(0, Math.min(1, (look - g.from) / Math.max(.001, g.to - g.from)));
   const dots = g.el.children;
   for(let j = 0; j < 3; j++){ const v = Math.max(0, Math.min(1, f*3 - j)); dots[j].style.setProperty('--f', v.toFixed(3)); }
+  if(BLOCK_WAIT.on){ const r = Math.max(0, Math.ceil(g.to - look)), t = (BLOCK_WAIT.sec ? BLOCK_WAIT.sec + '  ·  ' : '') + 'in ' + r + 's';
+    const bs = $('#blkSec'); if(bs.textContent !== t) bs.textContent = t; }
+  const cd = dots[3];
+  if(cd){ const r = Math.max(0, Math.ceil(g.to - look)), txt = Math.floor(r / 60) + ':' + String(r % 60).padStart(2, '0');
+    if(cd.textContent !== txt) cd.textContent = txt; }
 }
 function scrollToEl(el){
   const view = $('#view'); if(!el || !view) return;
   const y = view.clientHeight*0.5 - (el.offsetTop + el.offsetHeight/2);
   $('#col').style.transform = `translateY(${Math.round(y)}px)`;
 }
+/* FOLLOWING PEOPLE (Joel, 7 Oct): when the lyrics are up from singing or a mention (no track), the line heard sits a
+   third of the way down so what comes after it shows underneath, and the view CREEPS slowly on to reveal the next lines
+   - slower and softer than a track's scroll - until the next line is heard. A track keeps the centred timed scroll. */
+const CREEP = {k: null, at: 0, base: 0, AT: 34, WAIT: 3.0, SEC_PER_LINE: 7.0, MAX_LINES: 2};   // (was 1.2 s / 2.4 s a line: "a touch fast", Joel 7 Oct)
+function followMode(){ return !!st.song && (st.paused != null || st.follow); }
 function scrollTo(k){
   const el = lineEls[k], view = $('#view'); if(!el || !view) return;
   // the sung line sits in the middle of the lyric area, between the title bar and the section strip
-  // (Joel: "it should really be in the center")
-  const y = view.clientHeight*0.5 - (el.offsetTop + el.offsetHeight/2);
+  // (Joel: "it should really be in the center"); following people: a third of the way down, to show what's next
+  const frac = followMode() ? CREEP.AT / 100 : 0.5;
+  const y = view.clientHeight*frac - (el.offsetTop + el.offsetHeight/2);
+  CREEP.k = k; CREEP.at = performance.now()/1000; CREEP.base = Math.round(y);
   $('#col').style.transform = `translateY(${Math.round(y)}px)`;
+}
+function creep(now){
+  document.body.classList.toggle('follow', followMode());
+  if(!followMode() || CREEP.k == null || !lineEls[CREEP.k]) return;
+  const t = now - CREEP.at - CREEP.WAIT; if(t <= 0) return;
+  const lh = lineEls[CREEP.k].offsetHeight * 1.3;
+  const px = Math.min(CREEP.MAX_LINES * lh, t * lh / CREEP.SEC_PER_LINE);
+  $('#col').style.transform = `translateY(${Math.round(CREEP.base - px)}px)`;
 }
 let zoom = parseFloat(localStorage.getItem('cm.zoom') || '1') || 1;
 function refit(){
   // default lyric size (Joel: 30% bigger than the first version, for reading from the stage);
   // the pinch / +/- zoom multiplies on top of it
-  $('#col').style.fontSize = (Math.min(innerHeight*0.12, Math.max(28, innerWidth*0.125)) * zoom).toFixed(1) + 'px';
+  $('#col').style.fontSize = (Math.min(innerHeight*0.12, Math.max(28, innerWidth*0.125)) * zoom * TEXT).toFixed(1) + 'px';
   fitLines();
   if(typeof activeCue === 'string' || typeof activeCue === 'number'){
     const k = parseInt(activeCue, 10); if(!isNaN(k)) requestAnimationFrame(() => scrollTo(k));
@@ -825,7 +987,7 @@ function setZoom(z){
   try{ localStorage.setItem('cm.zoom', zoom.toFixed(3)); }catch(e){}
   document.body.classList.toggle('big', zoom >= 1.35);
   document.body.classList.toggle('huge', zoom >= 1.85);
-  refit(); if(st.words) fitBlock();
+  refit(); if(st.words || document.body.classList.contains('sectionview')) fitBlock();
   const t = $('#zoomTag'); t.textContent = Math.round(zoom*100)+'%'; t.classList.add('show');
   clearTimeout(setZoom._t); setZoom._t = setTimeout(() => t.classList.remove('show'), 900);
 }
@@ -901,12 +1063,23 @@ function frame(){
     // held (mentioned, clock stopped): exactly the line held, no lead
     const p = st.paused != null ? st.paused : now - st.started, look = st.paused != null ? p + 0.01 : p + LEAD;
     let i = -1; for(let k=0;k<cues.length;k++){ if(cues[k].t <= look) i = k; else break; }
+    // PUSHING, NOT DRAGGING (16 Oct, Joel + the songwriter: 'it needs to be ahead clearly... we should rather have the problem
+    // that it's bringing the next line too quickly'): the next line is lit HALFWAY through the one being sung, or LEAD
+    // seconds before it starts - whichever is sooner. While they sing a line, they are already reading the next.
+    if(st.paused == null){
+      let j = -1; for(let k=0;k<cues.length;k++){ if(cues[k].t <= p) j = k; else break; }
+      let jl = j; while(jl >= 0 && cues[jl].s) jl--;
+      let n = j + 1; while(n < cues.length && cues[n].s) n++;
+      // (16 Oct pm, Joel: 'leading too fast now, split the difference': 70% through the line, LEAD 1.8 s - was 50%, 2.5 s)
+      if(jl >= 0 && n < cues.length && p >= cues[jl].t + 0.7 * (cues[n].t - cues[jl].t) && n > i) i = n;
+    }
     let ci = i; while(ci >= 0 && cues[ci].s) ci--;
     // the line being sung; before the first line, put that first line up early (dimmed)
     const gn = st.paused != null ? -1 : gaps.findIndex(g => look >= g.from && look < g.to);
     if(gn >= 0){ setGap(gn); gapProgress(gn, look); }
     else if(ci >= 0) setActive(ci, false);
     else { let f = i+1; while(f < cues.length && cues[f].s) f++; if(f < cues.length) setActive(f, true); }
+    creep(now);
     let sect = ''; for(let k=i;k>=0;k--) if(cues[k].s){ sect = cues[k].text; break; }
     const se = $('#sect'), nm = sect ? sectionName(sect) : '';
     if(se.textContent !== nm) se.textContent = nm;
@@ -950,7 +1123,7 @@ addEventListener('keydown', e => {
   if(e.key === '-') setZoom(zoom/1.1);
   if(e.key === '0') setZoom(1);
 });
-addEventListener('resize', () => { refit(); if(st.words) fitBlock(); if(st.song){ const [x,y] = dotUV(); orb.toStatus(x,y); orbCorner = [x, y]; }
+addEventListener('resize', () => { refit(); if(st.words || document.body.classList.contains('sectionview')) fitBlock(); if(st.song){ const [x,y] = dotUV(); orb.toStatus(x,y); orbCorner = [x, y]; }
   else if(orbCorner){ const [x,y] = dotUV(); if(isFinite(x) && isFinite(y)) orbCorner = [x, y]; orbHome = ''; } });
 
 /* ---------------- stay awake, stay listening ----------------
@@ -997,8 +1170,10 @@ setInterval(reviveMic, 5000);              // a track can end quietly (headphone
 /* ---------------- the sung words (no Mac) ---------------- */
 // Words heard (from the on-device recogniser, or the browser's own): titles and lines through the
 // same rules. pool = the last ~9 s of words, recent = the newest of them, at = when they were heard.
+// TRACKS ONLY (19 Oct, Joel): words no longer put songs up on their own - only the music does. ?words=1 brings them back.
+const WORDS_ON = /[?&]words=1\b/.test(location.search);
 function heardWords(pool, recent, at){
-  if(!dec) return;
+  if(!dec || !WORDS_ON) return;
   if(!LSIX) LSIX = LS.createIndex(Object.values(SONGS), PREACHED);
   if(MN && !TIX) TIX = MN.createTitleIndex(Object.values(SONGS), TITLES || {});   // private songs too, once unlocked
   const now = performance.now()/1000;
@@ -1147,13 +1322,20 @@ function unlockAudio(){
     if(actx.state !== 'running') actx.resume().catch(() => {});
   }catch(e){}
 }
+// MIRROR (13 Oct): the console's live view - this exact screen, display only: no microphone, no welcome, no gate
+const MIRROR = /[?&]mirror=1\b/.test(location.search);
+if(MIRROR) document.documentElement.classList.add('mirror');
+// KIOSK (14 Oct): the projector's own Chrome (extend.sh) - nobody can reach it to tap, so no welcome, start listening at once
+const KIOSK = /[?&]kiosk=1\b/.test(location.search);
 async function begin(){
+  if(MIRROR) return;
   unlockAudio();
   keepAwake();
   $('#gate').classList.add('gone');
   try{ await startMic(inputId, {reuse:true}); orbHome = ''; placeOrb();
        const tr = mstream && mstream.getAudioTracks()[0]; logEvent('start', 'Started, listening from ' + ((tr && tr.label) || 'the default input'));
        try{ localStorage.setItem('cm.micok', '1'); }catch(e){}             // next time: start without a tap
+       reportMics(); if(!begin.rep){ begin.rep = setInterval(reportMics, 15000); }
        probeWords();
   }catch(e){
     // say WHY, in words a singer can act on, and keep the real error in the log
@@ -1235,7 +1417,7 @@ $('#wGo').addEventListener('click', e => {
 $('#welcome').addEventListener('pointerdown', e => e.stopPropagation());
 $('#cpAbout').addEventListener('click', () => { $('#cp').hidden = true; showWelcome(); });
 let seen = null; try{ seen = localStorage.getItem('cm.welcome'); }catch(e){}
-if(seen !== WELCOME && !new URLSearchParams(location.search).get('demo')) showWelcome();
+if(seen !== WELCOME && !new URLSearchParams(location.search).get('demo') && !MIRROR && !KIOSK) showWelcome();
 $('#cpDone').addEventListener('click', () => { $('#cp').hidden = true; });
 $('#cpBtn').addEventListener('click', e => { e.stopPropagation(); openPanel(); });
 /* full screen: one button (and the F key); the icon flips to "exit" while full screen. Hidden where the
@@ -1452,10 +1634,12 @@ refit();
 try{ document.fonts.ready.then(() => refit()); }catch(e){}   // the lyric font arriving late changes how long lines wrap
 showVersion();
 refreshInstall();
-try{ const r = await fetch('fpstatus', {cache:'no-store'}); if(r.ok) serverMode = !!(await r.json()).ready; }catch(e){}
+// served by the Mac (it answers fpstatus at all, even while still loading its songs) = Mac mode. Waiting for 'ready'
+// here dropped a page opened during the Mac's ~30 s start-up into phone mode for good: it never sent the Mac a sound (7 Oct)
+try{ const r = await fetch('fpstatus', {cache:'no-store'}); if(r.ok){ const j = await r.json(); serverMode = !!(j && ('ready' in j)); } }catch(e){}
 if(serverMode){
   $('#load').classList.add('done');
-  setInterval(pollServer, 150);            // the Mac says what it heard: check often, it is on this network
+  setInterval(pollServer, MIRROR ? 600 : 150);   // the Mac says what it heard: check often (the console's live view: gently)
 }else{
   let LOOPS = []; try{ LOOPS = await (await fetch('data/loops.json?v=' + APP_VERSION)).json(); }catch(e){}
   try{ dec = (await import('./decide.js?v=' + APP_VERSION)).createDecider(id => SONGS[id], {KEYS: [], LOOPS}); }catch(e){ console.warn('decide.js:', e); }   // KEYS: [] = key-change search OFF (30 Sep): six extra keys named wrong songs on an unknown song (Destiny)
@@ -1508,6 +1692,6 @@ frame();
   try{ granted = (await navigator.permissions.query({name:'microphone'})).state === 'granted'; }catch(e){}
   try{ seen = localStorage.getItem('cm.welcome') === WELCOME; granted = granted || localStorage.getItem('cm.micok') === '1'; }catch(e){}
   await Promise.race([swBoot, new Promise(r => setTimeout(r, 1500))]);   // a saved update switches over first (a reload)
-  if(granted && seen && !$('#gate').classList.contains('gone')) begin();
+  if((KIOSK || (granted && seen)) && !$('#gate').classList.contains('gone')) begin();
 })();
 })();

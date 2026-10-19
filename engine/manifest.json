@@ -17,17 +17,17 @@
   "min_votes": 12,
   "max_hits": 8000000,
   "offset_quant_frames": 2,
-  "stoplist": 100000000
+  "stoplist": 0
  },
  "source": {
   "file": "app/library/fingerprints.npz",
-  "postings": 33288878,
-  "bytes": 332931969,
-  "sha256": "e1db22519f60915d0b8385da859f85f2290d1dd5c86cd967c227dcc2f6272644",
+  "postings": 33612679,
+  "bytes": 336170395,
+  "sha256": "6327b5e5e0ad867e2c5976e9e12bb142856fada4e5d049de100bebe4003552e9",
   "refs_json": true
  },
  "nbuckets": 262657,
- "universe": 22403663,
+ "universe": 22631657,
  "sections": [
   {
    "name": "bucket_bits",
@@ -39,50 +39,50 @@
    "name": "stream",
    "type": "bits",
    "offset": 1050632,
-   "bytes": 87116436,
-   "bits": 696931482
+   "bytes": 87923843,
+   "bits": 703390742
   }
  ],
  "stats": {
-  "distinct_hashes": 2481574,
-  "postings": 33288878,
-  "stream_bits": 696931482,
-  "unary_ones": 32926396,
+  "distinct_hashes": 2486843,
+  "postings": 33612679,
+  "stream_bits": 703390742,
+  "unary_ones": 33218768,
   "max_rice_k": 24
  },
  "checksum": [
-  4124488871,
-  594602544
+  3249717641,
+  2838065971
  ],
- "total_bytes": 88167068,
+ "total_bytes": 88974475,
  "shards": [
   {
-   "file": "index/fp-00-da524c6e1e.bin",
+   "file": "index/fp-00-374e2ad230.bin",
    "bytes": 14000000
   },
   {
-   "file": "index/fp-01-3d595c443b.bin",
+   "file": "index/fp-01-edb340fae2.bin",
    "bytes": 14000000
   },
   {
-   "file": "index/fp-02-70ba18c07a.bin",
+   "file": "index/fp-02-1fc2457513.bin",
    "bytes": 14000000
   },
   {
-   "file": "index/fp-03-b587222576.bin",
+   "file": "index/fp-03-80d8e89538.bin",
    "bytes": 14000000
   },
   {
-   "file": "index/fp-04-21f83ae611.bin",
+   "file": "index/fp-04-e84769418d.bin",
    "bytes": 14000000
   },
   {
-   "file": "index/fp-05-402e66f2e4.bin",
+   "file": "index/fp-05-d836528b5b.bin",
    "bytes": 14000000
   },
   {
-   "file": "index/fp-06-b00a242c12.bin",
-   "bytes": 4167068
+   "file": "index/fp-06-d0f632df2f.bin",
+   "bytes": 4974475
   }
  ],
  "refs": [
@@ -11215,7 +11215,7 @@
    "shift": -0.004,
    "aligned": true,
    "excluded": false,
-   "duration": 445.385,
+   "duration": 549.474,
    "start": 22348964
   },
   {
@@ -11226,8 +11226,118 @@
    "shift": 0.0,
    "aligned": true,
    "excluded": false,
-   "duration": 445.385,
-   "start": 22376295
+   "duration": 549.474,
+   "start": 22382694
+  },
+  {
+   "ref_id": "diligence::diligence-9-inst",
+   "song_id": "diligence",
+   "via": "release",
+   "live": false,
+   "shift": -0.024,
+   "aligned": true,
+   "excluded": false,
+   "duration": 287.672,
+   "start": 22416500
+  },
+  {
+   "ref_id": "diligence::diligence-10-pure-inst",
+   "song_id": "diligence",
+   "via": "release",
+   "live": false,
+   "shift": 0.0,
+   "aligned": false,
+   "excluded": false,
+   "duration": 269.512,
+   "start": 22433493
+  },
+  {
+   "ref_id": "rejoicegreatly",
+   "song_id": "rejoicegreatly",
+   "via": "instrumental",
+   "live": false,
+   "shift": 0.0,
+   "aligned": null,
+   "excluded": false,
+   "duration": 314.232,
+   "start": 22449808
+  },
+  {
+   "ref_id": "comfortyeeveryvalley",
+   "song_id": "comfortyeeveryvalley",
+   "via": "instrumental",
+   "live": false,
+   "shift": 0.0,
+   "aligned": null,
+   "excluded": false,
+   "duration": 358.06,
+   "start": 22469392
+  },
+  {
+   "ref_id": "multitudes::multitudes-8-99bpm-inst",
+   "song_id": "multitudes",
+   "via": "release",
+   "live": false,
+   "shift": 0.0,
+   "aligned": false,
+   "excluded": false,
+   "duration": 527.273,
+   "start": 22491398
+  },
+  {
+   "ref_id": "multitudes::multitudes-9-clean-inst",
+   "song_id": "multitudes",
+   "via": "release",
+   "live": false,
+   "shift": 0.0,
+   "aligned": false,
+   "excluded": false,
+   "duration": 524.848,
+   "start": 22523838
+  },
+  {
+   "ref_id": "diligence::diligence-13-inst",
+   "song_id": "diligence",
+   "via": "release",
+   "live": false,
+   "shift": 0.0,
+   "aligned": false,
+   "excluded": false,
+   "duration": 353.425,
+   "start": 22556278
+  },
+  {
+   "ref_id": "obtainingglory::obtaining-glory-15-inst",
+   "song_id": "obtainingglory",
+   "via": "release",
+   "live": false,
+   "shift": 0.0,
+   "aligned": true,
+   "excluded": false,
+   "duration": 290.769,
+   "start": 22577366
+  },
+  {
+   "ref_id": "obtainingglory::obtaining-glory-15",
+   "song_id": "obtainingglory",
+   "via": "release",
+   "live": false,
+   "shift": 0.0,
+   "aligned": true,
+   "excluded": false,
+   "duration": 290.769,
+   "start": 22594945
+  },
+  {
+   "ref_id": "obtainingglory::obtaining-glory-15-inst-1",
+   "song_id": "obtainingglory",
+   "via": "release",
+   "live": false,
+   "shift": 0.0,
+   "aligned": true,
+   "excluded": false,
+   "duration": 316.46,
+   "start": 22612524
   }
  ],
  "decide": {

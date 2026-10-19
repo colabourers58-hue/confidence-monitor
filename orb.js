@@ -7,7 +7,7 @@ const VERT = `attribute vec2 p; void main(){ gl_Position = vec4(p, 0.0, 1.0); }`
 const FRAG = `
 precision highp float;
 uniform vec2  uRes;
-uniform float uTime, uLevel, uCatch, uRest;
+uniform float uTime, uLevel, uCatch, uRest, uPhase;
 uniform vec2  uCenter;
 uniform float uSize;
 uniform vec2  uPokeDir;   // where it was touched, as a direction from the centre
@@ -42,7 +42,9 @@ void main(){
   float r = length(p);
   float e = clamp(uLevel, 0.0, 1.0);
   float T = uTime;
-  float t = T * (0.38 + e*0.95);             // always moving; sound makes it quicker
+  // always moving; sound makes it quicker. The phase is ADDED UP frame by frame in JS (uPhase): T*(speed) made
+  // every level change jump the lights by T*change - hours into a service they whipped round (Joel, 7 Oct)
+  float t = uPhase;
 
   // shape: a sphere that gently morphs and swells with sound
   vec2 dir = r > 0.0001 ? p / r : vec2(1.0, 0.0);
@@ -194,6 +196,7 @@ void main(){
   gl_FragColor = vec4(c, 1.0);
 }`;
 
+const ORB_PACE = 0.26, ORB_PACE_SOUND = 0.5;   // the lights' drift when quiet, and how much sound adds (was 0.38 / 0.95)
 export class Orb {
   constructor(canvas){
     this.c = canvas;
@@ -217,7 +220,7 @@ export class Orb {
     const loc = gl.getAttribLocation(prog, 'p');
     gl.enableVertexAttribArray(loc); gl.vertexAttribPointer(loc, 2, gl.FLOAT, false, 0, 0);
     this.u = {};
-    for(const n of ['uRes','uTime','uLevel','uCatch','uRest','uCenter','uSize','uPokeDir','uDent','uJig','uRip','uRipPos','uAtmos','uBurst','uBurstC','uAmb','uT0','uT1','uT2','uKick','uJigDir','uConf'])
+    for(const n of ['uRes','uTime','uPhase','uLevel','uCatch','uRest','uCenter','uSize','uPokeDir','uDent','uJig','uRip','uRipPos','uAtmos','uBurst','uBurstC','uAmb','uT0','uT1','uT2','uKick','uJigDir','uConf'])
       this.u[n] = gl.getUniformLocation(prog, n);
     this.level = 0; this.levelIn = 0; this.catchV = 0; this.rest = 1;
     this.center = [0, 0]; this.size = 1;
@@ -230,7 +233,8 @@ export class Orb {
     this.tint = [[0,0.40,0.60],[0.10,0.22,0.78],[0.25,0.70,1.00]]; this.tintTarget = this.tint.map(c => c.slice());
     this.t0 = performance.now();
     this.resize(); addEventListener('resize', () => this.resize());
-    const loop = () => { this.draw(); requestAnimationFrame(loop); };
+    // the console's live view (html.mirror) draws the orb at ~8 fps: it's a thumbnail, and the Mac runs on battery at camp
+    const loop = () => { this.draw(); if(document.documentElement.classList.contains('mirror')) setTimeout(() => requestAnimationFrame(loop), 120); else requestAnimationFrame(loop); };
     requestAnimationFrame(loop);
   }
   resize(){
@@ -314,6 +318,8 @@ export class Orb {
     for(let i=0;i<3;i++) for(let j=0;j<3;j++) this.tint[i][j] += (this.tintTarget[i][j] - this.tint[i][j]) * kt;
     gl.uniform2f(this.u.uRes, this.c.width, this.c.height);
     gl.uniform1f(this.u.uTime, (now - this.t0) / 1000);
+    this.phase = ((this.phase || 0) + dt * (ORB_PACE + this.level * ORB_PACE_SOUND)) % 6283.1853;   // 1000 turns: float-safe
+    gl.uniform1f(this.u.uPhase, this.phase);
     gl.uniform1f(this.u.uLevel, this.level);
     gl.uniform1f(this.u.uCatch, this.catchV);
     gl.uniform1f(this.u.uRest, this.rest);
