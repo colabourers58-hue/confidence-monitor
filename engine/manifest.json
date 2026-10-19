@@ -21,13 +21,13 @@
  },
  "source": {
   "file": "app/library/fingerprints.npz",
-  "postings": 33612679,
-  "bytes": 336170395,
-  "sha256": "6327b5e5e0ad867e2c5976e9e12bb142856fada4e5d049de100bebe4003552e9",
+  "postings": 33928538,
+  "bytes": 339329593,
+  "sha256": "e826e017859cf2c59ccbb767a5f3ce0bc02219beba04306d2f8a8895b0c361b2",
   "refs_json": true
  },
  "nbuckets": 262657,
- "universe": 22631657,
+ "universe": 22853957,
  "sections": [
   {
    "name": "bucket_bits",
@@ -39,50 +39,50 @@
    "name": "stream",
    "type": "bits",
    "offset": 1050632,
-   "bytes": 87923843,
-   "bits": 703390742
+   "bytes": 88713716,
+   "bits": 709709723
   }
  ],
  "stats": {
-  "distinct_hashes": 2486843,
-  "postings": 33612679,
-  "stream_bits": 703390742,
-  "unary_ones": 33218768,
+  "distinct_hashes": 2493812,
+  "postings": 33928538,
+  "stream_bits": 709709723,
+  "unary_ones": 33714902,
   "max_rice_k": 24
  },
  "checksum": [
-  3249717641,
-  2838065971
+  3445009113,
+  187766097
  ],
- "total_bytes": 88974475,
+ "total_bytes": 89764348,
  "shards": [
   {
-   "file": "index/fp-00-374e2ad230.bin",
+   "file": "index/fp-00-3aa049c57c.bin",
    "bytes": 14000000
   },
   {
-   "file": "index/fp-01-edb340fae2.bin",
+   "file": "index/fp-01-560b76f83e.bin",
    "bytes": 14000000
   },
   {
-   "file": "index/fp-02-1fc2457513.bin",
+   "file": "index/fp-02-0967f8ee44.bin",
    "bytes": 14000000
   },
   {
-   "file": "index/fp-03-80d8e89538.bin",
+   "file": "index/fp-03-8dfb6f9840.bin",
    "bytes": 14000000
   },
   {
-   "file": "index/fp-04-e84769418d.bin",
+   "file": "index/fp-04-2216121415.bin",
    "bytes": 14000000
   },
   {
-   "file": "index/fp-05-d836528b5b.bin",
+   "file": "index/fp-05-d8e55c01aa.bin",
    "bytes": 14000000
   },
   {
-   "file": "index/fp-06-d0f632df2f.bin",
-   "bytes": 4974475
+   "file": "index/fp-06-4d547ba843.bin",
+   "bytes": 5764348
   }
  ],
  "refs": [
@@ -10783,8 +10783,8 @@
    "song_id": "diligence",
    "via": "release",
    "live": false,
-   "shift": -0.016,
-   "aligned": true,
+   "shift": 0.0,
+   "aligned": false,
    "excluded": false,
    "duration": 291.024,
    "start": 21593508
@@ -10827,8 +10827,8 @@
    "song_id": "diligence",
    "via": "instrumental",
    "live": false,
-   "shift": -0.024,
-   "aligned": true,
+   "shift": 0.0,
+   "aligned": false,
    "excluded": false,
    "duration": 290.959,
    "start": 21668212
@@ -10882,7 +10882,7 @@
    "song_id": "thereisnosalvation",
    "via": "instrumental",
    "live": false,
-   "shift": 0.0,
+   "shift": -0.341,
    "aligned": true,
    "excluded": false,
    "duration": 496.364,
@@ -11212,8 +11212,8 @@
    "song_id": "multitudes",
    "via": "release",
    "live": false,
-   "shift": -0.004,
-   "aligned": true,
+   "shift": 0.0,
+   "aligned": false,
    "excluded": false,
    "duration": 549.474,
    "start": 22348964
@@ -11224,7 +11224,7 @@
    "via": "instrumental",
    "live": false,
    "shift": 0.0,
-   "aligned": true,
+   "aligned": false,
    "excluded": false,
    "duration": 549.474,
    "start": 22382694
@@ -11234,8 +11234,8 @@
    "song_id": "diligence",
    "via": "release",
    "live": false,
-   "shift": -0.024,
-   "aligned": true,
+   "shift": 0.0,
+   "aligned": false,
    "excluded": false,
    "duration": 287.672,
    "start": 22416500
@@ -11274,26 +11274,15 @@
    "start": 22469392
   },
   {
-   "ref_id": "multitudes::multitudes-8-99bpm-inst",
-   "song_id": "multitudes",
-   "via": "release",
-   "live": false,
-   "shift": 0.0,
-   "aligned": false,
-   "excluded": false,
-   "duration": 527.273,
-   "start": 22491398
-  },
-  {
    "ref_id": "multitudes::multitudes-9-clean-inst",
    "song_id": "multitudes",
    "via": "release",
    "live": false,
    "shift": 0.0,
-   "aligned": false,
+   "aligned": true,
    "excluded": false,
    "duration": 524.848,
-   "start": 22523838
+   "start": 22491398
   },
   {
    "ref_id": "diligence::diligence-13-inst",
@@ -11301,10 +11290,10 @@
    "via": "release",
    "live": false,
    "shift": 0.0,
-   "aligned": false,
+   "aligned": true,
    "excluded": false,
    "duration": 353.425,
-   "start": 22556278
+   "start": 22523838
   },
   {
    "ref_id": "obtainingglory::obtaining-glory-15-inst",
@@ -11315,7 +11304,7 @@
    "aligned": true,
    "excluded": false,
    "duration": 290.769,
-   "start": 22577366
+   "start": 22544926
   },
   {
    "ref_id": "obtainingglory::obtaining-glory-15",
@@ -11326,18 +11315,161 @@
    "aligned": true,
    "excluded": false,
    "duration": 290.769,
-   "start": 22594945
+   "start": 22562505
   },
   {
-   "ref_id": "obtainingglory::obtaining-glory-15-inst-1",
+   "ref_id": "prayerofjesus::prayer-of-jesus-4-inst",
+   "song_id": "prayerofjesus",
+   "via": "release",
+   "live": false,
+   "shift": 0.0,
+   "aligned": true,
+   "excluded": false,
+   "duration": 292.445,
+   "start": 22580084
+  },
+  {
+   "ref_id": "iknowthethoughtsithink::i-know-the-thoughts-3-inst",
+   "song_id": "iknowthethoughtsithink",
+   "via": "release",
+   "live": false,
+   "shift": 0.0,
+   "aligned": true,
+   "excluded": false,
+   "duration": 264.132,
+   "start": 22598114
+  },
+  {
+   "ref_id": "obtainingglory::obtaining-glory-15-inst-key1",
    "song_id": "obtainingglory",
    "via": "release",
    "live": false,
    "shift": 0.0,
    "aligned": true,
    "excluded": false,
-   "duration": 316.46,
-   "start": 22612524
+   "duration": 290.747,
+   "start": 22614160
+  },
+  {
+   "ref_id": "obtainingglory::obtaining-glory-15-inst-key-1",
+   "song_id": "obtainingglory",
+   "via": "release",
+   "live": false,
+   "shift": 0.0,
+   "aligned": true,
+   "excluded": false,
+   "duration": 290.75,
+   "start": 22631738
+  },
+  {
+   "ref_id": "obtainingglory::obtaining-glory-15-inst-key2",
+   "song_id": "obtainingglory",
+   "via": "release",
+   "live": false,
+   "shift": 0.0,
+   "aligned": true,
+   "excluded": false,
+   "duration": 290.745,
+   "start": 22649318
+  },
+  {
+   "ref_id": "obtainingglory::obtaining-glory-15-inst-key-2",
+   "song_id": "obtainingglory",
+   "via": "release",
+   "live": false,
+   "shift": 0.0,
+   "aligned": true,
+   "excluded": false,
+   "duration": 290.751,
+   "start": 22666896
+  },
+  {
+   "ref_id": "diligence::diligence-14-inst",
+   "song_id": "diligence",
+   "via": "release",
+   "live": false,
+   "shift": 0.0,
+   "aligned": true,
+   "excluded": false,
+   "duration": 353.425,
+   "start": 22684476
+  },
+  {
+   "ref_id": "diligence::diligence-13",
+   "song_id": "diligence",
+   "via": "release",
+   "live": false,
+   "shift": 0.0,
+   "aligned": true,
+   "excluded": false,
+   "duration": 353.425,
+   "start": 22705564
+  },
+  {
+   "ref_id": "hazardmylifeforjesus::hazard-my-life-for-jesus-2",
+   "song_id": "hazardmylifeforjesus",
+   "via": "release",
+   "live": false,
+   "shift": 0.0,
+   "aligned": true,
+   "excluded": false,
+   "duration": 184.248,
+   "start": 22726652
+  },
+  {
+   "ref_id": "becauseofjesus::because-of-jesus-1",
+   "song_id": "becauseofjesus",
+   "via": "release",
+   "live": false,
+   "shift": 0.0,
+   "aligned": true,
+   "excluded": false,
+   "duration": 202.272,
+   "start": 22738025
+  },
+  {
+   "ref_id": "reviveyourwork::revive-your-work-1",
+   "song_id": "reviveyourwork",
+   "via": "release",
+   "live": false,
+   "shift": 0.0,
+   "aligned": true,
+   "excluded": false,
+   "duration": 168.048,
+   "start": 22750658
+  },
+  {
+   "ref_id": "thereisnosalvation::there-is-no-salvation-14-inst-2",
+   "song_id": "thereisnosalvation",
+   "via": "release",
+   "live": false,
+   "shift": 0.0,
+   "aligned": true,
+   "excluded": false,
+   "duration": 499.432,
+   "start": 22761018
+  },
+  {
+   "ref_id": "thereisnosalvation::there-is-no-salvation-14",
+   "song_id": "thereisnosalvation",
+   "via": "release",
+   "live": false,
+   "shift": 0.0,
+   "aligned": true,
+   "excluded": false,
+   "duration": 499.432,
+   "start": 22791274
+  },
+  {
+   "ref_id": "multitudes::multitudes-10",
+   "song_id": "multitudes",
+   "via": "release",
+   "live": false,
+   "shift": 0.0,
+   "aligned": true,
+   "excluded": false,
+   "duration": 529.697,
+   "start": 22821530
   }
  ],
  "decide": {
