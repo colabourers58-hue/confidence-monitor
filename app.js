@@ -1,7 +1,7 @@
 /* Everything runs on this device. No server, no network after the first load. */
-import {Orb} from './orb.js?v=202610191520';
+import {Orb} from './orb.js?v=202610201249';
 // Stamped by publish_site.sh on every publish ('dev' when served straight from this Mac).
-const APP_VERSION = '202610191520';
+const APP_VERSION = '202610201249';
 
 const $ = s => document.querySelector(s);
 // the orb is decoration: if this device can't draw it (old GPU, WebGL off, a shader error), the
@@ -50,8 +50,8 @@ let privateCount = 0;
 /* ---------------- engine (runs in a worker, on device) ---------------- */
 let worker = null, engineReady = false, loadMsgT = 0, engineRetry = 0;
 function startEngine(){
-  try{ worker = new Worker('engine/fp-worker.js?v=202610191520', {type:'module'}); }
-  catch(e){ try{ worker = new Worker('engine/fp-worker.js?v=202610191520'); }catch(e2){ worker = null; } }
+  try{ worker = new Worker('engine/fp-worker.js?v=202610201249', {type:'module'}); }
+  catch(e){ try{ worker = new Worker('engine/fp-worker.js?v=202610201249'); }catch(e2){ worker = null; } }
   if(!worker){ $('#load').classList.add('done'); return; }
   worker.onmessage = ev => {
     const m = ev.data || {};
@@ -364,7 +364,7 @@ function showWhy(now, loud, up){
     if(silent > 30) t = `No sound is reaching Prompter from “${mic}”. Check the cable or the feed, or pick the input in Settings`; }
   else {
     const ago = lastLookAt ? Math.max(0, Math.round(now - lastLookAt)) : null;
-    p = `Listening \u00b7 ${mic}` + (ago == null ? '' : ` \u00b7 checked ${ago} s ago`);
+    p = `${up ? 'Hearing the track clearly' : 'Hearing well'} \u00b7 ${mic}` + (ago == null ? '' : ` \u00b7 checked ${ago} s ago`);
     if(updateWaiting) p += ' \u00b7 update saved (applies next time Prompter is opened)';
     if(ago != null && ago > 10){ cls = 'bad'; t = 'Prompter has stopped checking the music. Reload the page'; }
     if(clipFrac > 0.02){ t = 'Input very hot: turn it down at the desk'; cls = 'warn'; }
@@ -1034,7 +1034,10 @@ function frame(){
     const db = 20*Math.log10(level || 1e-6);
     $('#cpMeter').style.width = Math.min(100, Math.max(0, (db + 70) / 60 * 100)) + '%';
     $('#cpLevel').textContent = db.toFixed(0) + ' dB';
-    $('#cpHearing').innerHTML = rawLevel < 0.0004 ? '<span class="warn">Nothing coming in. Check the input below</span>' : level*3.2 > 0.10 ? 'Hearing music' : 'Quiet room';
+    // how well it hears, in words (Joel, 20 Oct: 'would be cool for the app to tell me if its good')
+    $('#cpHearing').innerHTML = rawLevel < 0.0004 ? '<span class="warn">Nothing coming in. Check the input below</span>'
+      : clipFrac > 0.02 ? '<span class="warn">Too loud, distorting. Turn the input down</span>'
+      : up ? 'Hearing the track clearly' : level*3.2 > 0.10 ? 'Hearing music, clean signal' : 'Hearing well';
     renderNow();
   }
   if(loud){ quietSince = null; if(soundSince == null) soundSince = now; }
@@ -1223,7 +1226,9 @@ function startASR(){
 }
 function asrTick(){
   if(!asrW || !asrReady || !dec || !actx || !mstream || document.visibilityState !== 'visible') return;
-  if(!dec.wantWords()){ asrPool = []; return; }          // a song is up and the fingerprints follow it
+  // a song is up and the fingerprints follow it: the words still show in the Log (Joel, 20 Oct: 'i still wanna see the live
+  // transcript so i see its working'), they just decide nothing. With ?words=1 they decide, so they stop here as before
+  if(!dec.wantWords()){ asrPool = []; if(WORDS_ON) return; }
   if(asrBusy) return;                                     // still on the last window: this one is skipped
   if(asrMedian() > ASR_SLOW){ asrOdd = !asrOdd; if(asrOdd) return; }       // a slow device: every other window
   if(costBase != null && costBase > 0.8 * EVERY) return;  // the fingerprint looks are struggling: they come first
