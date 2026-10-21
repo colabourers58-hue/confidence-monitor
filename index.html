@@ -99,7 +99,9 @@ if(/iPad|iPhone|iPod/.test(navigator.userAgent)||(/Macintosh/.test(navigator.use
   #blkSec{font-weight:500;font-size:.40em;letter-spacing:-.01em;color:var(--label-2);margin-bottom:.8em;font-variant-numeric:tabular-nums}
   #blkLines p{margin:0 0 .26em;font-weight:700;line-height:1.14;letter-spacing:-.02em;color:rgba(255,255,255,.93);text-wrap:balance;
               transition:color .35s}
-  #blkLines p.sung{color:rgba(255,255,255,.52)}
+  #blkLines p{color:rgba(255,255,255,.5)}
+  #blkLines p.sung{color:rgba(255,255,255,.3)}
+  #blkLines p.next{color:#fff}
   #blkLines p.hit{color:var(--live)}
   #blkNext{margin-top:1.15em;color:var(--label-3);font-weight:600;font-size:.6em;line-height:1.22;text-wrap:balance}
   #blkNext span{display:block;font-size:.62em;font-weight:500;margin-bottom:.45em}
@@ -354,6 +356,6 @@ if(/iPad|iPhone|iPod/.test(navigator.userAgent)||(/Macintosh/.test(navigator.use
   <li>Choose <b style="display:inline;font-size:inherit">Add to Home Screen</b>, then Add.</li></ol></div><div class="arrow"></div></div>
 <div id="gate"><b>Tap to begin</b><small>One tap allows the microphone. After that it runs on its own.</small></div>
 <script>(function(){var f=document.createElement("div");f.style.cssText="display:flex;flex-direction:column;row-gap:1px;position:absolute";f.appendChild(document.createElement("div"));f.appendChild(document.createElement("div"));document.documentElement.appendChild(f);if(f.scrollHeight!==1)document.documentElement.className+=" nogap";f.parentNode.removeChild(f);})();</script>
-<script type="module" src="app.js?v=202610201400"></script>
+<script type="module" src="app.js?v=202610211056"></script>
 </body>
 </html>

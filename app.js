@@ -1,7 +1,7 @@
 /* Everything runs on this device. No server, no network after the first load. */
-import {Orb} from './orb.js?v=202610201400';
+import {Orb} from './orb.js?v=202610211056';
 // Stamped by publish_site.sh on every publish ('dev' when served straight from this Mac).
-const APP_VERSION = '202610201400';
+const APP_VERSION = '202610211056';
 
 const $ = s => document.querySelector(s);
 // the orb is decoration: if this device can't draw it (old GPU, WebGL off, a shader error), the
@@ -50,8 +50,8 @@ let privateCount = 0;
 /* ---------------- engine (runs in a worker, on device) ---------------- */
 let worker = null, engineReady = false, loadMsgT = 0, engineRetry = 0;
 function startEngine(){
-  try{ worker = new Worker('engine/fp-worker.js?v=202610201400', {type:'module'}); }
-  catch(e){ try{ worker = new Worker('engine/fp-worker.js?v=202610201400'); }catch(e2){ worker = null; } }
+  try{ worker = new Worker('engine/fp-worker.js?v=202610211056', {type:'module'}); }
+  catch(e){ try{ worker = new Worker('engine/fp-worker.js?v=202610211056'); }catch(e2){ worker = null; } }
   if(!worker){ $('#load').classList.add('done'); return; }
   worker.onmessage = ev => {
     const m = ev.data || {};
@@ -740,7 +740,7 @@ function showWords(song, anchor){
 }
 // the section that holds the sung line, whole; what was sung softens, the next section waits below
 let BLOCK_MAX = TEXT >= 1.3 ? 4 : 6;   // pages of up to 6 lines; 4 once the console's Text size is 130%+ (bigger words, fewer per page)
-function renderBlock(song, anchor, waiting){
+function renderBlock(song, anchor, waiting, sung){
   const c = song.cues;
   let a0 = anchor, a1 = anchor;
   while(a0 > 0 && !c[a0-1].s) a0--;
@@ -767,9 +767,18 @@ function renderBlock(song, anchor, waiting){
   reportPages(song, L, size);                 // the console mirrors these exact pages (16 Oct)
   if(L.length){ let pos = L.indexOf(anchor); if(pos < 0){ pos = 0; while(pos + 1 < L.length && L[pos + 1] <= anchor) pos++; }
     const pg = Math.min(pages - 1, Math.floor(pos / size)); a0 = L[pg * size]; a1 = L[Math.min(L.length, (pg + 1) * size) - 1]; }
-  let sec = ''; for(let k=anchor;k>=0;k--) if(c[k].s){ sec = c[k].text; break; }
+  // TWO LINES, ALWAYS (21 Oct, Joel: 'show the line and the next line... so we know what we are on and what is coming next'):
+  // at the stage's text size a page held one or two lines, so the next line was usually on the page after. Now the screen
+  // shows the line being sung (yellow) and the next one (white) - in a wait, the next two coming.
+  if(hasSections && anchor >= 0){
+    const nextOf = k => { let x = k + 1; while(x < c.length && c[x].s) x++; return x < c.length ? x : -1; };
+    const first = (!waiting && sung != null && sung >= 0 && sung < anchor) ? sung : anchor, nx = nextOf(first);
+    a0 = first; a1 = nx >= 0 ? nx : first;
+  }
+  let sec = ''; for(let k=a0;k>=0;k--) if(c[k].s){ sec = c[k].text; break; }
   $('#blkSec').textContent = sec ? sectionName(sec) : '';
-  fillPage(c, a0, a1, anchor, waiting);
+  fillPage(c, a0, a1, anchor, waiting, sung);
+  PAGE.id = song.id; PAGE.a0 = a0; PAGE.a1 = a1;
   BLOCK_WAIT.on = !!waiting; BLOCK_WAIT.sec = sec ? sectionName(sec) : '';
   { const blk = $('#blk'), box = $('#blockView'); if(_hid) box.style.display = 'flex';
     if(blk.scrollHeight > box.clientHeight * 0.97) $('#blkNext').innerHTML = '';
@@ -788,12 +797,20 @@ function reportPages(song, L, size){
        .then(r => r.text()).catch(() => {}); }catch(e){}
 }
 const BLOCK_WAIT = {on: false, sec: ''};
-function fillPage(c, a0, a1, anchor, waiting){
+function fillPage(c, a0, a1, anchor, waiting, sung){
   const lines = $('#blkLines'); lines.innerHTML = '';
+  // THE LINE AND THE NEXT ONE, ALWAYS (21 Oct, Joel on stage: 'show the line and the next line both bold, but the live one is
+  // yellow, so if the timing is off we know what we are on and what is coming next'): yellow = being sung, white = next,
+  // the rest of the page quieter. In a wait nothing is live and the first line coming is the next.
+  const nextOf = k => { let x = k + 1; while(x < c.length && c[x].s) x++; return x < c.length ? x : -1; };
+  let live = -1, next = -1;
+  if(waiting || anchor < 0) next = anchor;
+  else if(sung != null && sung >= 0 && sung < anchor){ live = sung; next = anchor; }
+  else { live = anchor; next = nextOf(anchor); }
   for(let k=a0;k<=a1;k++){
     if(c[k].s) continue;
     const p = document.createElement('p'); p.textContent = c[k].text;
-    p.className = k === anchor ? (waiting ? '' : 'hit') : k < anchor ? 'sung' : '';
+    p.className = k === live ? 'hit' : k === next ? 'next' : (k < anchor || k < live) ? 'sung' : '';
     if(k === anchor && performance.now() / 1000 - HEARD.at < 20)          // the words that placed it, underlined
       p.innerHTML = c[k].text.split(/(\s+)/).map(w => { const e = w.replace(/&/g, '&amp;').replace(/</g, '&lt;');
         return HEARD.words.has(normW(w)) ? '<u>' + e + '</u>' : e; }).join('');
@@ -895,17 +912,20 @@ function underlineActive(){
 // line by line... They are very very slow. They are not corresponding."): a timed song shows its whole verse or chorus
 // as one block, the line being sung lit, the section swapping as a whole. ?view=lines brings back the scrolling lines.
 const SECTION_VIEW = !/[?&]view=lines\b/.test(location.search);
-function setActive(k, pending){
-  const key = k + (pending ? 'p' : '');
+const TURN_LEAD = 0.8;              // a page turns this long before its first line (the line before it is still being sung)
+const PAGE = {id: null, a0: -1, a1: -1};   // the page on screen (renderBlock)
+function setActive(k, pending, sung){
+  if(sung == null || sung >= k) sung = -1;
+  const key = k + (pending ? 'p' : '') + (sung >= 0 ? 's' + sung : '');
   if(key === activeCue) return; activeCue = key;
-  if(SECTION_VIEW && st.song && !st.words && k >= 0){ renderBlock(st.song, k); document.body.classList.add('sectionview'); }
+  if(SECTION_VIEW && st.song && !st.words && k >= 0){ renderBlock(st.song, k, false, sung); document.body.classList.add('sectionview'); }
   gaps.forEach(g => g.el.classList.remove('on'));
   let order = []; lineEls.forEach((el,i) => { if(el) order.push(i); });
   const pos = order.indexOf(k);
   order.forEach((i,n) => {
     const el = lineEls[i], d = n - pos;
     el.className = 'ln' + (el.classList.contains('brk') ? ' brk' : '')
-      + (d === 0 ? (pending ? ' pending' : ' on') : d < 0 ? ' past' : d === 1 ? ' near' : '');
+      + (d === 0 ? (pending ? ' pending' : ' on') : i === sung ? ' on' : d < 0 ? ' past' : d === 1 ? ' near' : '');
   });
   underlineActive();
   scrollTo(k);
@@ -1069,18 +1089,29 @@ function frame(){
     // PUSHING, NOT DRAGGING (16 Oct, Joel + the songwriter: 'it needs to be ahead clearly... we should rather have the problem
     // that it's bringing the next line too quickly'): the next line is lit HALFWAY through the one being sung, or LEAD
     // seconds before it starts - whichever is sooner. While they sing a line, they are already reading the next.
+    let jl = -1, n = -1;
     if(st.paused == null){
       let j = -1; for(let k=0;k<cues.length;k++){ if(cues[k].t <= p) j = k; else break; }
-      let jl = j; while(jl >= 0 && cues[jl].s) jl--;
-      let n = j + 1; while(n < cues.length && cues[n].s) n++;
+      jl = j; while(jl >= 0 && cues[jl].s) jl--;
+      n = j + 1; while(n < cues.length && cues[n].s) n++;
       // (16 Oct pm, Joel: 'leading too fast now, split the difference': 70% through the line, LEAD 1.8 s - was 50%, 2.5 s)
       if(jl >= 0 && n < cues.length && p >= cues[jl].t + 0.7 * (cues[n].t - cues[jl].t) && n > i) i = n;
     }
+    // ...AND LEAVING ON TIME (21 Oct, Joel: 'lyrics are arriving on time but leaving too early'). The next line still lights
+    // ahead, but the line being sung no longer goes with it: (1) on the same page both stay lit until it's sung; (2) when the
+    // next line is on ANOTHER page or section, the page stays until TURN_LEAD before that line (the dim 'Next' under it shows
+    // what's coming); (3) the wait after a line (an instrumental) starts when the line is over, not LEAD before.
+    let sung = -1;
+    if(jl >= 0 && n < cues.length && i >= n && p < cues[n].t){
+      if(SECTION_VIEW && PAGE.id === st.song.id && jl >= PAGE.a0 && jl <= PAGE.a1 && (n < PAGE.a0 || n > PAGE.a1)){
+        if(p < cues[n].t - TURN_LEAD) i = jl;
+      } else sung = jl;
+    }
     let ci = i; while(ci >= 0 && cues[ci].s) ci--;
     // the line being sung; before the first line, put that first line up early (dimmed)
-    const gn = st.paused != null ? -1 : gaps.findIndex(g => look >= g.from && look < g.to);
+    const gn = st.paused != null ? -1 : gaps.findIndex(g => p >= g.from && look < g.to);
     if(gn >= 0){ setGap(gn); gapProgress(gn, look); }
-    else if(ci >= 0) setActive(ci, false);
+    else if(ci >= 0) setActive(ci, false, sung);
     else { let f = i+1; while(f < cues.length && cues[f].s) f++; if(f < cues.length) setActive(f, true); }
     creep(now);
     let sect = ''; for(let k=i;k>=0;k--) if(cues[k].s){ sect = cues[k].text; break; }
