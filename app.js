@@ -1,7 +1,7 @@
 /* Everything runs on this device. No server, no network after the first load. */
-import {Orb} from './orb.js?v=202610211056';
+import {Orb} from './orb.js?v=202610211121';
 // Stamped by publish_site.sh on every publish ('dev' when served straight from this Mac).
-const APP_VERSION = '202610211056';
+const APP_VERSION = '202610211121';
 
 const $ = s => document.querySelector(s);
 // the orb is decoration: if this device can't draw it (old GPU, WebGL off, a shader error), the
@@ -50,8 +50,8 @@ let privateCount = 0;
 /* ---------------- engine (runs in a worker, on device) ---------------- */
 let worker = null, engineReady = false, loadMsgT = 0, engineRetry = 0;
 function startEngine(){
-  try{ worker = new Worker('engine/fp-worker.js?v=202610211056', {type:'module'}); }
-  catch(e){ try{ worker = new Worker('engine/fp-worker.js?v=202610211056'); }catch(e2){ worker = null; } }
+  try{ worker = new Worker('engine/fp-worker.js?v=202610211121', {type:'module'}); }
+  catch(e){ try{ worker = new Worker('engine/fp-worker.js?v=202610211121'); }catch(e2){ worker = null; } }
   if(!worker){ $('#load').classList.add('done'); return; }
   worker.onmessage = ev => {
     const m = ev.data || {};
@@ -104,7 +104,9 @@ function onResult(m){
     if(!nk) costBase = costBase == null ? m.ms : 0.8 * costBase + 0.2 * m.ms;
     else if(costBase != null){ const pk = Math.max(0, (m.ms - costBase) / nk); costKey = costKey == null ? pk : 0.8 * costKey + 0.2 * pk; }
   }
-  dec.result(m, heardAt, m.win || 5, now);
+  // MOVED BY HAND, CARRIES ON FROM THERE (21 Oct, Joel): after a swipe, looks of the same song confirm it but never move it
+  if(dec.state.driver === 'hand' && dec.state.song_id && m && m.song_id === dec.state.song_id) dec.state.last_confirm = now;
+  else dec.result(m, heardAt, m.win || 5, now);
   // room memory: a look heard confidently on track teaches the engine how this song sounds here
   const L = dec.learn(m, heardAt, m.win || 5, now);
   if(L && worker) worker.postMessage(Object.assign({type:'learn'}, L));
@@ -1144,6 +1146,44 @@ function frame(){
 }
 
 /* ---------------- gestures ---------------- */
+/* SWIPE THE LYRICS (21 Oct, Joel: 'the override on the iOS and display-only ones should work like Apple Music where I swipe up
+   or down'): swipe up = the next line now, swipe down = the line before; the song carries on from there. On a screen fed by the
+   Mac it is the console's click (goto); on its own (the link) the clock moves here and the track no longer moves it. */
+function lyricLine(){                       // the line being sung now (the yellow one)
+  if(!st.song || !cues.length) return -1;
+  const p = st.paused != null ? st.paused : st.started != null ? performance.now()/1000 - st.started : null;
+  if(p == null) return -1;
+  let j = -1; for(let k = 0; k < cues.length; k++){ if(cues[k].t != null && cues[k].t <= p) j = k; else if(cues[k].t != null) break; }
+  while(j >= 0 && cues[j].s) j--;
+  return j;
+}
+function moveLine(dir){
+  if(!st.song || st.words || !cues.length) return;
+  // swiped a moment ago: count on from that line (the Mac sets its clock just before it, so the clock still says the one before)
+  const nowS = performance.now()/1000;
+  let k = (moveLine.last && moveLine.last.id === st.song.id && nowS - moveLine.last.at < 4) ? moveLine.last.k : lyricLine();
+  let x = k + dir; while(x >= 0 && x < cues.length && (cues[x].s || cues[x].t == null)) x += dir;
+  if(x < 0 || x >= cues.length) return;
+  moveLine.last = {id: st.song.id, k: x, at: nowS};
+  if(serverMode){
+    fetch('cue', {method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({action:'goto', song_id: st.song.id, cue: x})}).catch(() => {});
+  } else if(dec){
+    const now = performance.now()/1000;
+    dec.hold({song_id: st.song.id, started_at: now - cues[x].t}, now);
+    applyLocal(now);
+  }
+  logEvent('info', (dir > 0 ? 'Swiped on to: ' : 'Swiped back to: ') + (cues[x].text || '').slice(0, 60));
+}
+let swY = null, swX = 0, swT = 0;
+addEventListener('touchstart', e => { if(e.touches.length === 1 && $('#cp').hidden){ swY = e.touches[0].clientY; swX = e.touches[0].clientX; swT = performance.now(); } else swY = null; }, {passive:true});
+addEventListener('touchend', e => {
+  if(swY == null || !e.changedTouches.length) return;
+  const dy = e.changedTouches[0].clientY - swY, dx = e.changedTouches[0].clientX - swX; swY = null;
+  if(Math.abs(dy) >= 50 && Math.abs(dy) > 1.5 * Math.abs(dx) && performance.now() - swT < 800){ clearTimeout(holdT); moveLine(dy < 0 ? 1 : -1); }
+}, {passive:true});
+addEventListener('keydown', e => { if(!$('#cp').hidden) return;
+  if(e.key === 'ArrowDown' || e.key === 'ArrowRight'){ moveLine(1); e.preventDefault(); }
+  else if(e.key === 'ArrowUp' || e.key === 'ArrowLeft'){ moveLine(-1); e.preventDefault(); } });
 let pb = 0, pz = 1;
 const dist = t => Math.hypot(t[0].clientX - t[1].clientX, t[0].clientY - t[1].clientY);
 addEventListener('touchstart', e => { if(e.touches.length === 2){ pb = dist(e.touches); pz = zoom; } }, {passive:true});
